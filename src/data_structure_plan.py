@@ -26,3 +26,14 @@
 
 #alternative with channel_info --> 'members':[user_ids], 'owners':[user_ids],
 #     --> need to make assumption about whether to add owner to members in this case
+
+auth_user_id = 0
+
+channel_info = [ {'name': "",
+                   'channel_id': "",
+                   'public_status': "",
+                   'members' : [ { 'user_id': "", 
+                                   'channel_owner_status': "",
+                               },],   
+                   'messages':[],
+                   }]
