@@ -6,10 +6,7 @@
 #                'user_id' : int?,
 #                'password' : string,
 #                'global_owner_status' : boolean,
-#                'handle' : string,
-#                'channels' : [ {'channel_id' : int?,     --> may be redundant
-#                                'channel_owner_status' : boolean,
-#                               }, {...} ],         
+#                'handle' : string,        
 #               }, 
 #               {....}, ....
 #             ]
