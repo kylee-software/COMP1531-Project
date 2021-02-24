@@ -26,11 +26,6 @@
 
 auth_user_id = 0
 
-channel_info = [ {'name': "",
-                   'channel_id': "",
-                   'public_status': "",
-                   'members' : [ { 'user_id': "", 
-                                   'channel_owner_status': "",
-                               },],   
-                   'messages':[],
-                   }]
+channel_info = []
+
+user_info = []
