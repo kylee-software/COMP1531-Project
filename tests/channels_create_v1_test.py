@@ -3,10 +3,12 @@ from src.other import clear_v1
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 
-@pytest.fixure
+
+@pytest.fixture
 def call_clear():
     # rest the all data
     clear_v1()
+
 
 @pytest.fixture
 def create_user():
