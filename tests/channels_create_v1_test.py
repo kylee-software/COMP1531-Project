@@ -2,6 +2,7 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
+from src.error import InputError
 
 
 @pytest.fixture
@@ -18,8 +19,8 @@ def create_user():
 
 def test_invalid_name():
     # Test invalid name with more tan 20 characters --> "InputError"
-    assert channels_create_v1(create_user, "fffffffffffffffffffff", "is_public") == "Name is more than 20 characters " \
-                                                                                    "long! "
+    with pytest.raises(InputError):
+        channels_create_v1(create_user, "fffffffffffffffffffff", True)
 
 
 def test_valid_name_public():
