@@ -14,8 +14,8 @@ def call_clear():
 @pytest.fixture
 def create_user():
     # create a test user and return auth id
-    return auth_register_v1("testmail@gamil.com", "Testpass12345", "firstname", "lastname")
-
+    return auth_register_v1("testmail@gamil.com", "Testpass12345", "firstname", "lastname")['user_id']
+    # return type = {'user_id : int}
 
 def test_invalid_name():
     # Test invalid name with more tan 20 characters --> "InputError"
