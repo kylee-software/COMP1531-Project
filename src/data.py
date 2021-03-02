@@ -11,7 +11,6 @@ data = {'users': [], 'channels':[]}
 #               }, 
 #               {....}, ....
 #             ]
-#    --> authorisation? how do you become unauthorised?
 
 # channel_info = [ {'name': string,
 #                   'channel_id':int?,
