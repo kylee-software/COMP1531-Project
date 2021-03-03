@@ -6,13 +6,9 @@ from src.error import InputError
 
 
 @pytest.fixture
-def call_clear():
-    # rest the all data
-    clear_v1()
-
-
-@pytest.fixture
 def create_user():
+    # reset all data
+    clear_v1()
     # create a test user and return auth id
     return auth_register_v1("testmail@gamil.com", "Testpass12345", "firstname", "lastname")['user_id']
     # return type = {'user_id : int}
