@@ -17,7 +17,11 @@ def test_invalid_email():
     
     invalid_email_3 = 'test.unsw.edu.au'
     with pytest.raises(InputError):
-        auth_login_v1(invalid_email_3, 'password') 
+        auth_login_v1(invalid_email_3, 'password')
+    
+    invalid_email_4 = 'test_special!!!@unsw.edu.au'
+    with pytest.raises(InputError):
+        auth_login_v1(invalid_email_4, 'password')  
 
 # Test exception - Email given does not match a user's email (email doesn't exist)
 def test_email_nonexistent():
