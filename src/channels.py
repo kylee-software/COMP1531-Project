@@ -1,4 +1,4 @@
-import data # to add new channel_id and its corresponding data info to the dictionary
+import data  # to add new channel_id and its corresponding data info to the dictionary
 from error import InputError # to handle InputError
 
 def channels_list_v1(auth_user_id):
@@ -45,4 +45,4 @@ def channels_create_v1(auth_user_id, name, is_public):
     '''
     # channel_info[channel_id]['messages'] = channel_messages_v1(auth_user_id, channel_id, 0)
 
-    return {'channel_id': channel_id}
+    return channel_id
