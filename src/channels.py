@@ -1,4 +1,4 @@
-import data  # to add new channel_id and its corresponding data info to the dictionary
+import data as data_file  # to add new channel_id and its corresponding data info to the dictionary
 from error import InputError  # to handle InputError
 
 def channels_list_v1(auth_user_id):
@@ -29,10 +29,10 @@ def channels_create_v1(auth_user_id, name, is_public):
     Get the number of channels already exist to help to create the channel_id,
     i.e, channel_size + 1 = channel_id
     '''
-    channel_id = len(data.data['channels']) + 1
+    channel_id = len(data_file.data['channels']) + 1
 
     # Add the new channel info to the data
-    new_channel = data.data['channels'][channel_id]
+    new_channel = data_file.data['channels'][channel_id - 1]
     new_channel['channel_id'] = channel_id
     new_channel['name'] = name
     new_channel['public_status'] = is_public
