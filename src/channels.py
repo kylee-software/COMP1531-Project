@@ -1,5 +1,5 @@
 import data  # to add new channel_id and its corresponding data info to the dictionary
-from error import InputError # to handle InputError
+from error import InputError  # to handle InputError
 
 def channels_list_v1(auth_user_id):
     return {
@@ -32,13 +32,14 @@ def channels_create_v1(auth_user_id, name, is_public):
     channel_id = len(data.data['channels']) + 1
 
     # Add the new channel info to the data
-    data.data['channels'][channel_id]['channel_id'] = channel_id
-    data.data['channels'][channel_id]['name'] = name
-    data.data['channels'][channel_id]['public_status'] = is_public
+    new_channel = data.data['channels'][channel_id]
+    new_channel['channel_id'] = channel_id
+    new_channel['name'] = name
+    new_channel['public_status'] = is_public
 
     # Add owner info to members list
-    data.data['channels'][channel_id]['members'][0]['user_id'] = auth_user_id
-    data.data['channels'][channel_id]['members'][0]['channel_owner_status'] = True
+    new_channel['members'][0]['user_id'] = auth_user_id
+    new_channel['members'][0]['channel_owner_status'] = True
 
     '''
     Add messages --> might have to import channel_messages_v1 from channel
