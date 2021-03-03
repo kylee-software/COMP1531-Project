@@ -2,7 +2,7 @@ from src.data import data
 
 def clear_v1():
     global data
-    data = {'user': [], 'channels': []}
+    data = {'users': [], 'channels':[]}
 
 def search_v1(auth_user_id, query_str):
     return {
