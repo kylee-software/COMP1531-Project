@@ -31,15 +31,18 @@ def channels_create_v1(auth_user_id, name, is_public):
     '''
     channel_id = len(data_file.data['channels']) + 1
 
+    # locate channels in the data dict
+    channels = data_file.data['channels']
+
     # Add the new channel info to the data
-    new_channel = data_file.data['channels'][channel_id - 1]
-    new_channel['channel_id'] = channel_id
-    new_channel['name'] = name
-    new_channel['public_status'] = is_public
+    new_channel = {'channel_id': channel_id,
+                   'name': name,
+                   'public_status': is_public}
+    channels.append(new_channel)
 
     # Add owner info to members list
-    new_channel['members'][0]['user_id'] = auth_user_id
-    new_channel['members'][0]['channel_owner_status'] = True
+    new_channel['members'] = [{'user_id': auth_user_id,
+                               'channel_owner_status': True}]
 
     '''
     Add messages --> might have to import channel_messages_v1 from channel
