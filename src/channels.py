@@ -1,5 +1,5 @@
 from src import data as data_file  # to add new channel_id and its corresponding data info to the dictionary
-from error import InputError  # to handle InputError
+from src.error import InputError  # to handle InputError
 
 def channels_list_v1(auth_user_id):
     return {
