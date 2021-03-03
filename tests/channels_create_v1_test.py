@@ -10,8 +10,10 @@ def create_user():
     # reset all data
     clear_v1()
     # create a test user and return auth id
-    return auth_register_v1("testmail@gamil.com", "Testpass12345", "firstname", "lastname")['user_id']
-    # return type = {'user_id : int}
+    email = "testmail@gamil.com"
+    password = "Testpass12345"
+    return auth_register_v1(email, password, "firstname", "lastname")
+
 
 def test_invalid_name():
     # Test invalid name with more tan 20 characters --> "InputError"
@@ -21,11 +23,9 @@ def test_invalid_name():
 
 def test_valid_name_public():
     # Given a valid name and is_public set to true, assert that the return value channel_id is a dictionary
-    assert type(channels_create_v1(create_user, "channelName1", True)) is dict
+    assert type(channels_create_v1(create_user, "channelName1", True)) is int
 
 
 def test_valid_name_private():
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert type(channels_create_v1(create_user, "channelName2", False)) is dict
-
-
+    assert type(channels_create_v1(create_user, "channelName2", False)) is int
