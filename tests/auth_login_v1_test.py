@@ -1,29 +1,64 @@
 import pytest
-# import auth function and clear function 
-#run clear then the test 
-# login clear so always running on empty so always invalid 
+from src.auth import auth_login_v1, auth_register_v1
+from src.other import clear_v1
+from src.error import InputError 
 
 # Test exception - Email given is not valid (wrong format)
 def test_invalid_email(): 
-    invalid_email = '@unsw.edu.au'
+    clear_v1() 
+
+    invalid_email_1 = '@unsw.edu.au'
     with pytest.raises(InputError): 
-        auth_login_v1(invalid_email, 'password')
+        auth_login_v1(invalid_email_1, 'password')
+    
+    invalid_email_2 = 'test@.au'
+    with pytest.raises(InputError):
+        auth_login_v1(invalid_email_2, 'password') 
+    
+    invalid_email_3 = 'test.unsw.edu.au'
+    with pytest.raises(InputError):
+        auth_login_v1(invalid_email_3, 'password') 
 
 # Test exception - Email given does not match a user's email (email doesn't exist)
-def test_given_email_nonexistent():
-    auth_register 
+def test_email_nonexistent():
+    clear_v1()
+
+    auth_register_v1('testing123@unsw.edu.au', 'password', 'first123', 'last123') 
     with pytest.raises(InputError):
-            auth_login()
+        auth_login_v1('testfail1@unsw.edu.au', 'password')
     
-    auth register
-    with pytest.raises
-    auth_login()
+    auth_register_v1('testing567@unsw.edu.au', 'password', 'first567', 'last567') 
+    with pytest.raises(InputError):
+        auth_login_v1('testfail2@unsw.edu.au', 'password') 
+
+    auth_register_v1('testing890@unsw.edu.au', 'password', 'first890', 'last890') 
+    with pytest.raises(InputError):
+        auth_login_v1('testfail3@unsw.edu.au', 'password') 
+
 # Test exception - password given is not correct  
 def test_password_incorrect():
-    auth_register_v1('testing@unsw.edu.au, 'password', 'first', 'last')
+    clear_v1()
+
+    auth_register_v1('testing123@unsw.edu.au', 'password', 'first123', 'last123') 
     with pytest.raises(InputError):
-        auth_
-# Test where auth_user_id given as email and password given are correct
-def correct_login_details_given(): 
+        auth_login_v1('testing123@unsw.edu.au', 'failed123')
+    
+    auth_register_v1('testing567@unsw.edu.au', 'password', 'first567', 'last567') 
     with pytest.raises(InputError):
-     
+        auth_login_v1('testing567@unsw.edu.au', 'failed567')
+    
+    auth_register_v1('testing890@unsw.edu.au', 'password', 'first890', 'last890') 
+    with pytest.raises(InputError):
+        auth_login_v1('testing890@unsw.edu.au', 'failed890')
+
+# Test - email and password given are correct
+def test_correct_login_details():
+    clear_v1()
+
+    auth_register_v1('testing123@unsw.edu.au', 'password', 'first123', 'last123') 
+    auth_register_v1('testing567@unsw.edu.au', 'password', 'first567', 'last567') 
+    auth_register_v1('testing890@unsw.edu.au', 'password', 'first890', 'last890') 
+
+    assert auth_login_v1('testing123@unsw.edu.au', 'password') == #userid
+    assert auth_login_v1('testing567@unsw.edu.au', 'password') == #userid 
+    assert auth_login_v1('testing890@unsw.edu.au', 'password') == #userid  
