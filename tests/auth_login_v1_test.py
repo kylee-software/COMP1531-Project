@@ -55,10 +55,10 @@ def test_password_incorrect():
 def test_correct_login_details():
     clear_v1()
 
-    auth_register_v1('testing123@unsw.edu.au', 'password', 'first123', 'last123') 
-    auth_register_v1('testing567@unsw.edu.au', 'password', 'first567', 'last567') 
-    auth_register_v1('testing890@unsw.edu.au', 'password', 'first890', 'last890') 
+    userid_1 = auth_register_v1('testing123@unsw.edu.au', 'password', 'first123', 'last123') 
+    userid_2 = auth_register_v1('testing567@unsw.edu.au', 'password', 'first567', 'last567') 
+    userid_3 = auth_register_v1('testing890@unsw.edu.au', 'password', 'first890', 'last890') 
 
-    assert auth_login_v1('testing123@unsw.edu.au', 'password') == #userid
-    assert auth_login_v1('testing567@unsw.edu.au', 'password') == #userid 
-    assert auth_login_v1('testing890@unsw.edu.au', 'password') == #userid  
+    assert auth_login_v1('testing123@unsw.edu.au', 'password') == userid_1  
+    assert auth_login_v1('testing567@unsw.edu.au', 'password') == userid_2 
+    assert auth_login_v1('testing890@unsw.edu.au', 'password') == userid_3   
