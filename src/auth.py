@@ -77,3 +77,5 @@ def auth_register_v1(email, password, name_first, name_last):
                     } 
 
                     data['users'].append(new_user)
+
+                    return new_user('user_id')
