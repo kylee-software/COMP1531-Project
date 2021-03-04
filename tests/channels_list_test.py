@@ -9,9 +9,9 @@ from src.other import clear_v1
 def auth_user_id():
     return auth_register_v1("test@test.unsw.com", 'testPassword8', 'Test', "User")
 
-@pytest.fixture
+"""@pytest.fixture
 def names():
-    return ['testChannel01', 'testChannel02', 'testChannel03', 'testChannel04', 'testChannel05']
+    return ['testChannel01', 'testChannel02', 'testChannel03', 'testChannel04', 'testChannel05']"""
 
 
 def test_lists_a_single_channel(auth_user_id):
