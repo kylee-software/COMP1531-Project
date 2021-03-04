@@ -74,6 +74,45 @@ def test_last_name_valid_length():
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.edu.au', 'password', 'first3', 'thislastnamecontainsspecialcharacters##^^&&**!!123123123')
 
+# Test - if handle generated has whitespace it raises an error as not allowed 
+def test_no_whitespace():
+    clear_v1() 
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing123@unsw.edu.au', 'password', 'first name', 'last name')
+    
+    with pytest.raises(InputError):
+        auth_register_v1('testing567@unsw.edu.au', 'password', '   first', 'last') 
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing890@unsw.edu.au', 'password', 'first', 'last   ')
+
+# Test - if handle generated has @ it raises an error as not allowed
+def test_no_at_symbol():
+    clear_v1()
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing123@unsw.edu.au', 'password', 'firstn@me', 'l@stn@me') 
+    
+    with pytest.raises(InputError):
+        auth_register_v1('testing567@unsw.edu.au', 'password', '@first', 'last')
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing890@unsw.edu.au', 'password', 'first', 'last@')
+
+# Test - if handle generated contains both @ and whitespace it raises an error as not allowed 
+def test_no_at_and_whitespace():
+    clear_v1() 
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing123@unsw.edu.au', 'password', '@ first ', '@ last ')
+    
+    with pytest.raises(InputError):
+        auth_register_v1('testing567@unsw.edu.au', 'password', 'first @ name', 'last @ name')
+
+    with pytest.raises(InputError):
+        auth_register_v1('testing890@unsw.edu.au', 'password', 'first @@@' , 'last @@@ ') 
+
 # Test registration of details was successful - if registration is successful then you can login 
 def test_registration_successful():
     clear_v1()
@@ -84,9 +123,5 @@ def test_registration_successful():
 
     assert auth_login_v1('testing123@unsw.edu.au', 'password') == userid_1
     assert auth_login_v1('testing567@unsw.edu.au', 'password') == userid_2
-    assert auth_login_v1('testing890@unsw.edu.au', 'password') == userid_3 
+    assert auth_login_v1('testing890@unsw.edu.au', 'password') == userid_3
 
-
-# Tests for handle - no @ or whitespace, 20 characters only, Q - in the case where we need to add numbers to handles as the handle already exists, is it allowed to go over the 20 character limiit?
-# Need clarification on names and handles - are @ and whitespace allowed in names?
-# Assume can have same name but different emails, numbers and special characters allowed in names 
