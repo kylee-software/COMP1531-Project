@@ -4,7 +4,7 @@ from src.data import data
 
 def auth_login_v1(email, password):
 
-    if re.fullmatch(r'^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
+    if re.match(r'^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         raise InputError('Please enter a valid email address.') 
     
     for lists in data['users']:
@@ -25,7 +25,7 @@ def auth_register_v1(email, password, name_first, name_last):
     name_join = '' 
     handle = ''  
 
-    if re.fullmatch (r'^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
+    if re.match (r'^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         return InputError('Please enter a valid email address.')
     else:
         for lists in data('users'):
