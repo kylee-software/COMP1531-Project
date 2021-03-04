@@ -28,6 +28,11 @@ def auth_register_v1(email, password, name_first, name_last):
     if re.fullmatch (r'^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         return InputError('Please enter a valid email address.')
     else:
+        for lists in data('users'):
+            for user in lists:
+                if user['email_address'] == email:
+                    raise InputError('Email already registered.') 
+                       
         if password_length < 6:
             raise InputError('Password is less than 6 characters.') 
         else:
