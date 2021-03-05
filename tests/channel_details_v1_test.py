@@ -11,12 +11,12 @@ def create_user():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v1(email,password,firstname, lastname)["auth_user_id"]
 
 @pytest.fixture
 def create_channel(is_public):
     name = "Testchannel"
-    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")
+    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")["auth_user_id"]
     return channels_create_v1(user_id, name, is_public)
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def expected_output():
 def test_valid_case():
     clear_v1()
     channel_id = create_channel(True)
-    owner_id = auth_login_v1("channelcreator@gmail.com", "TestTest1")
+    owner_id = auth_login_v1("channelcreator@gmail.com", "TestTest1")["auth_user_id"]
     user_id2 = create_user()
     channel_join_v1(user_id2, channel_id)
     assert channel_details_v1(user_id2, channel_id) == expected_output()
