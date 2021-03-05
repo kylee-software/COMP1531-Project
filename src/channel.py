@@ -1,8 +1,6 @@
 from src.data import data
 from src.error import AccessError, InputError
 
-global data
-
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
@@ -45,6 +43,7 @@ def channel_leave_v1(auth_user_id, channel_id):
     }
 
 def channel_join_v1(auth_user_id, channel_id):
+    global data
     # First check will be to make sure channel_id is valid
     found_channel_id = False
     for channel in data['channels']:

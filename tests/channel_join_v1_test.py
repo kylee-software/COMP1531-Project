@@ -11,13 +11,13 @@ def create_user():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v1(email,password,firstname, lastname)['auth_user_id']
 
 @pytest.fixture
 def create_channel(is_public):
     name = "Testchannel"
     user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "channelcreator", "lastname")
-    return channels_create_v1(user_id, name, is_public)
+    return channels_create_v1(user_id, name, is_public)['channel_id']
 
 def test_valid_channel_id_public():
     clear_v1()
@@ -45,7 +45,7 @@ def test_not_global_user_private_channel():
 def test_channel_member_joining_again():
     clear_v1()
     user_id = create_user()
-    channel_id = channel_create_v1(user_id, "testchannel", True)
+    channel_id = channel_create_v1(user_id, "testchannel", True)['channel_id']
     assert channel_join_v1(user_id, channel_id) == {}
 
 
