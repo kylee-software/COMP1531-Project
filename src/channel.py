@@ -1,3 +1,8 @@
+from src.data import data
+from src.error import AccessError, InputError
+
+global data
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
