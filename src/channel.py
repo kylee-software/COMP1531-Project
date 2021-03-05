@@ -8,22 +8,61 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     }
 
 def channel_details_v1(auth_user_id, channel_id):
+    found_channel_id = False 
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            found_channel_id == True
+            break
+    if found_channel_id == False:
+        raise InputError
+    
+    owner_ids = []
+    member_ids = []
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            found_member = False
+            channel_name = channel['channel_name']
+
+            for member in channel['members']:
+                member_ids.append(member['user_id'])
+                if member['owner_status'] == True:
+                    owner_ids.append(member['user_id'])
+                if member['user_id'] == auth_user_id:
+                    found_member = True
+            
+            if found_member == False:
+                raise AccessError
+            
+            break
+    
+    owner_details = []
+    member_details = []
+    for user in data['users']:
+        if user['user_id'] in member_ids:
+            member =   {
+                            'u_id':user['user_id'],
+                            "email":user['email'],
+                            'name_first':user['first_name'],
+                            'name_last':user['last_name'],
+                            'handle_str':user['handle'],
+                        }
+            member_details.append(member)
+        if user['user_id'] in owner_ids:
+            owner = {
+                        'u_id':user['user_id'],
+                        "email":user['email'],
+                        'name_first':user['first_name'],
+                        'name_last':user['last_name'],
+                        'handle_str':user['handle'],
+                    }
+            owner_details.append(owner)
+
+
+    
     return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-            }
-        ],
+        'name': name,
+        'owner_members': owner_details,
+        'all_members': member_details,
     }
 
 def channel_messages_v1(auth_user_id, channel_id, start):

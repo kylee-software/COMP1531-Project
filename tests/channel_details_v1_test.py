@@ -40,21 +40,12 @@ def test_valid_case():
     assert channel_details_v1(user_id2, channel_id) == expected_output()
     assert channel_details_v1(owner_id, channel_id) == expected_output()
 
-    
+
 def test_invalid_channel_id():
     clear_v1()
     user_id = create_user()
     with pytest.raises(InputError):
         channel_details_v1(user_id, 1)
-
-#NOT IN SPECS:
-def test_user_id_doesnt_exist():
-    clear_v1()
-    channel_id = create_channel(True)
-    user_id = auth_login_v1("channelcreator@gmail.com", "TestTest1")
-    user_id += user_id
-    with pytest.raises(InputError):
-        channel_details(user_id, channel_id)
 
 def test_user_not_in_channel():
     clear_v1()
