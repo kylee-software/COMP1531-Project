@@ -19,12 +19,13 @@ def names():
 def test_oneChannel(auth_user_id):
     clear_v1()
     channels_create_v1(auth_user_id, 'testChannel01', False)
-    assert len(channels_listall_v1(auth_user_id)) == 1
+    channelDict = channels_listall_v1(auth_user_id)
+    assert len(channelDict['channels']) == 1
     
 ##test if there are no channels
 def test_noChannels(auth_user_id):
     clear_v1()
-    assert channels_listall_v1(auth_user_id) == []
+    assert channels_listall_v1(auth_user_id) == {'channels': []}
 
 ##test with multiple channels and public to true
 ##test with multiple channels 
@@ -32,14 +33,16 @@ def test_fiveChannels_public(auth_user_id, names):
     clear_v1()
     for name in names:
         channels_create_v1(auth_user_id, name, True)
-    assert len(channels_listall_v1(auth_user_id)) == 5
+    channelDict = channels_listall_v1(auth_user_id)
+    assert len(channelDict['channels']) == 5
     
 ##test with multiple channels 
 def test_fiveChannels(auth_user_id, names):
     clear_v1()
     for values in names:
         channels_create_v1(auth_user_id, values, False)
-    assert len(channels_listall_v1(auth_user_id)) == 5
+    channelDict = channels_listall_v1(auth_user_id)
+    assert len(channelDict['channels']) == 5
 
 def test_invalid_authId():
     clear_v1()

@@ -1,0 +1,6 @@
+Assumptions for channels_listall_v1:
+    channel_create works and creates correct channel names and id's
+    only have to test for length of returns channels list
+    auth_register works
+    returns a dictionary with key 'channels' and value [] if no channels have been created
+
