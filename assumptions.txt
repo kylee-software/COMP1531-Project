@@ -1,0 +1,12 @@
+Assumptions for channel_details_v1:
+    - 
+
+Assumptions for channel_join_v1:
+    - if user tries to join a channel they are already in, nothing is done 
+      to the data store and the function simply returns successful (as they are in the channel)
+
+Assumptions for channel_invite_v1:
+    - if user tries to invite someone to channel they are already in, nothing is done
+      to the data store and the function returns successful
+    - if global owner is not in channel they also cannot invite users to the channel 
+      (they have no special power there)
