@@ -6,6 +6,21 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     }
 
 def channel_details_v1(auth_user_id, channel_id):
+    '''
+    channel details returns the name and member details of a channel a user is in
+
+    Arguments:
+        auth_user_id (int)      - user id of the user requesting channel information
+        channel_id (int)        - channel_id of the channel details being requested
+
+    Exceptions:
+        InputError  - Occurs when channel id is not valid
+        AccessError - Occurs when auth user id is not a member of the channel
+
+    Return Value:
+        Returns {name, owner_members, all_members} on successful obtaining of channel details
+    '''
+    
     global data
 
     found_channel_id = False 
