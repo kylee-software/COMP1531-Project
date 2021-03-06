@@ -27,7 +27,7 @@ def auth_register_v1(email, password, name_first, name_last):
     if re.match ('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         return InputError('Please enter a valid email address.')
  
-    for user in data('users'): 
+    for user in data['users']: 
             if user['email_address'] == email:
                 raise InputError('Email already registered.') 
 
