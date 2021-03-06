@@ -20,10 +20,9 @@ def auth_register_v1(email, password, name_first, name_last):
     password_length = len(password)
     first_name_length = len(name_first)
     last_name_length = len(name_last)
-    handle = ''  
 
-    if re.match ('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None: 
-        return InputError('Please enter a valid email address.')
+    if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
+        raise InputError('Please enter a valid email address.')
  
     for user in data['users']: 
             if user['email_address'] == email:
@@ -38,7 +37,7 @@ def auth_register_v1(email, password, name_first, name_last):
     if last_name_length < 1 or last_name_length > 50:
         raise InputError('Last name is not a valid length.') 
                 
-    name_join = name_first + name_last
+    handle = name_first + name_last
 
     if len(handle) > 20:
         handle = handle[0:20] 
