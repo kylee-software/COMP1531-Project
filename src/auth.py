@@ -44,7 +44,7 @@ def auth_register_v1(email, password, name_first, name_last):
         handle = handle[0:20] 
     
     for character in handle:
-        if character == '@' or character.isspace() == : 
+        if character == '@' or character.isspace() : 
             raise InputError("No @ or whitespace allowed in handles.")
 
     user_list = data['users']
