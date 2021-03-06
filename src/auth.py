@@ -7,15 +7,14 @@ def auth_login_v1(email, password):
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         raise InputError('Please enter a valid email address.') 
     
-    for lists in data['users']:
-        for user in lists:
-            if user['email_address'] == email:
-                if user['account_password'] == password:
-                    return user['user_id']  
-                else:
-                    raise InputError('Incorrect Password.') 
+    for user in data['users']:
+        if user['email_address'] == email:
+            if user['account_password'] == password:
+                return user['user_id']  
             else:
-                raise InputError('Email not found.') 
+                raise InputError('Incorrect Password.') 
+        else:
+            raise InputError('Email not found.') 
 
 def auth_register_v1(email, password, name_first, name_last):
     
@@ -28,8 +27,7 @@ def auth_register_v1(email, password, name_first, name_last):
     if re.match ('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None: 
         return InputError('Please enter a valid email address.')
  
-    for lists in data('users'):
-        for user in lists:
+    for user in data('users'): 
             if user['email_address'] == email:
                 raise InputError('Email already registered.') 
 
@@ -53,19 +51,6 @@ def auth_register_v1(email, password, name_first, name_last):
         if character == '@' or character.isspace(): 
             raise InputError("No @ or whitespace allowed in handles.")
 
-    """   number = 0
-    numbering_start = True 
-    for user in data['users']:
-        if user['account_handle'] == handle:
-            handle = handle + str()
-            for user_handle in data['users']:
-                if numbering_start is True:
-                    handle = handle + str(number)
-                    numbering_start = False 
-                else:
-                    number += 1
-                    handle = handle + str(number)
-    """
     user_list = data['users']
     i = 0
     number = 0
