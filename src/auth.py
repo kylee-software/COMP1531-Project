@@ -75,4 +75,4 @@ def auth_register_v1(email, password, name_first, name_last):
 
     user_list.append(new_user)
 
-    return new_user('user_id')
+    return new_user['user_id'] 
