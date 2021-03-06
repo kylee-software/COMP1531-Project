@@ -1,4 +1,70 @@
+from src.data import data
+from src.error import AccessError, InputError
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    '''
+    Function to invite and add a user of u_id to a channel of channel_id. 
+
+    Arguments:
+        auth_user_id (int)      - user_id of the person already in the channel
+        channel_id (int)        - unique channel identifier
+        u_id (int)              - user_id of the person being invited to the channel
+
+    Exceptions:
+        InputError  - Occurs when channel_id, u_id or auth_user_id are not valid ids
+        AccessError - Occurs when auth_user_id is not already a member of the channel
+
+    Return Value:
+        Returns {} on successfully added u_id to channel_id
+    '''
+    global data
+    #check valid channle id
+    valid_id = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            valid_id = True
+            break
+    if valid_id == False:
+        raise InputError(f"channel_id: {channel_id} is not valid.")
+    
+    #check valid u id and auth_u_id
+    valid_id = False
+    valid_auth_id = False
+    for user in data['users']:
+        if user['user_id'] == u_id:
+            valid_id = True
+        if user['user_id'] == auth_user_id:
+            valid_auth_id = True
+    if valid_id == False:
+        raise InputError(f"u_id: {u_id} is not valid")
+    if valid_auth_id = False:
+        raise InputError(f"auth_user_id: {auth_user_id} is not valid")
+
+    #check auth_user is in channel
+    auth_in_channel = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            for member in data['members']:
+                if member['user_id'] == auth_user_id:
+                    auth_in_channel = True
+                    break
+    if auth_in_channel == False:
+        raise AccessError(f"auth_user_id was not in channel")
+
+    # check if user being added is global owner
+    global_owner == False:
+    for user in data['users']:
+        if user['user_id'] == u_id:
+            global_owner = user['global_owner_status']
+    
+    # add if user isnt already in the channel
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            for member in channel['members']:
+                if member['user_id'] == u_id:
+                    return {}
+            channel['members'].append({'user_id':u_id, 'channel_owner_status':global_owner})
+    
     return {
     }
 
