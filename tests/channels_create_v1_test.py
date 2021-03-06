@@ -9,7 +9,7 @@ from src.error import InputError
 def create_user():
     # reset all data
     clear_v1()
-    # create a test user and return auth id
+    # create a test user and return auth_id
     email = "testmail@gamil.com"
     password = "Testpass12345"
     return auth_register_v1(email, password, "firstname", "lastname")
