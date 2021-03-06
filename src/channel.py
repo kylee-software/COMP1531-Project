@@ -29,8 +29,15 @@ def channel_details_v1(auth_user_id, channel_id):
             found_channel_id == True
             break
     if found_channel_id == False:
-        raise InputError
+        raise InputError("Invalid channel id")
     
+    found_auth_id = False
+    for user in data['users']:
+        if user['user_id'] == auth_user_id:
+            found_auth_id == True
+    if found_auth_id == False:
+        raise AccessError(f"Invalid auth_user_id")
+
     owner_ids = []
     member_ids = []
     for channel in data['channels']:
@@ -46,7 +53,7 @@ def channel_details_v1(auth_user_id, channel_id):
                     found_member = True
             
             if found_member == False:
-                raise AccessError
+                raise AccessError("auth_user_id is not a channel member")
             
             break
     
