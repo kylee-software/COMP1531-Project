@@ -2,21 +2,33 @@ from src.data import data
 from src.error import AccessError
 
 def channels_list_v1(auth_user_id):
-    validId = False
+    """Returns a list of channels that the given auth_user_id is a part of
+
+    Args:
+        auth_user_id ([int]): [a valide user_id]
+
+    Raises:
+        AccessError: [occurs when auth_user_id is invalid]
+
+    Returns:
+        Dictionary: key 'channels' and list of dicts with keys channel_id and name
+    """
+    foundId = False
     for user in data['users']:
         if user['user_id'] == auth_user_id:
-            validId = True
-    if validId == False:
+            foundId = True
+    if foundId == False:
         raise AccessError
 
-    returnList = []
+    returnDict = {'channels': []}
     for channel in data['channels']:
-        for members in channel['members']:
-            for member in members:
-                if member['user_id'] == auth_user_id:
-                    returnList.append(channel)
+        for member in channel['members']:
+            if member['user_id'] == auth_user_id:
+                newDict = {'channel_id': channel.get('channel_id'),
+                            'name': channel.get('name')}
+                returnDict['channels'].append(newDict)
 
-    return returnList
+    return returnDict
 
 def channels_listall_v1(auth_user_id):
     return {
