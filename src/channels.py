@@ -1,4 +1,4 @@
-from src import data as data_file  # to add new channel_id and its corresponding data info to the dictionary
+from src.data import data as data_dict  # to add new channel_id and its corresponding data info to the dictionary
 from src.error import InputError  # to handle InputError
 
 def channels_list_v1(auth_user_id):
@@ -25,14 +25,14 @@ def channels_create_v1(auth_user_id, name, is_public):
     if len(name) > 20:
         raise InputError("Channel name is longer than 20 characters.")
 
-    '''
-    Get the number of channels already exist to help to create the channel_id,
-    i.e, channel_size + 1 = channel_id
-    '''
-    channel_id = len(data_file.data['channels']) + 1
-
     # locate channels in the data dict
-    channels = data_file.data['channels']
+    channels = data_dict['channels']
+
+    '''
+        Get the number of channels already exist to help to create the channel_id,
+        i.e, channel_size + 1 = channel_id
+        '''
+    channel_id = len(channels) + 1
 
     # Add the new channel info to the data
     new_channel = {'channel_id': channel_id,
