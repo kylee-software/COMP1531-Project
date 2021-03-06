@@ -42,11 +42,6 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     # Add owner info to members list
     new_channel['members'] = [{'user_id': auth_user_id,
-                               'channel_owner_status': True}]
-
-    '''
-    Add messages --> might have to import channel_messages_v1 from channel
-    '''
-    # channel_info[channel_id]['messages'] = channel_messages_v1(auth_user_id, channel_id, 0)
+                               'permission_id': 1}]
 
     return {channel_id}
