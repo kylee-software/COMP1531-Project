@@ -23,9 +23,9 @@ def test_invalid_name():
 
 def test_valid_name_public():
     # Given a valid name and is_public set to true, assert that the return value channel_id is a dictionary
-    assert type(channels_create_v1(create_user, "channelName1", True)) is dict
+    assert channels_create_v1(create_user, "channelName1", True) == {1}
 
 
 def test_valid_name_private():
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert type(channels_create_v1(create_user, "channelName2", False)) is dict
+    assert channels_create_v1(create_user, "channelName2", False) == {2}
