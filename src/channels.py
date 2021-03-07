@@ -1,5 +1,6 @@
 from src.data import data
 from src.error import AccessError
+from src.helper import check_auth_user_id_v1
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
@@ -13,12 +14,7 @@ def channels_list_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    foundId = False
-    for user in data['users']:
-        if user['user_id'] == auth_user_id:
-            foundId = True
-    if foundId == False:
-        raise AccessError
+    check_auth_user_id_v1(auth_user_id)
 
     returnDict = {'channels': []}
     for channel in data['channels']:
