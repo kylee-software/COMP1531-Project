@@ -1,5 +1,7 @@
 from src.data import data
 from src.error import AccessError, InputError
+from src.helper import check_auth_user_id_v1 as check_user_id
+from src.helper import check_channel_id_v1
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
@@ -23,21 +25,9 @@ def channel_details_v1(auth_user_id, channel_id):
     
     global data
 
-    found_channel_id = False 
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            found_channel_id == True
-            break
-    if found_channel_id == False:
-        raise InputError("Invalid channel id")
+    check_channel_id_v1(channel_id)
+    check_user_id(auth_user_id)
     
-    found_auth_id = False
-    for user in data['users']:
-        if user['user_id'] == auth_user_id:
-            found_auth_id == True
-    if found_auth_id == False:
-        raise AccessError(f"Invalid auth_user_id")
-
     owner_ids = []
     member_ids = []
     for channel in data['channels']:
