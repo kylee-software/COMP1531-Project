@@ -14,39 +14,38 @@ def auth_user_id():
 def names():
     return ['testChannel01', 'testChannel02', 'testChannel03', 'testChannel04', 'testChannel05']
 
+@pytest.fixture
+def clear():
+    clear_v1()
+
 ##create one channel with one member and
 #  no messages and
-def test_oneChannel(auth_user_id):
-    clear_v1()
+def test_oneChannel(clear, auth_user_id):
     channels_create_v1(auth_user_id, 'testChannel01', False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 1
     
 ##test if there are no channels
-def test_noChannels(auth_user_id):
-    clear_v1()
+def test_noChannels(clear, auth_user_id):
     assert channels_listall_v1(auth_user_id) == {'channels': []}
 
 ##test with multiple channels and public to true
 ##test with multiple channels 
-def test_fiveChannels_public(auth_user_id, names):
-    clear_v1()
+def test_fiveChannels_public(clear, auth_user_id, names):
     for name in names:
         channels_create_v1(auth_user_id, name, True)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
     
 ##test with multiple channels 
-def test_fiveChannels(auth_user_id, names):
-    clear_v1()
+def test_fiveChannels(clear, auth_user_id, names):
     for values in names:
         channels_create_v1(auth_user_id, values, False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
 
 def test_invalid_authId():
-    clear_v1()
-    auth_user_id = 4
+    auth_user_id = {'auth_user_id': 4}
     with pytest.raises(AccessError):
         channels_listall_v1(auth_user_id)
     

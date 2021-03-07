@@ -15,7 +15,7 @@ def channels_listall_v1(auth_user_id):
     """Returns a list of all channels
 
     Args:
-        auth_user_id (int): a valid user_id
+        auth_user_id (dict): 'auth_user_id': a valid user_id
 
     Raises:
         AccessError: occurs when auth_user_id is invalid
@@ -23,7 +23,7 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    check_auth_user_id_v1(auth_user_id)
+    check_auth_user_id_v1(auth_user_id['auth_user_id'])
     
     returnDict = {'channels': []}
     for channel in data['channels']:
