@@ -70,11 +70,11 @@ def channel_join_v1(auth_user_id, channel_id):
         raise InputError(f"channel id: {channel_id} is not a valid channel")
     
     # Next we find out if the auth_user_id user is a global owner
-    global_status = False
+    global_status = 2
     found_user = False
     for user in data['users']:
         if user['user_id'] == auth_user_id:
-            global_status == user['global_owner_status']
+            global_status == user['permission_id']
             found_user = True
             break
     if found_user == False:
@@ -90,8 +90,8 @@ def channel_join_v1(auth_user_id, channel_id):
             is_public = channel['public_status']
 
             # Now if the user is a global owner or the channel is public they can be added
-            if global_status == True or is_public == True:
-                user_dict = {'user_id':auth_user_id, 'channel_owner_status':global_status,}
+            if global_status == 1 or is_public == True:
+                user_dict = {'user_id':auth_user_id, 'permission_id':global_status,}
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
