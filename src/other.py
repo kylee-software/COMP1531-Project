@@ -1,6 +1,8 @@
 from src.data import data
 
 def clear_v1():
+    """empties the data dictionary
+    """
     global data
     data['users'] = []
     data['channels'] = []
