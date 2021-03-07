@@ -4,3 +4,8 @@ Assumptions for channels_listall_v1:
     auth_register works
     returns a dictionary with key 'channels' and value [] if no channels have been created
 
+Assumptions for channels_create_v1:
+    auth_register_v1() works and returns correct auth_user_id
+    auth_login_v1() works and that the user is login in order to create a channel
+    only need to raise exception when the length of the channel name is greater than 20 characters
+    only test for correct channel_id
