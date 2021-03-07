@@ -29,7 +29,9 @@ def channels_create_v1(auth_user_id, name, is_public):
         auth_user_id (int)      - user_id of the person already in the channel
         name (string)           - name for the channel
         is_public (boolean)         - True if the channel is public, False if it's private
+
     Exceptions:
+        AccessError - Occurs when the given auth_user_id is an unauthorised user
         InputError  - Occurs when channel name is greater than 20 characters
 
     Return Value:

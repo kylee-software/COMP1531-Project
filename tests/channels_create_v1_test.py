@@ -12,7 +12,7 @@ def create_user():
     # create a test user and return auth_id
     email = "testmail@gamil.com"
     password = "Testpass12345"
-    return auth_register_v1(email, password, "firstname", "lastname")['auth_user_id']
+    return auth_register_v1(email, password, "firstname", "lastname")
 
 
 def test_invalid_name():
