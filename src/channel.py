@@ -67,11 +67,14 @@ def channel_join_v1(auth_user_id, channel_id):
 
     # Next we find out if the auth_user_id user is a global owner
     global_status = 2
+    found_user = False
     for user in data['users']:
         if user['user_id'] == auth_user_id:
             global_status = user.get('permission_id')
             found_user = True
             break
+    if found_user == False:
+        raise InputError(f"user id {auth_user_id} is not a valid user")
 
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
