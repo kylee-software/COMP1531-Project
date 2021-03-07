@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 from src.data import data
 from src.error import AccessError, InputError
 from src.helper import check_auth_user_id_v1 as check_user_id
 from src.helper import check_channel_id_v1
 
+=======
+>>>>>>> master
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
@@ -45,6 +48,7 @@ def channel_leave_v1(auth_user_id, channel_id):
     }
 
 def channel_join_v1(auth_user_id, channel_id):
+<<<<<<< HEAD
     '''
     Channel join adds a user to a channel if they are authorised to join
 
@@ -103,6 +107,8 @@ def channel_join_v1(auth_user_id, channel_id):
                 raise AccessError(f"channel is private and user is not global owner")
             break
     
+=======
+>>>>>>> master
     return {
     }
 
