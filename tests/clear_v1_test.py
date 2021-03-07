@@ -14,7 +14,7 @@ def test_one_user():
 
 def test_one_channel():
     auth_register_v1("test@unsw.au", "testPassword8", "Test", "User")
-    auth_user_id = auth_login_v1("test@unsw.au", "testPassword8")
+    auth_user_id = auth_login_v1("test@unsw.au", "testPassword8")['auth_user_id']
     channels_create_v1(auth_user_id, 'testChannel', False)
     clear_v1()
     with pytest.raises(AccessError):
