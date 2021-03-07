@@ -1,5 +1,6 @@
 from src.data import data as data_dict  # to add new channel_id and its corresponding data info to the dictionary
-from src.error import InputError, AccessError  # to handle InputError
+from src.error import InputError  # to handle InputError
+from src.helper import check_auth_user_id_v1
 
 def channels_list_v1(auth_user_id):
     return {
@@ -39,8 +40,7 @@ def channels_create_v1(auth_user_id, name, is_public):
         Returns {channel_id} upon valid channel name
     '''
 
-    if auth_user_id['auth_user_id'] >= len(data_dict['users']):
-        raise AccessError("Unauthorised user")
+    check_auth_user_id_v1(auth_user_id['auth_user_id'])
 
     if len(name) > 20:
         raise InputError("Channel name is longer than 20 characters.")
