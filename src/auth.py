@@ -90,13 +90,14 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError('Last name is not a valid length.')
 
     handle = name_first + name_last
-
-    if len(handle) > 20:
-        handle = handle[0:20]
-
+    
     for character in handle:
         if character == '@' or character.isspace():
             raise InputError("No @ or whitespace allowed in handles.")
+
+    if len(handle) > 20:
+        handle = handle[0:20]
+        handle = handle.lower() 
 
     user_list = data['users']
     i = 0
