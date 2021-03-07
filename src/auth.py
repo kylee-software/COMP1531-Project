@@ -57,15 +57,15 @@ def auth_register_v1(email, password, name_first, name_last):
             i = 0
             number += 1
         i += 1
-    global_owner_status = False
+    permission_id = 2
     if len(data['users']) == 0:
-        global_owner_status = True
+        permission_id = 1
     new_user = {
         'first_name': name_first,
         'last_name': name_last,
         'email_address': email,
         'account_password': password,
-        'global_owner_status': global_owner_status,
+        'permission_id': permission_id, 
         'account_handle': updated_handle,
         'user_id': len(data['users']) + 1,  
     } 
