@@ -6,7 +6,7 @@ def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
 
     Args:
-        auth_user_id (dict): 'auth_user_id': a valid user_id
+        auth_user_id (int): a valid user_id
 
     Raises:
         AccessError: occurs when auth_user_id is invalid
@@ -14,12 +14,12 @@ def channels_list_v1(auth_user_id):
     Returns:
         Dictionary: has key 'channels' and list of dicts with keys channel_id and name
     """
-    check_auth_user_id_v1(auth_user_id['auth_user_id'])
+    check_auth_user_id_v1(auth_user_id)
 
     returnDict = {'channels': []}
     for channel in data_dict['channels']:
         for member in channel['members']:
-            if member['user_id'] == auth_user_id['auth_user_id']:
+            if member['user_id'] == auth_user_id:
                 newDict = {'channel_id': channel.get('channel_id'),
                             'name': channel.get('name')}
                 returnDict['channels'].append(newDict)
@@ -30,7 +30,7 @@ def channels_listall_v1(auth_user_id):
     """Returns a list of all channels
 
     Args:
-        auth_user_id (dict): 'auth_user_id': a valid user_id
+        auth_user_id (int): a valid user_id
 
     Raises:
         AccessError: occurs when auth_user_id is invalid
@@ -38,7 +38,7 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    check_auth_user_id_v1(auth_user_id['auth_user_id'])
+    check_auth_user_id_v1(auth_user_id)
     
     returnDict = {'channels': []}
     for channel in data_dict['channels']:
@@ -53,9 +53,9 @@ def channels_create_v1(auth_user_id, name, is_public):
      Function to create a channel that is either a public or private channel with a given name
 
     Arguments:
-        auth_user_id (dict)     - dict with user_id of the person already in the channel
+        auth_user_id (int)      - user_id of the person already in the channel
         name (string)           - name for the channel
-        is_public (boolean)         - True if the channel is public, False if it's private
+        is_public (boolean)     - True if the channel is public, False if it's private
 
     Exceptions:
         AccessError - Occurs when the given auth_user_id is an unauthorised user
