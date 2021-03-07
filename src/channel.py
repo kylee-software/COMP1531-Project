@@ -52,10 +52,10 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise AccessError(f"auth_user_id was not in channel")
 
     # check if user being added is global owner
-    global_owner == False:
+    global_owner == 2:
     for user in data['users']:
         if user['user_id'] == u_id:
-            global_owner = user['global_owner_status']
+            global_owner = user['permission_id']
     
     # add if user isnt already in the channel
     for channel in data['channels']:
@@ -63,7 +63,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
             for member in channel['members']:
                 if member['user_id'] == u_id:
                     return {}
-            channel['members'].append({'user_id':u_id, 'channel_owner_status':global_owner})
+            channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
     
     return {
     }
