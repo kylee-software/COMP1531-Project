@@ -1,5 +1,7 @@
 from src.data import data
 from src.error import AccessError, InputError
+from src.helper import check_auth_user_id_v1 as check_user_id
+from src.helper import check_channel_id_v1
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
@@ -18,33 +20,19 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         Returns {} on successfully added u_id to channel_id
     '''
     global data
-    #check valid channle id
-    valid_id = False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            valid_id = True
-            break
-    if valid_id == False:
-        raise InputError(f"channel_id: {channel_id} is not valid.")
+    check_channel_id_v1(channel_id)
+    check_user_id(auth_user_id)
     
-    #check valid u id and auth_u_id
-    valid_id = False
-    valid_auth_id = False
-    for user in data['users']:
-        if user['user_id'] == u_id:
-            valid_id = True
-        if user['user_id'] == auth_user_id:
-            valid_auth_id = True
-    if valid_id == False:
-        raise InputError(f"u_id: {u_id} is not valid")
-    if valid_auth_id = False:
-        raise InputError(f"auth_user_id: {auth_user_id} is not valid")
-
+    try:
+        check_user_id(u_id)
+    except AccessError:
+        raise InputError(f"invalid u_id: {u_id}")
+        
     #check auth_user is in channel
     auth_in_channel = False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            for member in data['members']:
+            for member in channel['members']:
                 if member['user_id'] == auth_user_id:
                     auth_in_channel = True
                     break
@@ -52,7 +40,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise AccessError(f"auth_user_id was not in channel")
 
     # check if user being added is global owner
-    global_owner == 2:
+    global_owner = 2
     for user in data['users']:
         if user['user_id'] == u_id:
             global_owner = user['permission_id']
