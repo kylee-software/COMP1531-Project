@@ -36,7 +36,7 @@ def channels_create_v1(auth_user_id, name, is_public):
         Returns {channel_id} upon valid channel name
     '''
 
-    if int(auth_user_id) >= len(data_dict['users']):
+    if auth_user_id >= len(data_dict['users']):
         raise AccessError("Unauthorised user")
 
     if len(name) > 20:
