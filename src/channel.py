@@ -43,7 +43,6 @@ def channel_join_v1(auth_user_id, channel_id):
     return {
     }
 
-
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
