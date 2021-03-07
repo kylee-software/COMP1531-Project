@@ -125,3 +125,5 @@ def test_registration_successful():
     assert auth_login_v1('testing567@unsw.au', 'password') == userid_2
     assert auth_login_v1('testing890@unsw.au', 'password') == userid_3
 
+    
+
