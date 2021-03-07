@@ -64,4 +64,5 @@ def channels_create_v1(auth_user_id, name, is_public):
     new_channel['members'] = [{'user_id': auth_user_id['auth_user_id'],
                                'permission_id': 1}]
 
+    print({'channel_id': channel_id})
     return {'channel_id': channel_id}
