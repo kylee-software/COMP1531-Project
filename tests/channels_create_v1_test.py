@@ -16,23 +16,20 @@ def create_user():
     return auth_user_id
 
 
-def test_invalid_name():
+def test_invalid_name(create_user):
     # Test invalid name with more tan 20 characters --> "InputError"
-    auth_user_id = create_user()
     with pytest.raises(InputError):
-        channels_create_v1(auth_user_id, "fffffffffffffffffffff", True)
+        channels_create_v1(create_user, "fffffffffffffffffffff", True)
 
 
-def test_valid_name_public():
+def test_valid_name_public(create_user):
     # Given a valid name and is_public set to true, assert that the return value channel_id is a dictionary
-    auth_user_id = create_user()
-    assert channels_create_v1(auth_user_id, "channelName1", True) == {'channel_id': 1}
+    assert channels_create_v1(create_user, "channelName1", True) == {'channel_id': 1}
 
 
-def test_valid_name_private():
+def test_valid_name_private(create_user):
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    auth_user_id = create_user()
-    assert channels_create_v1(auth_user_id, "channelName2", False) == {'channel_id': 2}
+    assert channels_create_v1(create_user, "channelName2", False) == {'channel_id': 2}
 
 
 def test_invalid_authId():
