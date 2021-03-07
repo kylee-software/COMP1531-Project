@@ -8,7 +8,7 @@ from src.auth import auth_register_v1
 
 @pytest.fixture
 def auth_user_id():
-    return auth_register_v1("test@test.unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")
 
 @pytest.fixture
 def names():
