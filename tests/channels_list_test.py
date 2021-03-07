@@ -7,7 +7,7 @@ from src.other import clear_v1
 
 @pytest.fixture
 def auth_user_id():
-    return auth_register_v1("test@test.unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")
 
 @pytest.fixture
 def names():
@@ -32,7 +32,7 @@ def test_can_see_five_channels(auth_user_id, names):
     assert len(returnDict['channels']) == 5
 
 def test_can_only_see_one_of_six(auth_user_id, names):
-    auth_user_id02 = auth_register_v1("test02@test.unsw.com", 'testPassword16', 'Test02', "User")
+    auth_user_id02 = auth_register_v1("test02@unsw.com", 'testPassword16', 'Test02', "User")
     for name in names:
         channels_create_v1(auth_register_v1, name, False)
     channels_create_v1(auth_user_id02, 'testChannel06', False)
