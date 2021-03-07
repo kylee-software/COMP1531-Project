@@ -37,7 +37,7 @@ def test_valid_name_private():
 
 def test_invalid_authId():
     clear_v1()
-    auth_user_id = 4
+    auth_user_id = {'auth_user_id': 4}
     with pytest.raises(AccessError):
         channels_create_v1(auth_user_id, "channelName3", True)
 
