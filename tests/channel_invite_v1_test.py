@@ -26,7 +26,7 @@ def create_user2():
 @pytest.fixture
 def create_public_channel():
     name = "Testchannel"
-    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest", "channelcreator", "last")
+    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest", "channelcreator", "last")['auth_user_id']
     return channels_create_v1(user_id, name, True)['channel_id']
 
 @pytest.fixture
