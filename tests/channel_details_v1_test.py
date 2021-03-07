@@ -1,7 +1,7 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v1
-from src.channel import channel_join_v1
+from src.auth import auth_register_v1, auth_login_v1
+from src.channel import channel_join_v1, channel_details_v1
 from src.channels import channels_create_v1
 from src.error import InputError, AccessError
 
@@ -17,14 +17,14 @@ def create_user():
 def create_channel():
     name = "Testchannel"
     user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")["auth_user_id"]
-    return channels_create_v1(user_id, name, True)
+    return channels_create_v1(user_id, name, True)['channel_id']
 
 @pytest.fixture
 def clear():
     clear_v1()
 
 def create_user_output(email, password, firstname, lastname, handle):
-    return {'u_id':auth_login_v1(email, password), "email":email, 'name_first':firstname,'name_last':lastname,'handle_str':handle,}
+    return {'u_id':auth_login_v1(email, password)['auth_user_id'], "email":email, 'name_first':firstname,'name_last':lastname,'handle_str':handle,}
 
 def expected_output():
     name = "Testchannel"
@@ -45,5 +45,5 @@ def test_invalid_channel_id(clear, create_user):
 
 def test_user_not_in_channel(clear, create_channel, create_user):
     with pytest.raises(AccessError):
-        channel_details(create_user, create_channel)
+        channel_details_v1(create_user, create_channel)
 

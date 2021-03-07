@@ -82,7 +82,7 @@ def channel_details_v1(auth_user_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             found_member = False
-            channel_name = channel['channel_name']
+            channel_name = channel['name']
 
             for member in channel['members']:
                 member_ids.append(member['user_id'])
@@ -102,26 +102,26 @@ def channel_details_v1(auth_user_id, channel_id):
         if user['user_id'] in member_ids:
             member =   {
                             'u_id':user['user_id'],
-                            "email":user['email'],
+                            "email":user['email_address'],
                             'name_first':user['first_name'],
                             'name_last':user['last_name'],
-                            'handle_str':user['handle'],
+                            'handle_str':user['account_handle'],
                         }
             member_details.append(member)
         if user['user_id'] in owner_ids:
             owner = {
                         'u_id':user['user_id'],
-                        "email":user['email'],
+                        "email":user['email_address'],
                         'name_first':user['first_name'],
                         'name_last':user['last_name'],
-                        'handle_str':user['handle'],
+                        'handle_str':user['account_handle'],
                     }
             owner_details.append(owner)
 
 
     
     return {
-        'name': name,
+        'name': channel_name,
         'owner_members': owner_details,
         'all_members': member_details,
     }
