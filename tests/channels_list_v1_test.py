@@ -7,7 +7,7 @@ from src.other import clear_v1
 
 @pytest.fixture
 def auth_user_id():
-    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")['auth_user_id']
 
 @pytest.fixture
 def names():
@@ -33,7 +33,7 @@ def test_can_see_five_channels(clear, auth_user_id, names):
     assert len(returnDict['channels']) == 5
 
 def test_can_only_see_one_of_six(clear, auth_user_id, names):
-    auth_user_id02 = auth_register_v1("test02@unsw.com", 'testPassword16', 'Test02', "User")
+    auth_user_id02 = auth_register_v1("test02@unsw.com", 'testPassword16', 'Test02', "User")['auth_user_id']
     for name in names:
         channels_create_v1(auth_user_id, name, False)
     channels_create_v1(auth_user_id02, 'testChannel06', False)
@@ -42,7 +42,7 @@ def test_can_only_see_one_of_six(clear, auth_user_id, names):
         assert channel['name'] == 'testChannel06'
         
 def test_invalid_authid(clear):
-    auth_user_id = {'auth_user_id': 4}
+    auth_user_id = 4
     with pytest.raises(AccessError):
         channels_list_v1(auth_user_id)
 

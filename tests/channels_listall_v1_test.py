@@ -8,7 +8,7 @@ from src.auth import auth_register_v1
 
 @pytest.fixture
 def auth_user_id():
-    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")['auth_user_id']
 
 @pytest.fixture
 def names():
@@ -44,8 +44,8 @@ def test_fiveChannels(clear, auth_user_id, names):
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
 
-def test_invalid_authId():
-    auth_user_id = {'auth_user_id': 4}
+def test_invalid_authId(clear):
+    auth_user_id =  4
     with pytest.raises(AccessError):
         channels_listall_v1(auth_user_id)
     

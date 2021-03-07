@@ -13,7 +13,7 @@ def create_user():
     email = "testmail@gamil.com"
     password = "Testpass12345"
     auth_user_id = auth_register_v1(email, password, "firstname", "lastname")
-    return auth_user_id
+    return auth_user_id['auth_user_id']
 
 
 def test_invalid_name(create_user):
@@ -34,7 +34,7 @@ def test_valid_name_private(create_user):
 
 def test_invalid_authId():
     clear_v1()
-    auth_user_id = {'auth_user_id': 4}
+    auth_user_id = 4
     with pytest.raises(AccessError):
         channels_create_v1(auth_user_id, "channelName3", True)
 
