@@ -1,5 +1,6 @@
 from src.data import data
 from src.error import InputError, AccessError
+from src.helper import check_auth_user_id_v1
 
 def channels_list_v1(auth_user_id):
     return {
@@ -23,12 +24,7 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    foundID = False
-    for user in data['users']:
-        if user.get('user_id') == auth_user_id:
-            foundID = True
-    if foundID == False: 
-        raise AccessError
+    check_auth_user_id_v1(auth_user_id)
     
     returnDict = {'channels': []}
     for channel in data['channels']:
