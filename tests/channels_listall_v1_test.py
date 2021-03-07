@@ -1,7 +1,7 @@
 import pytest
 
 
-from src.error import InputError
+from src.error import AccessError
 from src.channels import channels_create_v1, channels_listall_v1
 from src.other import clear_v1
 from src.auth import auth_register_v1
@@ -47,6 +47,6 @@ def test_fiveChannels(auth_user_id, names):
 def test_invalid_authId():
     clear_v1()
     auth_user_id = 4
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channels_listall_v1(auth_user_id)
     
