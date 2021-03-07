@@ -47,7 +47,7 @@ def channel_details_v1(auth_user_id, channel_id):
 
             for member in channel['members']:
                 member_ids.append(member['user_id'])
-                if member['owner_status'] == True:
+                if member['permission_id'] == 1:
                     owner_ids.append(member['user_id'])
                 if member['user_id'] == auth_user_id:
                     found_member = True
