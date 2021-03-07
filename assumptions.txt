@@ -3,6 +3,12 @@ Assumptions for channels_listall_v1:
     only have to test for length of returns channels list
     auth_register works
     returns a dictionary with key 'channels' and value [] if no channels have been created
+    
+Assumptions for channels_list_v1:
+    channel_create works and creates correct channel names and id's
+    auth_register works
+    returns a dictionary with key 'channels' and value [] if no channels have been created
+    only testing user created channels for simplicity not joined channels as channel_join is assumed to be working
 
 Assumptions for channels_create_v1:
     auth_register_v1() works and returns correct auth_user_id
