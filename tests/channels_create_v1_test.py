@@ -29,7 +29,7 @@ def test_valid_name_public(create_user):
 
 def test_valid_name_private(create_user):
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert channels_create_v1(create_user, "channelName2", False) == {'channel_id': 2}
+    assert channels_create_v1(create_user, "channelName2", False) == {'channel_id': 1}
 
 
 def test_invalid_authId():
