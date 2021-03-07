@@ -22,6 +22,7 @@ def channels_listall_v1(auth_user_id):
     }
 
 def channels_create_v1(auth_user_id, name, is_public):
+    global data_dict
     '''
      Function to create a channel that is either a public or private channel with a given name
 
