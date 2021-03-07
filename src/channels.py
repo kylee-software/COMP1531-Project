@@ -28,8 +28,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     Arguments:
         auth_user_id (int)      - user_id of the person already in the channel
         name (string)           - name for the channel
-        u_id (int)              - user_id of the person being invited to the channel
-
+        is_public (int)         - True if the channel is public, False if it's private
     Exceptions:
         InputError  - Occurs when channel name is greater than 20 characters
 
