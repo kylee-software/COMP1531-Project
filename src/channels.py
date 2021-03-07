@@ -22,6 +22,21 @@ def channels_listall_v1(auth_user_id):
     }
 
 def channels_create_v1(auth_user_id, name, is_public):
+    '''
+     Function to create a channel that is either a public or private channel with a given name
+
+    Arguments:
+        auth_user_id (int)      - user_id of the person already in the channel
+        name (string)           - name for the channel
+        u_id (int)              - user_id of the person being invited to the channel
+
+    Exceptions:
+        InputError  - Occurs when channel name is greater than 20 characters
+
+    Return Value:
+        Returns {channel_id} upon valid channel name
+    '''
+
     if len(name) > 20:
         raise InputError("Channel name is longer than 20 characters.")
 
@@ -44,4 +59,4 @@ def channels_create_v1(auth_user_id, name, is_public):
     new_channel['members'] = [{'user_id': auth_user_id,
                                'permission_id': 1}]
 
-    return {channel_id}
+    return {'channel_id': channel_id}
