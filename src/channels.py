@@ -40,7 +40,7 @@ def channels_create_v1(auth_user_id, name, is_public):
         Returns {channel_id} upon valid channel name
     '''
 
-    check_auth_user_id_v1(auth_user_id['auth_user_id'])
+    check_auth_user_id_v1(auth_user_id)
 
     if len(name) > 20:
         raise InputError("Channel name is longer than 20 characters.")
@@ -61,7 +61,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     channels.append(new_channel)
 
     # Add owner info to members list
-    new_channel['members'] = [{'user_id': auth_user_id['auth_user_id'],
+    new_channel['members'] = [{'user_id': auth_user_id,
                                'permission_id': 1}]
 
     return {'channel_id': channel_id}

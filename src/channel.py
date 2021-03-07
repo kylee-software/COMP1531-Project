@@ -1,5 +1,7 @@
 from src.data import data
 from src.error import AccessError, InputError
+from src.helper import check_auth_user_id_v1 as check_user_id
+from src.helper import check_channel_id_v1
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
@@ -61,20 +63,23 @@ def channel_join_v1(auth_user_id, channel_id):
     
     global data
     # First check will be to make sure channel_id is valid
-    found_channel_id = False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            found_channel_id == True
-            break
-    if found_channel_id == False:
-        raise InputError(f"channel id: {channel_id} is not a valid channel")
+    check_user_id(auth_user_id)
+
+    check_channel_id_v1(channel_id)
+    #found_channel_id = False
+    #for channel in data['channels']:
+    #    if channel.get('channel_id') == channel_id:
+    #        found_channel_id == True
+    #        break
+    #if found_channel_id == False:
+    #    raise InputError(f"channel id: {channel_id} is not a valid channel")
     
     # Next we find out if the auth_user_id user is a global owner
     global_status = 2
     found_user = False
     for user in data['users']:
         if user['user_id'] == auth_user_id:
-            global_status == user['permission_id']
+            global_status == user.get('permission_id')
             found_user = True
             break
     if found_user == False:
