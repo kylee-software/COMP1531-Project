@@ -1,5 +1,5 @@
 from src.data import data as data_dict  
-from src.error import InputError  
+from src.error import AccessError, InputError  
 from src.helper import check_auth_user_id_v1
 
 def channels_list_v1(auth_user_id):
@@ -14,7 +14,8 @@ def channels_list_v1(auth_user_id):
     Returns:
         Dictionary: has key 'channels' and list of dicts with keys channel_id and name
     """
-    check_auth_user_id_v1(auth_user_id)
+    if check_auth_user_id_v1(auth_user_id) == False:
+        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
 
     returnDict = {'channels': []}
     for channel in data_dict['channels']:
@@ -38,7 +39,8 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    check_auth_user_id_v1(auth_user_id)
+    if check_auth_user_id_v1(auth_user_id) == False:
+        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
     returnDict = {'channels': []}
     for channel in data_dict['channels']:
@@ -66,7 +68,8 @@ def channels_create_v1(auth_user_id, name, is_public):
     '''
     global data_dict
 
-    check_auth_user_id_v1(auth_user_id)
+    if check_auth_user_id_v1(auth_user_id) == False:
+        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(name) > 20:
         raise InputError("Channel name is longer than 20 characters.")

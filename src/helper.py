@@ -1,5 +1,4 @@
 from src.data import data
-from src.error import AccessError, InputError
 
 def check_auth_user_id_v1(auth_user_id):
     '''
@@ -18,8 +17,8 @@ def check_auth_user_id_v1(auth_user_id):
     global data
     for user in data['users']:
         if user['user_id'] == auth_user_id:
-            return 
-    raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+            return True
+    return False
 
 
 def check_channel_id_v1(channel_id):
@@ -42,7 +41,7 @@ def check_channel_id_v1(channel_id):
     global data
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            return 
-    raise InputError(f"Channel_id: {channel_id} is invalid")
+            return True
+    return False
 
 
