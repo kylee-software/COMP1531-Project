@@ -1,5 +1,4 @@
 from src.data import data
-from src.error import AccessError, InputError
 
 def check_auth_user_id_v1(auth_user_id):
     '''
