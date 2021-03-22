@@ -1,5 +1,5 @@
 
-data = {'users': [], 'channels':[]}
+data = {'users': [], 'channels':[], 'msg_id_counter': 0}
 
 # user_info = [ {'first_name' : string,
 #                'last_name' : string,
