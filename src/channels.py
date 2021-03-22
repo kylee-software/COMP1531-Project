@@ -1,6 +1,6 @@
 from src.data import data as data_dict  
 from src.error import AccessError, InputError  
-from src.helper import check_auth_user_id_v1
+from src.helper import check_auth_user_id_v1, valid_token
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
@@ -39,9 +39,11 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    if check_auth_user_id_v1(auth_user_id) == False:
+    #if check_auth_user_id_v1(auth_user_id) == False:
+    #   raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+    if not valid_token:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
-    
+
     returnDict = {'channels': []}
     for channel in data_dict['channels']:
         newChannel = {'channel_id': channel.get('channel_id'),
