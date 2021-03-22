@@ -1,4 +1,21 @@
 from src.data import data
+import jwt
+
+SECRET = 'jwtSecret'
+
+def valid_token(token):
+    """checks if the given token is valid
+
+    Args:
+        token (jwt): encoded jwt
+    """
+    decoded_jwt = jwt.decode(token, SECRET, algorithms=['RS256'])
+    for user in data['users']:
+        for session in user['sessions']:
+            if decoded_jwt['session_id'] == session['session_id']: return True
+    return False
+
+
 
 def check_auth_user_id_v1(auth_user_id):
     '''
