@@ -1,6 +1,9 @@
 import re
+
+from jwt import decode
 from src.error import InputError
 from src.data import data
+from src.helper import valid_token, decode_token
 
 """
 user_login_v1 takes in an email and password. 
@@ -126,3 +129,26 @@ def auth_register_v1(email, password, name_first, name_last):
     user_list.append(new_user)
 
     return {'auth_user_id': new_user['user_id']}
+
+
+
+def auth_logout(token):
+    """Given an active token, invalidates the token to log the user out. If a 
+    valid token is given, and the user is successfully logged out, it returns true, otherwise false.
+
+    Args:
+        token (string): encoded jwt 
+
+    Returns:
+        boolean: True if successfully logged out, False if otherwise
+    """
+    if not valid_token:
+        return False
+    else: 
+        decoded_token = decode_token(token)
+        for user in data['users']:
+            for session in user['sessions']:
+                if decoded_token == session:
+                    del session
+                    return True
+    return False
