@@ -30,7 +30,7 @@ def test_valid_channel_id():
     clear_v1() 
 
 def test_hash_changes_password():
-    user_info = auth_register_v1("test@gmail.com", hash_password("password"), "first", "last")
+    auth_register_v1("test@gmail.com", hash_password("password"), "first", "last")
     with pytest.raises(InputError):
         auth_login_v1("test@gmail.com", "password")
     assert auth_login_v1("test@gmail.com", hash_password("password"))
