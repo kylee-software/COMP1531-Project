@@ -13,6 +13,7 @@ def create_user():
     lastname = "lastname2"
     return auth_register_v1(email,password,firstname, lastname)["auth_user_id"]
 
+
 @pytest.fixture
 def create_channel():
     name = "Testchannel"
@@ -37,13 +38,16 @@ def test_valid_case(clear, create_channel, create_user):
     channel_join_v1(create_user, create_channel)
     assert channel_details_v1(create_user, create_channel) == expected_output()
     assert channel_details_v1(owner_id, create_channel) == expected_output()
+    clear_v1() 
 
 def test_invalid_channel_id(clear, create_user):
     with pytest.raises(InputError):
         channel_details_v1(create_user, 1)
+    clear_v1() 
 
 
 def test_user_not_in_channel(clear, create_channel, create_user):
     with pytest.raises(AccessError):
         channel_details_v1(create_user, create_channel)
+    clear_v1() 
 

@@ -1,6 +1,5 @@
-from src.data import data as data_dict  
 from src.error import AccessError, InputError  
-from src.helper import is_valid_user_id
+from src.helper import is_valid_user_id, load_data, save_data
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
@@ -14,11 +13,12 @@ def channels_list_v1(auth_user_id):
     Returns:
         Dictionary: has key 'channels' and list of dicts with keys channel_id and name
     """
+    data = load_data()
     if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
 
     returnDict = {'channels': []}
-    for channel in data_dict['channels']:
+    for channel in data['channels']:
         for member in channel['members']:
             if member['user_id'] == auth_user_id:
                 newDict = {'channel_id': channel.get('channel_id'),
@@ -39,11 +39,12 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
+    data = load_data()
     if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
     returnDict = {'channels': []}
-    for channel in data_dict['channels']:
+    for channel in data['channels']:
         newChannel = {'channel_id': channel.get('channel_id'),
                         'name': channel.get('name')}
         returnDict['channels'].append(newChannel)
@@ -66,7 +67,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     Return Value:
         Returns {channel_id} upon valid channel name
     '''
-    global data_dict
+    data = load_data()
 
     if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
@@ -75,7 +76,7 @@ def channels_create_v1(auth_user_id, name, is_public):
         raise InputError("Channel name is longer than 20 characters.")
 
     # locate channels in the data_dict dict
-    channels = data_dict['channels']
+    channels = data['channels']
 
     '''
         Get the number of channels already exist to help to create the channel_id,
@@ -93,4 +94,5 @@ def channels_create_v1(auth_user_id, name, is_public):
     new_channel['members'] = [{'user_id': auth_user_id,
                                'permission_id': 1}]
 
+    save_data(data)
     return {'channel_id': channel_id}

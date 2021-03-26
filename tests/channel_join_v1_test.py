@@ -33,29 +33,34 @@ def clear():
 def test_valid_channel_id_public(clear, create_public_channel, create_user):
 
     assert channel_join_v1(create_user, create_public_channel) == {}
+    clear_v1() 
 
 
 def test_invalid_channel_id(clear, create_user):
     
     with pytest.raises(InputError):
         channel_join_v1(create_user, 1) 
+    clear_v1() 
 
 
 def test_global_user_private_channel(clear, create_user, create_private_channel):
 
     assert channel_join_v1(create_user, create_private_channel) == {}
+    clear_v1() 
 
 
 def test_not_global_user_private_channel(clear, create_private_channel, create_user):
 
     with pytest.raises(AccessError):
         channel_join_v1(create_user, create_private_channel) == {}
+    clear_v1() 
 
 
 def test_channel_member_joining_again(clear, create_user):
     
     channel_id = channels_create_v1(create_user, "testchannel", True)['channel_id']
     assert channel_join_v1(create_user, channel_id) == {}
+    clear_v1() 
 
 
 
