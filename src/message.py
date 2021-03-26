@@ -1,27 +1,8 @@
 from src.data import data
-from src.helper import valid_token, get_user_from_token, get_handle_from_token
+from src.helper import valid_token, get_user_from_token, get_handle_from_token, return_valid_tagged_handles
 from src.error import AccessError, InputError
 from datetime import datetime
 
-def return_valid_tagged_handles(message, channel_id):
-    split_message = message.split()
-    handles = []
-    for word in split_message:
-        if word.startswith('@'):
-            handles.append(word.strip('@'))
-    real_handles = []
-    for handle in handles:
-        for user in data['users']:
-            if user['handle'] == handle:
-                real_handles.append(handle)
-    real_handles_in_channel = []
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            for handle in real_handles:
-                for member in channel['members']:
-                    if member['handle'] == handle:
-                        real_handles_in_channel.append(handle)
-    return real_handles_in_channel
 
 def message_send_v1(token, channel_id, message):
     global data
@@ -54,7 +35,7 @@ def message_send_v1(token, channel_id, message):
                         if user['user_id'] == user1['user_id']:
                             if tagged_handles.count(user1['handle']) != 0:
                                 notification_message = f"{user_handle} tagged you in {channel['name']}: {message[0:20]}"
-                                user['notifications'].insert(0, notification_message)
+                                user['notifications'].insert(0, {channel_id, -1, notification_message})
     else:
         raise AccessError('You have not joined this channel')
 

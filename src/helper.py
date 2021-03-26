@@ -1,5 +1,26 @@
 from src.data import data
 
+
+def return_valid_tagged_handles(message, channel_id):
+    split_message = message.split()
+    handles = []
+    for word in split_message:
+        if word.startswith('@'):
+            handles.append(word.strip('@'))
+    real_handles = []
+    for handle in handles:
+        for user in data['users']:
+            if user['handle'] == handle:
+                real_handles.append(handle)
+    real_handles_in_channel = []
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            for handle in real_handles:
+                for member in channel['members']:
+                    if member['handle'] == handle:
+                        real_handles_in_channel.append(handle)
+    return real_handles_in_channel
+
 def check_auth_user_id_v1(auth_user_id):
     '''
     checks the given auth_user_id is valid
