@@ -4,6 +4,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.helper import valid_token, get_user_from_token
+from src.error import AccessError
 
 def defaultHandler(err):
     response = err.get_response()
@@ -31,6 +33,14 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications():
+    token = request.args.get('token')
+    if not valid_token(token):
+        raise AccessError("Invalid User")
+    user = get_user_from_token(token)
+    return {'notifications' : user['notifications']}
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
