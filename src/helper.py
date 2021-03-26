@@ -92,19 +92,36 @@ def save_data(data):
 
     Arguments:
         data       - data to save
+    
+    Exceptions:
+        If data to be saved is not of the format 
+            {'users':[], 'channels':[]} an exception is raised
     '''
-    with open('src/data.json', 'w') as FILE:
-        json.dump(data, FILE)
+
+    if 'users' in data and 'channels' in data:
+        with open('src/data.json', 'w') as FILE:
+            json.dump(data, FILE)
+    else:
+        raise Exception("attempting to save incorrrect data format, must be {'users':[], 'channels':[]}")
+
 
 def load_data():
     '''
     loads the data from a json file called data.json
 
     Return Type:
-        data that was stored in data.json
+        data that was stored in data.json if its in the 
+        correct format ({'users':[], 'channels':[]})
+
+        or returns empty data ({'users':[], 'channels':[]}) 
+        if the data in the json file was the incorrect format
     '''
     with open('src/data.json','r') as FILE:
-        return json.load(FILE)
+        data = json.load(FILE)
+        if 'users' in data and 'channels' in data:
+            return data
+        else:
+            return {'users':[], 'channels':[],}
 
 
 #def find_user(user_id, data):

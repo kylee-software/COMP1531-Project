@@ -4,7 +4,7 @@ from src.other import clear_v1
 from src.error import AccessError, InputError
 import pytest
 from src.channels import channels_create_v1
-
+import json
 
 def test_invalid_user_id():
     clear_v1()
@@ -47,8 +47,19 @@ def test_valid_token():
 #    assert is_valid_token(token)['user_id'] == user_id
      assert is_valid_token(create_token(1,1)) != False
 
-def test_load_save_file():
-    save_data({})
-    assert load_data() == {}
-    save_data({'test':'testing'})
-    assert load_data() == {'test':'testing'}
+def test_save_incorrect_data():
+    with pytest.raises(Exception):
+        save_data({'users':'testing'})
+    
+def test_save_correct_data():
+    data = {'users':['testing'], 'channels':['testing']}
+    save_data(data)
+    assert load_data() == data
+    clear_v1()
+
+def test_load_incorrect_data():
+    with open('src/data.json', 'w') as FILE:
+        json.dump("incorrect", FILE)
+    assert load_data() == {'users':[], 'channels':[]}
+    clear_v1()
+

@@ -3,10 +3,7 @@ from src.helper import load_data, save_data
 def clear_v1():
     """empties the data dictionary
     """
-    data = load_data()
-    data['users'] = []
-    data['channels'] = []
-    save_data(data)
+    save_data({'users':[], 'channels':[]})
 
 def search_v1(auth_user_id, query_str):
     return {
