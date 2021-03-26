@@ -1,6 +1,6 @@
 from src.data import data as data_dict  
 from src.error import AccessError, InputError  
-from src.helper import check_auth_user_id_v1
+from src.helper import is_valid_user_id
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
@@ -14,7 +14,7 @@ def channels_list_v1(auth_user_id):
     Returns:
         Dictionary: has key 'channels' and list of dicts with keys channel_id and name
     """
-    if check_auth_user_id_v1(auth_user_id) == False:
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
 
     returnDict = {'channels': []}
@@ -39,7 +39,7 @@ def channels_listall_v1(auth_user_id):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    if check_auth_user_id_v1(auth_user_id) == False:
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
     returnDict = {'channels': []}
@@ -68,7 +68,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     '''
     global data_dict
 
-    if check_auth_user_id_v1(auth_user_id) == False:
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(name) > 20:
