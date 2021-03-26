@@ -1,6 +1,10 @@
 from src.data import data
+import hashlib
+import jwt
 
-def check_auth_user_id_v1(auth_user_id):
+SECRET = 'WED09B-ECHO'
+
+def is_valid_user_id(auth_user_id):
     '''
     checks the given auth_user_id is valid
 
@@ -21,7 +25,7 @@ def check_auth_user_id_v1(auth_user_id):
     return False
 
 
-def check_channel_id_v1(channel_id):
+def is_valid_channel_id(channel_id):
     '''
     checks the given channel_id is valid
 
@@ -45,3 +49,17 @@ def check_channel_id_v1(channel_id):
     return False
 
 
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def create_token(user_id, session_id):
+    return jwt.encode({'user_id':user_id,'session_id': session_id}, SECRET, algorithm='HS256')
+
+def is_valid_token(user_id, token):
+    decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+    decoded_user_id = decoded_token['user_id']
+
+    if decoded_user_id == user_id:
+        return True
+    else:
+        return False
