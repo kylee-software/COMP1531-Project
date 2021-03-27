@@ -1,41 +1,47 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v1
-from src.channels import channels_create_v1
+from src.auth import auth_register_v2
+from src.channels import channels_create_v2
 from src.error import InputError, AccessError
+from src.helper import create_token
 
 
 @pytest.fixture
-def create_user():
+def token():
     # reset all data
     clear_v1()
     # create a test user and return auth_id
     email = "testmail@gamil.com"
     password = "Testpass12345"
-    auth_user_id = auth_register_v1(email, password, "firstname", "lastname")
-    return auth_user_id['auth_user_id']
+    token = auth_register_v2(email, password, "firstname", "lastname")['token']
+    return token
 
 
-def test_invalid_name(create_user):
-    # Test invalid name with more tan 20 characters --> "InputError"
+def test_invalid_name(token):
+    # Test invalid name with more tan 20 characters or no name is entered --> "InputError"
     with pytest.raises(InputError):
-        channels_create_v1(create_user, "fffffffffffffffffffff", True)
+        channels_create_v2(token, "", True)
+        channels_create_v2(token, "fffffffffffffffffffff", True)
 
 
-def test_valid_name_public(create_user):
+def test_valid_name_public(token):
     # Given a valid name and is_public set to true, assert that the return value channel_id is a dictionary
-    assert channels_create_v1(create_user, "channelName1", True) == {'channel_id': 1}
+    assert channels_create_v2(token, "channelName1", True) == {'channel_id': 1}
 
 
-def test_valid_name_private(create_user):
+def test_valid_name_private(token):
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert channels_create_v1(create_user, "channelName2", False) == {'channel_id': 1}
+    assert channels_create_v2(token, "channelName2", False) == {'channel_id': 1}
 
 
-def test_invalid_authId():
+def test_invalid_token():
     clear_v1()
-    auth_user_id = 4
+    token = create_token(5, 1)
     with pytest.raises(AccessError):
-        channels_create_v1(auth_user_id, "channelName3", True)
+        channels_create_v2(token, "channelName3", True)
 
+
+def test_valid_channel_id(token):
+    channel_id = channels_create_v2(token, 'channel_name', True)['channel_id']
+    assert channel_id == 1
 

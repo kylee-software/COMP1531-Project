@@ -20,12 +20,7 @@
 - only testing user created channels for simplicity not joined channels as channel_join is assumed to be working
 
 ## channels_create_v1
-- auth_register_v1() works and returns correct auth_user_id
-- auth_login_v1() works and that the user is login in order to create a channel
-- only need to raise exception when the length of the channel name is greater than 20 characters
-- only test for correct channel_id
-
-
+- channel name can not be empty
 
 ## auth_register_v1
 - Numbers and special characters except for '@' are allowed in names. Whitespace is not allowed in names.
