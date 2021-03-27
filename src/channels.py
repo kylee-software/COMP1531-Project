@@ -54,7 +54,7 @@ def channels_listall_v1(auth_user_id):
     return returnDict
 
 
-def channels_create_v1(token, name, is_public):
+def channels_create_v2(token, name, is_public):
     '''
     Function to create a channel that is either a public or private with a given name
 

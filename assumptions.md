@@ -19,7 +19,7 @@
 - returns a dictionary with key 'channels' and value [] if no channels have been created
 - only testing user created channels for simplicity not joined channels as channel_join is assumed to be working
 
-## channels_create_v1
+## channels_create_v2
 - channel name can not be empty
 
 ## auth_register_v1
