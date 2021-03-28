@@ -3,7 +3,6 @@ from src.other import clear_v1
 from src.auth import auth_register_v2
 from src.channels import channels_create_v2
 from src.error import InputError, AccessError
-from src.helper import create_token
 
 
 @pytest.fixture
@@ -35,10 +34,8 @@ def test_valid_name_private(token):
 
 
 def test_invalid_token():
-    clear_v1()
-    token = create_token(5, 1)
     with pytest.raises(AccessError):
-        channels_create_v2(token, "channelName3", True)
+        channels_create_v2("invalid_token", "channelName3", True)
 
 
 def test_valid_channel_id(token):

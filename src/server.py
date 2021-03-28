@@ -36,7 +36,7 @@ def echo():
 def channels_create_v2():
     token = request.get_json()['token']
     name = request.get_json()['name']
-    is_public = token = request.get_json()['is_public']
+    is_public = request.get_json()['is_public']
 
     # Get the return value
     dict = channels.channels_create_v2(token, name, is_public)

@@ -7,7 +7,7 @@ def clear():
     '''
     Reset the data
     '''
-    empty_data = requests.delete(config.url + 'clear/v1').json()
+    requests.delete(config.url + 'clear/v1').json()
     return
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def test_invalid_name(token):
         'is_public': True
     })
 
-    resp2 = empty_resp = requests.post(config.url + 'channels/create/v2', json={
+    resp2 = requests.post(config.url + 'channels/create/v2', json={
         'token': token,
         'name': "fffffffffffffffffffff",
         'is_public': True
