@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
-from src import config
+from src import config, channel
 
 def defaultHandler(err):
     response = err.get_response()
@@ -27,10 +27,19 @@ APP.register_error_handler(Exception, defaultHandler)
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
+
+@APP.route("channel/messages/v2", methods=['GET'])
+def channel_messages_v2():
+    token = request.get_json()['token']
+    channel_id = request.get_json()['channel_id']
+    start = request.get_json()['start']
+
+    messages_dict = channel.channel_messages_v2(token, channel_id, start)
+    return dumps(messages_dict)
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
