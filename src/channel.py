@@ -1,32 +1,30 @@
-from src.data import data
-from src.error import AccessError, InputError
-from src.helper import check_auth_user_id_v1 as check_user_id
-from src.helper import check_channel_id_v1
+from error import AccessError, InputError
+from helper import is_valid_token, load_data, save_data, is_valid_channel_id
 
-def channel_invite_v1(auth_user_id, channel_id, u_id):
+def channel_invite_v1(token, channel_id, u_id):
     '''
     Function to invite and add a user of u_id to a channel of channel_id. 
 
     Arguments:
-        auth_user_id (int)      - user_id of the person already in the channel
+        token (int)      - user_id of the person already in the channel
         channel_id (int)        - unique channel identifier
         u_id (int)              - user_id of the person being invited to the channel
 
     Exceptions:
-        InputError  - Occurs when channel_id, u_id or auth_user_id are not valid ids
-        AccessError - Occurs when auth_user_id is not already a member of the channel
+        InputError  - Occurs when channel_id, u_id or token are not valid ids
+        AccessError - Occurs when token is not already a member of the channel
 
     Return Value:
         Returns {} on successfully added u_id to channel_id
     '''
-    global data
-    if check_channel_id_v1(channel_id) == False:
+    data = load_data()
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
     
-    if check_user_id(auth_user_id) == False:
-        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+    if is_valid_token(token) == False:
+        raise AccessError(f"Auth_user_id: {token} is invalid")
     
-    if check_user_id(u_id) == False:
+    if is_valid_token(u_id) == False:
         raise InputError(f"invalid u_id: {u_id}")
         
     #check auth_user is in channel
@@ -34,11 +32,11 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             for member in channel['members']:
-                if member['user_id'] == auth_user_id:
+                if member['user_id'] == token:
                     auth_in_channel = True
                     break
     if auth_in_channel == False:
-        raise AccessError(f"auth_user_id was not in channel")
+        raise AccessError(f"token was not in channel")
 
     # check if user being added is global owner
     global_owner = 2
@@ -53,16 +51,17 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
                 if member['user_id'] == u_id:
                     return {}
             channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
-    
+
+    save_data()
     return {
     }
 
-def channel_details_v1(auth_user_id, channel_id):
+def channel_details_v1(token, channel_id):
     '''
     channel details returns the name and member details of a channel a user is in
 
     Arguments:
-        auth_user_id (int)      - user id of the user requesting channel information
+        token (int)      - user id of the user requesting channel information
         channel_id (int)        - channel_id of the channel details being requested
 
     Exceptions:
@@ -73,12 +72,12 @@ def channel_details_v1(auth_user_id, channel_id):
         Returns {name, owner_members, all_members} on successful obtaining of channel details
     '''
     
-    global data
+    data = load_data()
 
-    if check_channel_id_v1(channel_id) == False:
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
-    if check_user_id(auth_user_id) == False:
-        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+    if is_valid_token(token) == False:
+        raise AccessError(f"Auth_user_id: {token} is invalid")
     
     owner_ids = []
     member_ids = []
@@ -91,11 +90,11 @@ def channel_details_v1(auth_user_id, channel_id):
                 member_ids.append(member['user_id'])
                 if member['permission_id'] == 1:
                     owner_ids.append(member['user_id'])
-                if member['user_id'] == auth_user_id:
+                if member['user_id'] == token:
                     found_member = True
             
             if found_member == False:
-                raise AccessError("auth_user_id is not a channel member")
+                raise AccessError("token is not a channel member")
             
             break
     
@@ -121,7 +120,7 @@ def channel_details_v1(auth_user_id, channel_id):
                     }
             owner_details.append(owner)
 
-
+    save_data()
     
     return {
         'name': channel_name,
@@ -129,30 +128,93 @@ def channel_details_v1(auth_user_id, channel_id):
         'all_members': member_details,
     }
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v2(token, channel_id, start):
+    '''
+        Function to return up to 50 messages between "start" and "start + 50"
+
+        Arguments:
+            token (int)         - an authorisation hash of the user
+            channel_id (int)    - channel_id of the channel the user is trying to access to
+            start (int)         - show messages starting from start; start = 0 means the most recent message
+
+        Exceptions:
+            AccessError - Occurs when the token is invalid and authorised user is not a member of the channel
+
+            InputError  - Occurs when channel_id is invalid and "start" is greater than\
+            the total number of messages in the channel
+
+        Return Value:
+            Returns {messages, start, end} where messages is a dictionary
+    '''
+
+    data = load_data()
+
+    # Check valid channel_id
+    if not is_valid_channel_id(channel_id):
+        raise InputError("Channel ID is invalid.")
+
+    if not is_valid_token(token):
+        raise AccessError("Token is invalid")
+
+    user_id = is_valid_token(token)['user_id']
+    channels = data['channels']
+    channel_members = channels[channel_id - 1]['members']
+    channel_messages = channels[channel_id - 1]['messages']
+    is_member = False
+
+    # Check valid auth_id
+    for member in channel_members:
+        if member['user_id'] == user_id:
+            is_member = True
+            break
+
+    if not is_member:
+        raise AccessError("Unauthorised User!")
+
+    # Check valid start number
+    if start >= len(channel_messages):
+        raise InputError("Start is greater than the total number of messages in the channel.")
+
+    # calculate the ending return value
+    end = start + 50 if (start + 50 < len(channels) - 1) else -1
+    messages_dict = {'messages': []}
+
+    if end == -1:
+        for i in range(start, len(channel_messages)):
+            messages_dict['messages'].append(channel_messages[i])
+    else:
+        for i in range(start, end):
+            messages_dict['messages'].append(channel_messages[i])
+
+    messages_dict['start'] = start
+    messages_dict['end'] = end
+
+    return messages_dict
+    # example
+    # {
+    #     'messages': [
+    #         {
+    #             'message_id': 1,
+    #             'u_id': 1,
+    #             'message': 'Hello world',
+    #             'time_created': 1582426789,
+    #         }
+    #     ],
+    #     'start': 0,
+    #     'end': 50,
+    # }
+
+
+def channel_leave_v1(token, channel_id):
     return {
-        'messages': [
-            {
-                'message_id': 1,
-                'u_id': 1,
-                'message': 'Hello world',
-                'time_created': 1582426789,
-            }
-        ],
-        'start': 0,
-        'end': 50,
     }
 
-def channel_leave_v1(auth_user_id, channel_id):
-    return {
-    }
-
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
     '''
     Channel join adds a user to a channel if they are authorised to join
 
     Arguments:
-        auth_user_id (int)      - User id of user attempting to join channel
+        token (int)      - User id of user attempting to join channel
         channel_id (int)    - channel id of channel user is attempting to join
         ...
 
@@ -164,17 +226,17 @@ def channel_join_v1(auth_user_id, channel_id):
         Returns {} on successfully joining a channel
     '''
     
-    global data
-    if check_user_id(auth_user_id) == False:
-        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+    data = load_data()
+    if is_valid_token(token) == False:
+        raise AccessError(f"Auth_user_id: {token} is invalid")
     
-    if check_channel_id_v1(channel_id) == False:
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
 
-    # Next we find out if the auth_user_id user is a global owner
+    # Next we find out if the token user is a global owner
     global_status = 2
     for user in data['users']:
-        if user['user_id'] == auth_user_id:
+        if user['user_id'] == token:
             global_status = user.get('permission_id')
             break
 
@@ -182,27 +244,29 @@ def channel_join_v1(auth_user_id, channel_id):
         if channel['channel_id'] == channel_id:
             # Now we check to see if the user is already in the channel
             for member in channel['members']:
-                if member['user_id'] == auth_user_id:
+                if member['user_id'] == token:
                     # member is already in channel so return as successful
                     return {}
             is_public = channel['public_status']
 
             # Now if the user is a global owner or the channel is public they can be added
             if global_status == 1 or is_public == True:
-                user_dict = {'user_id':auth_user_id, 'permission_id':global_status,}
+                user_dict = {'user_id':token, 'permission_id':global_status,}
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
                 raise AccessError(f"channel is private and user is not global owner")
             break
+
+    save_data()
     
     return {
     }
 
-def channel_addowner_v1(auth_user_id, channel_id, u_id):
+def channel_addowner_v1(token, channel_id, u_id):
     return {
     }
 
-def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+def channel_removeowner_v1(token, channel_id, u_id):
     return {
     }
