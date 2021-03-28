@@ -8,6 +8,7 @@ from src.error import InputError, AccessError
 
 @pytest.fixture
 def token():
+    clear_v1()
     # create a test user and return auth_id
     email = "testmail@gamil.com"
     password = "Testpass12345"
@@ -45,17 +46,16 @@ def test_invalid_start(token, channel_id):
         channel_messages_v2(token, channel_id, 51)
 
 def test_last_message(token, channel_id):
-    clear_v1()
     # Test if end = -1 when there are no more messages to load after the current return
     message_send_v2(token, channel_id, "Hi, everyone!")
     end = channel_messages_v2(token, channel_id, 0)['end']
     assert end == -1
 
 def test_more_messages(token, channel_id):
-    clear_v1()
     count = 60
     while count >= 0:
         message_send_v2(token, channel_id, f"{count}")
+        count -= 1
 
     # Test first 50 newest messages
     message_1 = channel_messages_v2(token, channel_id, 0)['messages'][49]['message']
