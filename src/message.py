@@ -25,7 +25,7 @@ def message_send_v1(token, channel_id, message):
             for user in channel['users']:
                 if user['user_id'] == user_id:
                     found_user = True
-                    channel['messages'].append(new_message)
+                    channel['messages'].insert(0, new_message)
                 
     if found_user:
         for channel in data['channels']:
