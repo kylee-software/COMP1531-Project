@@ -1,4 +1,4 @@
-from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, save_data
+from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, save_data, find_channel, find_user, is_user_in_channel
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.error import AccessError, InputError
@@ -63,3 +63,21 @@ def test_load_incorrect_data():
     assert load_data() == {'users':[], 'channels':[]}
     clear_v1()
 
+def test_find_channel():
+    data = {'users':[], 'channels':[{'channel_id': 1, 'members':[]}, {'channel_id':2, 'members':[]}]}
+    channel = find_channel(1, data)
+    assert channel == {'channel_id':1, 'members':[]}
+    channel['members'].append('test')
+    assert data['channels'][0] == {'channel_id':1, 'members':['test']}
+
+def test_find_user():
+    data = {'users':[{'user_id': 1},{'user_id':2,'name':'test'}], 'channels':[]}
+    user = find_user(2, data)
+    assert user == {'user_id':2, 'name':'test'}
+    user['name'] = 'changed'
+    assert data['users'][1] == {'user_id':2, 'name':'changed'}
+
+def test_is_user_in_channel():
+    data  = {'users':[], 'channels':[{'channel_id': 1, 'members':[]}, {'channel_id':2, 'members':[{'user_id':1}]}]}
+    assert is_user_in_channel(2, 1, data) == True
+    assert is_user_in_channel(1, 1, data) == False

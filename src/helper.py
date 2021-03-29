@@ -124,7 +124,19 @@ def load_data():
             return {'users':[], 'channels':[],}
 
 
-#def find_user(user_id, data):
- #   for user in data['users']:
- #       if user['user_id'] == user_id:
- #           return user
+def find_user(user_id, data):
+    for user in data['users']:
+        if user['user_id'] == user_id:
+            return user
+
+def find_channel(channel_id, data):
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            return channel
+
+def is_user_in_channel(channel_id, user_id, data):
+    channel = find_channel(channel_id, data)
+    for member in channel['members']:
+        if member['user_id'] == user_id:
+            return True
+    return False
