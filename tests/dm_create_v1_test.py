@@ -36,10 +36,10 @@ def test_invalid_token(user1):
         dm_create_v1("Invalid token", [user1])
 
 def test_invalid_u_id(token, user1):
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         dm_create_v1(token, [user1, 123])
 
-def test_valid_single(token, user1):
+def test_valid_return(token, user1, user2):
     assert dm_create_v1(token, [user1])['dm_id'] == 1
     assert dm_create_v1(token, [user1, user2])['dm_id'] == 2
     clear_v1()
