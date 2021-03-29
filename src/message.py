@@ -39,13 +39,13 @@ def message_senddm_v1(token, dm_id, message):
         for member in dm['members']:
             if member == auth_user_id:
                 found_user = True
-            dm['messages'].insert(0, (message, message_id))
+            dm['messages'].insert(0, {'message':message, 'message_id':message_id})
     
     if found_dm == False:
         raise InputError(description=f"invalid dm id")
 
     if found_user == False:
         raise AccessError(description=f"user not in dm")
-        
+
     save_data(data)
     return {message_id}
