@@ -158,7 +158,31 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': 50,
     }
 
-def channel_leave_v1(auth_user_id, channel_id):
+def channel_leave_v1(token, channel_id):
+    data = load_data()
+    token_data = is_valid_token(token)
+
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
+    
+    auth_user_id = token_data['user_id']
+    if is_valid_user_id (auth_user_id) == False:
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+    
+    if is_valid_channel_id(channel_id) == False:
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
+    
+    found_member = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            for member, idx in enumerate(channel['members']):
+                if member['user_id'] == auth_user_id:
+                    found_member = True
+                    del channel['members'][idx]
+                    break
+            if found_member == False:
+                raise AccessError(description=f"user is not a member of this channel")
+                
     return {
     }
 
