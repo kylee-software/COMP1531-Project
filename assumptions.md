@@ -33,6 +33,10 @@
 - The first and last name can be in uppercase and/or lowercase.
 - Password may contain numbers, special characters and whitespace. 
 
+## channel/leave/v1:
+- if the user trying to leave is the only owner, no other users will be made an owner in their place
+- if the user trying to leave is the only member of the channel, the channel will not be deleted even if it is private (and therefore unjoinable)
+
 ## Functions without assumptions
 - channel_details_v1
 - auth_login_v1
