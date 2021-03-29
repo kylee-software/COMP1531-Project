@@ -6,48 +6,91 @@ from src.channels import channels_create_v1
 from src.error import InputError, AccessError
 
 @pytest.fixture
-def create_user():
+def user1():
     email = "test2email@gmail.com"
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)["auth_user_id"]
+    return auth_register_v1(email,password,firstname, lastname)
 
 
 @pytest.fixture
-def create_channel():
+def channel_id():
     name = "Testchannel"
-    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")["auth_user_id"]
-    return channels_create_v1(user_id, name, True)['channel_id']
+    owner_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")["auth_user_id"]
+    return channels_create_v1(owner_id, name, True)['channel_id']
 
 @pytest.fixture
 def clear():
     clear_v1()
 
-def create_user_output(email, password, firstname, lastname, handle):
-    return {'u_id':auth_login_v1(email, password)['auth_user_id'], "email":email, 'name_first':firstname,'name_last':lastname,'handle_str':handle,}
-
-def expected_output():
-    name = "Testchannel"
-    owner = create_user_output("channelcreator@gmail.com", "TestTest1", "first", "last", "firstlast")
-    other_member = create_user_output("test2email@gmail.com", "TestTest2", "firstname2", "lastname2", "firstname2lastname2")
-    return {'name':name,'owner_members':[owner],'all_members':[owner, other_member]}
-
-def test_valid_case(clear, create_channel, create_user):
+def test_valid_case(clear, channel_id, user1):
     owner_id = auth_login_v1("channelcreator@gmail.com", "TestTest1")["auth_user_id"]
-    channel_join_v1(create_user, create_channel)
-    assert channel_details_v1(create_user, create_channel) == expected_output()
-    assert channel_details_v1(owner_id, create_channel) == expected_output()
+    channel_join_v1(user1['token'], channel_id)
+    assert channel_details_v1(user1['token'], channel_id) == {
+                                                        'name':"Testchannel",
+                                                        'is_public':True,
+                                                        'owner_members':[{
+                                                                            'u_id':owner_id, 
+                                                                            "email":"channelcreator@gmail.com", 
+                                                                            'name_first':"first",
+                                                                            'name_last':"last",
+                                                                            'handle_str':"firstlast",
+                                                                            },],
+                                                        'all_members':[{
+                                                                            'u_id':owner_id, 
+                                                                            "email":"channelcreator@gmail.com", 
+                                                                            'name_first':"first",
+                                                                            'name_last':"last",
+                                                                            'handle_str':"firstlast",
+                                                                        }, 
+                                                                        {
+                                                                            'u_id':user1['auth_user_id'], 
+                                                                            "email":"test2email@gmail.com", 
+                                                                            'name_first':"firstname2",
+                                                                            'name_last':"lastname2",
+                                                                            'handle_str':"firstname2lastname2",
+                                                                        },],
+                                                        }
+    assert channel_details_v1(owner_id, channel_id) == {
+                                                        'name':"Testchannel",
+                                                        'is_public':True,
+                                                        'owner_members':[{
+                                                                            'u_id':owner_id, 
+                                                                            "email":"channelcreator@gmail.com", 
+                                                                            'name_first':"first",
+                                                                            'name_last':"last",
+                                                                            'handle_str':"firstlast",
+                                                                            },],
+                                                        'all_members':[{
+                                                                            'u_id':owner_id, 
+                                                                            "email":"channelcreator@gmail.com", 
+                                                                            'name_first':"first",
+                                                                            'name_last':"last",
+                                                                            'handle_str':"firstlast",
+                                                                        }, 
+                                                                        {
+                                                                            'u_id':user1['auth_user_id'], 
+                                                                            "email":"test2email@gmail.com", 
+                                                                            'name_first':"firstname2",
+                                                                            'name_last':"lastname2",
+                                                                            'handle_str':"firstname2lastname2",
+                                                                        },],
+                                                        }
     clear_v1() 
 
-def test_invalid_channel_id(clear, create_user):
+def test_invalid_channel_id(clear, user1):
     with pytest.raises(InputError):
-        channel_details_v1(create_user, 1)
+        channel_details_v1(user1['token'], 1)
     clear_v1() 
 
-
-def test_user_not_in_channel(clear, create_channel, create_user):
+def test_user_not_in_channel(clear, channel_id, user1):
     with pytest.raises(AccessError):
-        channel_details_v1(create_user, create_channel)
+        channel_details_v1(user1['token'], channel_id)
     clear_v1() 
+
+def test_invalid_token(clear, channel_id, user1):
+    with pytest.raises(AccessError):
+        channel_details_v1('bad.token.given', channel_id)
+    clear_v1()
 
