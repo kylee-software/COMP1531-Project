@@ -17,6 +17,21 @@ def user_profile_setemail_v1(auth_user_id, email):
     return {
     }
 
-def user_profile_sethandle_v1(auth_user_id, handle_str):
+def user_profile_sethandle_v1(token, handle_str):
+    data = load_data()
+    token_data = is_valid_token(token)
+
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
+    
+    auth_user_id = token_data['user_id']
+    if is_valid_user_id (auth_user_id) == False:
+        raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
+
+    if len(handle_str) <= 3 or len(handle_str) >= 20:
+        raise InputError(description=f"handle string is incorrect length, must be between 3 and 20 characters")
+
+    
+    
     return {
     }

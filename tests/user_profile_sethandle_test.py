@@ -12,7 +12,6 @@ def user1():
     lastname = "last"
     return auth_register_v1(email,password,firstname, lastname)
 
-
 @pytest.fixture
 def user2():
     email = "test2email@gmail.com"
