@@ -18,8 +18,11 @@ data = {'users': [], 'channels':[], 'dms':[]}
 #                   'members' : [ { 'user_id':int?, 
 #                                   'channel_owner_status':boolean,
 #                               },...],   
-#                   'messages':[strings -> use insert function to add new message to start],
-#                   }]
+#                   'messages':[ {'message_id':int,
+#                                 'message': string,
+#                                }, {...}... 
+#                              ]
+#                  } ]
 
 # dms =     [   {'dm_id':int, 
 #                'name':string, 
