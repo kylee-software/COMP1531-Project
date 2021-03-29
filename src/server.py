@@ -3,6 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
+from src.dm import dm_create_v1
 from src import config
 
 def defaultHandler(err):
@@ -27,10 +28,18 @@ APP.register_error_handler(Exception, defaultHandler)
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
+
+@APP.route("dm/create/v1", methods=['POST'])
+def dm_create_v1():
+    token = request.args.get('token')
+    u_ids = request.args.get('u_ids')
+    dm_dict = dm_create_v1(token, u_ids)
+
+    return dumps(dm_dict)
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
