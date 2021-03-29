@@ -1,3 +1,6 @@
+from src.helper import is_valid_token, save_data, load_data, find_user, is_valid_user_id
+from src.errors import InputError, AccessError
+
 def user_profile_v1(auth_user_id, u_id):
     return {
         'user': {
@@ -31,7 +34,9 @@ def user_profile_sethandle_v1(token, handle_str):
     if len(handle_str) <= 3 or len(handle_str) >= 20:
         raise InputError(description=f"handle string is incorrect length, must be between 3 and 20 characters")
 
-    
-    
+    user = find_user(auth_user_id, data)
+    user['handle_str'] = handle_str
+
+    save_data(data)
     return {
     }
