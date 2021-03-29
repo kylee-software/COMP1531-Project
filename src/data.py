@@ -1,7 +1,7 @@
 
-data = {'users': [], 'channels':[]}
+data = {'users': [], 'channels':[], 'dms':[]}
 
-# user_info = [ {'first_name' : string,
+# users =     [ {'first_name' : string,
 #                'last_name' : string,
 #                'email' : string,
 #                'user_id' : int?,
@@ -12,7 +12,7 @@ data = {'users': [], 'channels':[]}
 #               {....}, ....
 #             ]
 
-# channel_info = [ {'name': string,
+# channels =    [ {'name': string,
 #                   'channel_id':int?,
 #                   'public_status': boolean (false indicates private),
 #                   'members' : [ { 'user_id':int?, 
@@ -21,5 +21,16 @@ data = {'users': [], 'channels':[]}
 #                   'messages':[strings -> use insert function to add new message to start],
 #                   }]
 
-#   --> assuming owners will also be in the all_members return
+# dms =     [   {'dm_id':int, 
+#                'name':string, 
+#                'members':[list of user_ids]
+#                'messages':[ {'message_id':int,
+#                              'message': string,
+#                              }, {...}...
+#                           ],
+#               }   ]
 
+
+
+
+]
