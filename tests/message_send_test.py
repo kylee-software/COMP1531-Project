@@ -15,7 +15,7 @@ def token():
     password = "testPassword"
     firstname = "firstName"
     lastname = "lastName"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v1(email,password,firstname, lastname)['token']
 
 @pytest.fixture
 def channel_id(token):

@@ -36,3 +36,6 @@
 ## Functions without assumptions
 - channel_details_v1
 - auth_login_v1
+
+## message_send
+- The channel_id is always valid
