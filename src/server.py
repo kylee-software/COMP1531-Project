@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1
+from src.dm import dm_create_v1, dm_messages_v1
 from src import config
 
 def defaultHandler(err):
@@ -40,6 +40,16 @@ def dm_create_v1():
     dm_dict = dm_create_v1(token, u_ids)
 
     return dumps(dm_dict)
+
+@APP.route("dm/messages/v1", methods=['GET'])
+def dm_messages_v1():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    start = request.args.get('start')
+
+    messages_dict = dm_messages_v1(token, dm_id, start)
+    return dumps(messages_dict)
+
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
