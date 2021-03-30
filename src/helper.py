@@ -1,5 +1,12 @@
 from src.data import data
 
+def is_valid_token(token):
+    return {}
+
+def load ():
+    return {}
+
+
 def check_auth_user_id_v1(auth_user_id):
     '''
     checks the given auth_user_id is valid
