@@ -28,11 +28,7 @@ Return Value:
 
 def create_session(user):
     unique_id = uuid.uuid4()
-    user_sessions = user['session_list']
-    if user_sessions is None:
-        user_sessions = []
-        user['session_list'] = user_sessions
-    user_sessions.append(unique_id)
+    user['session_list'].append(unique_id)
     return unique_id
 
 
@@ -138,6 +134,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'account_password': password,
         'permission_id': permission_id,
         'account_handle': updated_handle,
+        'session_list': [],
         'user_id': len(data['users']) + 1,
     }
     login_session_id = create_session(new_user)
@@ -145,6 +142,6 @@ def auth_register_v1(email, password, name_first, name_last):
     user_list.append(new_user)
     save_data(data)
 
-    login_token = create_token(user['user_id'], login_session_id)  
+    login_token = create_token(user['user_id'], login_session_id)
 
-    return {'token': login_token, 'auth_user_id': new_user['user_id']} 
+    return {'token': login_token, 'auth_user_id': new_user['user_id']}
