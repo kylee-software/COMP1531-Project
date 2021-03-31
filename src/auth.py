@@ -49,7 +49,8 @@ def auth_login_v1(email, password):
 
     for user in data['users']:
         if user['email_address'] == email:
-            if user['account_password'] == password:
+            hashed_password = hash_password(password)
+            if user['account_password'] == hashed_password:
                 login_session_id = create_session(user)
                 save_data(data)
                 login_token = create_token(user['user_id'], login_session_id)
