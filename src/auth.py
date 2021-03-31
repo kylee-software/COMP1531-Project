@@ -1,6 +1,6 @@
 import re
 from src.error import InputError
-from src.helper import save_data, load_data, create_token
+from src.helper import save_data, load_data, create_token, hash_password
 import uuid
 import jwt
 import json
@@ -141,7 +141,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'first_name': name_first,
         'last_name': name_last,
         'email_address': email,
-        'account_password': password,
+        'account_password': hash_password(password),
         'permission_id': permission_id,
         'account_handle': updated_handle,
         'session_list': [],
