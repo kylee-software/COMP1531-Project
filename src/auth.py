@@ -3,6 +3,8 @@ from src.error import InputError
 from src.helper import save_data, load_data, create_token
 import uuid
 import jwt
+import json
+import src.data
 
 """
 user_login_v1 takes in an email and password. 
@@ -26,10 +28,18 @@ Return Value:
 """
 
 
+class uuidencode(json.JSONEncoder):
+    def default(self, uuid_id):
+        if isinstance(uuid_id, uuid):
+            return str(uuid_id)
+        return json.JSONEncoder.default(self, uuid_id)
+
+
 def create_session(user):
     unique_id = uuid.uuid4()
+    unique_id_json = json.dumps(unique_id, cls=uuidencode)
     user['session_list'].append(unique_id)
-    return unique_id
+    return unique_id_json
 
 
 def auth_login_v1(email, password):
