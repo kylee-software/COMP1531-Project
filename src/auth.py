@@ -38,7 +38,7 @@ class uuidencode(json.JSONEncoder):
 def create_session(user):
     unique_id = uuid.uuid4()
     unique_id_json = json.dumps(unique_id, cls=uuidencode)
-    user['session_list'].append(unique_id)
+    user['session_list'].append(unique_id_json)
     return unique_id_json
 
 
