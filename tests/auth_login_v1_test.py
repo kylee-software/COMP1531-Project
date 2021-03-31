@@ -58,7 +58,7 @@ def test_password_incorrect():
     with pytest.raises(InputError):
         auth_login_v1('testing123@unsw.au', 'failed123')
 
-    auth_register_v1'testing567@unsw.au', 'password', 'first567', 'last567')
+    auth_register_v1('testing567@unsw.au', 'password', 'first567', 'last567')
     with pytest.raises(InputError):
         auth_login_v1('testing567@unsw.au', 'failed567')
 
@@ -74,7 +74,7 @@ def test_password_incorrect():
 def test_correct_login_details():
     clear_v1()
 
-    userid_1=auth_register_v1(
+    userid_1 = auth_register_v1(
         'testing123@unsw.au', 'password', 'first123', 'last123')
     assert is_valid_token(userid_1['token'])
 
