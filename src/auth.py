@@ -152,6 +152,6 @@ def auth_register_v1(email, password, name_first, name_last):
     user_list.append(new_user)
     save_data(data)
 
-    login_token = create_token(user['user_id'], login_session_id)
+    login_token = create_token(new_user['user_id'], login_session_id)
 
     return {'token': login_token, 'auth_user_id': new_user['user_id']}
