@@ -30,7 +30,7 @@ Return Value:
 
 class uuidencode(json.JSONEncoder):
     def default(self, uuid_id):
-        if isinstance(uuid_id, uuid):
+        if isinstance(uuid_id, uuid.UUID):
             return str(uuid_id)
         return json.JSONEncoder.default(self, uuid_id)
 
