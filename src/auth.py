@@ -6,29 +6,12 @@ import jwt
 import json
 import src.data
 
-"""
-user_login_v1 takes in an email and password. 
-It checks that the email is a valid format, belongs to a registered user and that the password belongs to the user.
-If conditions are met the user is logged in and the function returns user id.
-Otherwise, an error is raised.
-
-Arguments:
-    email (string) - The email inputted by the user.
-    password (string) - The password inputted by the user.
-
-Exceptions:
-    InputError  - Occurs when email does not match valid email format.
-    InputError - Occurs when email does not belong to a registered user.
-    InputError - Occurs when the password does not belong to the registered user.
-
-Return Value:
-    Returns {'auth_user_id': user['user_id']} on the condition that the email is valid, 
-    belongs to a registered user and that the password belongs to the registered user.
-
-"""
-
 
 class uuidencode(json.JSONEncoder):
+    """
+        Creation of class to help with the json encoding of UUID
+    """
+
     def default(self, uuid_id):
         if isinstance(uuid_id, uuid.UUID):
             return str(uuid_id)
@@ -36,13 +19,42 @@ class uuidencode(json.JSONEncoder):
 
 
 def create_session(user):
+    """
+    Generates a unique session id, appends it to the user's session list and returns the json encoded uuid.
+
+    Arguments:
+        user - element in dictionary - a user's account details
+
+    Return Value:
+        Returns unique_id_json after generating a unique session id for the user and appending it to the user's session list.
+    """
     unique_id = uuid.uuid4()
     unique_id_json = json.dumps(unique_id, cls=uuidencode)
     user['session_list'].append(unique_id_json)
     return unique_id_json
 
 
-def auth_login_v1(email, password):
+def auth_login_v2(email, password):
+    """
+    user_login_v2 takes in an email and password. 
+    It checks that the email is a valid format, belongs to a registered user and that the password belongs to the user.
+    If conditions are met the user is logged in and the function returns user id.
+    Otherwise, an error is raised.
+
+    Arguments:
+        email (string) - The email inputted by the user.
+        password (string) - The password inputted by the user.
+
+    Exceptions:
+        InputError  - Occurs when email does not match valid email format.
+        InputError - Occurs when email does not belong to a registered user.
+        InputError - Occurs when the password does not belong to the registered user.
+
+    Return Value:
+        Returns {'token': login_token, 'auth_user_id': user['user_id']} on the condition that the email is valid, 
+        belongs to a registered user and that the password belongs to the registered user.
+
+    """
     data = load_data()
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
         raise InputError('Please enter a valid email address.')
@@ -60,7 +72,8 @@ def auth_login_v1(email, password):
     raise InputError('Email not found.')
 
 
-"""
+def auth_register_v2(email, password, name_first, name_last):
+    """
 auth_register_v1 is a function that takes in an email, password and a new user's first and last name.
 It then checks the email, password, first and last names are all valid.
 It then creates a handle for the new user.
@@ -83,16 +96,12 @@ Exceptions:
     InputError - Occurs when first name is less than 1 character and greater than 50 characters in length.
     InputError - Occurs when last name is less than 1 character and greater than 50 characters in length.
     InputError - Occurs when the handle has either '@' or whitespace.
-      
+
 Return Value:
-    Returns {'auth_user_id': new_user['user_id']} on the condition that the email is valid and not previously registered.
+    Returns {'token': login_token, 'auth_user_id': new_user['user_id']} on the condition that the email is valid and not previously registered.
     Additionally, that the password, first and last names are the correct length.
     Further that the handle has no '@' or whitespace.
-
-"""
-
-
-def auth_register_v1(email, password, name_first, name_last):
+    """
     data = load_data()
     password_length = len(password)
     first_name_length = len(name_first)
