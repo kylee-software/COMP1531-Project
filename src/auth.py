@@ -1,6 +1,8 @@
 import re
 from src.error import InputError
-from src.helper import save_data, load_data
+from src.helper import save_data, load_data, create_token
+import uuid
+import jwt
 
 """
 user_login_v1 takes in an email and password. 
@@ -23,6 +25,17 @@ Return Value:
 
 """
 
+
+def create_session(user):
+    unique_id = uuid.uuid4()
+    user_sessions = user['session_list']
+    if user_sessions is None:
+        user_sessions = []
+        user['session_list'] = user_sessions
+    user_sessions.append(unique_id)
+    return unique_id
+
+
 def auth_login_v1(email, password):
     data = load_data()
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
@@ -31,10 +44,14 @@ def auth_login_v1(email, password):
     for user in data['users']:
         if user['email_address'] == email:
             if user['account_password'] == password:
-                return {'auth_user_id': user['user_id']}
+                login_session_id = create_session(user)
+                save_data(data)
+                login_token = create_token(user['user_id'], login_session_id)
+                return {'token': login_token, 'auth_user_id': user['user_id']}
             else:
                 raise InputError('Incorrect Password.')
     raise InputError('Email not found.')
+
 
 """
 auth_register_v1 is a function that takes in an email, password and a new user's first and last name.
@@ -67,6 +84,7 @@ Return Value:
 
 """
 
+
 def auth_register_v1(email, password, name_first, name_last):
     data = load_data()
     password_length = len(password)
@@ -90,14 +108,14 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError('Last name is not a valid length.')
 
     handle = name_first + name_last
-    
+
     for character in handle:
         if character == '@' or character.isspace():
             raise InputError("No @ or whitespace allowed in handles.")
 
     if len(handle) > 20:
         handle = handle[0:20]
-        handle = handle.lower() 
+        handle = handle.lower()
 
     user_list = data['users']
     i = 0
@@ -122,8 +140,11 @@ def auth_register_v1(email, password, name_first, name_last):
         'account_handle': updated_handle,
         'user_id': len(data['users']) + 1,
     }
+    login_session_id = create_session(new_user)
 
     user_list.append(new_user)
-    
     save_data(data)
-    return {'auth_user_id': new_user['user_id']}
+
+    login_token = create_token(user['user_id'], login_session_id)  
+
+    return {'token': login_token, 'auth_user_id': new_user['user_id']} 
