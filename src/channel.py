@@ -1,6 +1,6 @@
 from src.error import AccessError, InputError
 from src.helper import is_valid_user_id
-from src.helper import is_valid_channel_id, load_data, save_data
+from src.helper import is_valid_channel_id, load_data, save_data, is_user_in_channel, find_user_channel_owner_status, find_channel, find_user
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -209,6 +209,34 @@ def channel_join_v1(auth_user_id, channel_id):
 
 
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
+    data = load_data()
+    # Check if channel exists or not 
+    channel = find_channel(channel_id, data)
+    if channel is None:
+        return InputError("Channel doesn't exist.")
+    
+    # Check if member is already an owner 
+    potential_owner_status = find_user_channel_owner_status(channel_id, u_id, data)
+    if potential_owner_status is True: 
+        return InputError("User is already an owner.")    
+    
+    # Check if auth_user_id is an owner
+    first_user_owner = find_user(auth_user_id, data) 
+    owner_channel_status = find_user_channel_owner_status(
+        channel_id, auth_user_id, data)
+
+    if first_user_owner['global_owner_status'] is True or owner_channel_status is True:
+        if is_user_in_channel(channel_id, u_id, data) is True:
+            for member in channel['members']:
+                if member['user_id'] == u_id:
+                    member['channel_owner_status'] = True
+        else:
+            new_owner = {'user_id': u_id, 'channel_owner_status': True}
+            channel['members'].append(new_owner)
+        
+        save_data(data) 
+    else:
+        raise AccessError("Not an owner of this channel.") 
     return {
     }
 
