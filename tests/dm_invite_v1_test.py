@@ -43,6 +43,11 @@ def test_invalid_token(clear, token, user_id_list):
     with pytest.raises(AccessError):
         dm_invite(jwt.encode({'Test': 'Token'}, 'TestSecret', algorithm='HS256'), dm['dm_id'], user_id_list[0])
 
+def test_invited_user_is_already_in_dm(clear, token, user_id_list):
+    dm = dm_create(token, user_id_list)
+    with pytest.raises(InputError):
+        dm_invite(token, dm['dm_id'], user_id_list[0])
+
 def test_user_not_in_dm(clear, token, user_id_list):
     email = "test91gmail@gmail.com"
     password = "TestTest91"
