@@ -223,10 +223,11 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
 
     # Check if auth_user_id is an owner
     first_user_owner = find_user(auth_user_id, data)
+    first_user_owner_status = first_user_owner['permission_id']
     owner_channel_status = find_user_channel_owner_status(
-        channel_id, auth_user_id, data)
+        channel_id, first_user_owner['permission_id'], data)
 
-    if first_user_owner['permission_id'] is True or owner_channel_status is True:
+    if first_user_owner_status is True or owner_channel_status is True:
         if is_user_in_channel(channel_id, u_id, data) is True:
             for member in channel['members']:
                 if member['user_id'] == u_id:
