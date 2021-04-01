@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_user_id 
+from src.helper import is_valid_user_id
 from src.helper import is_valid_channel_id, load_data, save_data
+
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
@@ -21,14 +22,14 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     data = load_data()
     if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
-    
-    if is_valid_user_id (auth_user_id) == False:
+
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
-    
-    if is_valid_user_id (u_id) == False:
+
+    if is_valid_user_id(u_id) == False:
         raise InputError(f"invalid u_id: {u_id}")
-        
-    #check auth_user is in channel
+
+    # check auth_user is in channel
     auth_in_channel = False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
@@ -44,18 +45,20 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     for user in data['users']:
         if user['user_id'] == u_id:
             global_owner = user['permission_id']
-    
+
     # add if user isnt already in the channel
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             for member in channel['members']:
                 if member['user_id'] == u_id:
                     return {}
-            channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
-    
+            channel['members'].append(
+                {'user_id': u_id, 'permission_id': global_owner})
+
     save_data(data)
     return {
     }
+
 
 def channel_details_v1(auth_user_id, channel_id):
     '''
@@ -72,14 +75,14 @@ def channel_details_v1(auth_user_id, channel_id):
     Return Value:
         Returns {name, owner_members, all_members} on successful obtaining of channel details
     '''
-    
+
     data = load_data()
 
     if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
-    if is_valid_user_id (auth_user_id) == False:
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
-    
+
     owner_ids = []
     member_ids = []
     for channel in data['channels']:
@@ -93,34 +96,33 @@ def channel_details_v1(auth_user_id, channel_id):
                     owner_ids.append(member['user_id'])
                 if member['user_id'] == auth_user_id:
                     found_member = True
-            
+
             if found_member == False:
                 raise AccessError("auth_user_id is not a channel member")
-            
+
             break
-    
+
     owner_details = []
     member_details = []
     for user in data['users']:
         if user['user_id'] in member_ids:
-            member =   {
-                            'u_id':user['user_id'],
-                            "email":user['email_address'],
-                            'name_first':user['first_name'],
-                            'name_last':user['last_name'],
-                            'handle_str':user['account_handle'],
-                        }
+            member = {
+                'u_id': user['user_id'],
+                "email": user['email_address'],
+                'name_first': user['first_name'],
+                'name_last': user['last_name'],
+                'handle_str': user['account_handle'],
+            }
             member_details.append(member)
         if user['user_id'] in owner_ids:
             owner = {
-                        'u_id':user['user_id'],
-                        "email":user['email_address'],
-                        'name_first':user['first_name'],
-                        'name_last':user['last_name'],
-                        'handle_str':user['account_handle'],
-                    }
+                'u_id': user['user_id'],
+                "email": user['email_address'],
+                'name_first': user['first_name'],
+                'name_last': user['last_name'],
+                'handle_str': user['account_handle'],
+            }
             owner_details.append(owner)
-
 
     save_data(data)
     return {
@@ -128,6 +130,7 @@ def channel_details_v1(auth_user_id, channel_id):
         'owner_members': owner_details,
         'all_members': member_details,
     }
+
 
 def channel_messages_v1(auth_user_id, channel_id, start):
     return {
@@ -143,9 +146,11 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': 50,
     }
 
+
 def channel_leave_v1(auth_user_id, channel_id):
     return {
     }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     '''
@@ -163,11 +168,11 @@ def channel_join_v1(auth_user_id, channel_id):
     Return Value:
         Returns {} on successfully joining a channel
     '''
-    
+
     data = load_data()
-    if is_valid_user_id (auth_user_id) == False:
+    if is_valid_user_id(auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
-    
+
     if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
 
@@ -189,20 +194,24 @@ def channel_join_v1(auth_user_id, channel_id):
 
             # Now if the user is a global owner or the channel is public they can be added
             if global_status == 1 or is_public == True:
-                user_dict = {'user_id':auth_user_id, 'permission_id':global_status,}
+                user_dict = {'user_id': auth_user_id,
+                             'permission_id': global_status, }
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
-                raise AccessError(f"channel is private and user is not global owner")
+                raise AccessError(
+                    f"channel is private and user is not global owner")
             break
-    
+
     save_data(data)
     return {
     }
 
+
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
+
 
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     return {
