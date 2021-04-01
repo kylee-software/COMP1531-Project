@@ -1,5 +1,14 @@
 import requests
 from src import config
+from src.helper import create_token
+
+
+def test_invalid_token():
+    requests.delete(config.url + '/clear/v1')
+    invalid_token = create_token(100, 10)
+    setname_call = requests.put(config.url + '/user/profile/setname/v2',
+                                json={'token': invalid_token, 'name_first': 'firstname', 'name_last': 'lastname'})
+    assert setname_call.status_code == 400
 
 
 def test_first_name_incorrect_length():
