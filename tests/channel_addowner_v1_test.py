@@ -52,7 +52,7 @@ def test_not_owner_of_channel_or_dreams():
         'test2@unsw.au', 'password2', 'first2', 'last2')
     member_2 = auth_register_v1(
         'test3@unsw.au', 'password3', 'first3', 'last3')
-    channel_id = channels_create_v1(admin_1['token'], 'channel_1', True)
+    channel_id = channels_create_v1(admin_1['auth_user_id'], 'channel_1', True)
     with pytest.raises(AccessError):
         channel_addowner_v1(member_1['auth_user_id'],
                             channel_id['channel_id'], member_2['auth_user_id'])
@@ -67,7 +67,7 @@ def test_successful_addowner():
 
     admin = auth_register_v1('test@unsw.au', 'password1', 'first1', 'last1')
     member = auth_register_v1('test1@unsw.au', 'password2', 'first2', 'last2')
-    channel_id = channels_create_v1(admin['token'], 'channel_1', True)
+    channel_id = channels_create_v1(admin['auth_user_id'], 'channel_1', True)
     channel_addowner_v1(
         admin['auth_user_id'], channel_id['channel_id'], member['auth_user_id'])
 
