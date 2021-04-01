@@ -21,7 +21,7 @@ def test_invalid_channel():
 def test_user_nonexistent():
     clear_v1()
 
-    admin = auth_login_v1('test@unsw.au', 'password', 'first', 'last')
+    admin = auth_register_v1('test@unsw.au', 'password', 'first', 'last')
     channel_id = channels_create_v1(admin['auth_user_id'], 'channel_1', True)
     with pytest.raises(InputError):
         channel_addowner_v1(admin['auth_user_id'],
@@ -32,7 +32,7 @@ def test_user_nonexistent():
 
 def test_user_already_owner():
     clear_v1()
-    admin = auth_login_v1('test@unsw.au', 'password', 'first', 'last')
+    admin = auth_register_v1('test@unsw.au', 'password', 'first', 'last')
     channel_id = channels_create_v1(admin['auth_user_id'], 'channel_1', True)
     with pytest.raises(InputError):
         channel_addowner_v1(admin['auth_user_id'],
