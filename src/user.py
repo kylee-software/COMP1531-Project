@@ -1,3 +1,7 @@
+from src.helper import is_valid_user_id, load_data, save_data, find_user
+from src.error import InputError
+
+
 def user_profile_v1(auth_user_id, u_id):
     return {
         'user': {
@@ -9,13 +13,36 @@ def user_profile_v1(auth_user_id, u_id):
         },
     }
 
+
 def user_profile_setname_v1(auth_user_id, name_first, name_last):
+    if is_valid_user_id(auth_user_id) is False:
+        raise InputError("Authorised user id invalid.")
+
+    first_name_length = len(name_first)
+    last_name_length = len(name_last)
+    character_limit = 50
+
+    if first_name_length >= character_limit or last_name_length >= character_limit:
+        raise InputError(
+            "The length of the first or last name given has exceeded the limit of 50 characters.")
+    else:
+        data = load_data()
+
+        user_modified = find_user(auth_user_id, data)
+
+        user_modified['first_name'] = name_first
+        user_modified['last_name'] = name_last
+
+        save_data(data)
+
     return {
     }
+
 
 def user_profile_setemail_v1(auth_user_id, email):
     return {
     }
+
 
 def user_profile_sethandle_v1(auth_user_id, handle_str):
     return {
