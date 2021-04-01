@@ -13,7 +13,7 @@ def test_invalid_channel():
     admin = auth_register_v1('test@unsw.au', 'password1', 'first1', 'last1')
     member = auth_register_v1('test1@unsw.au', 'password2', 'first2', 'last2')
     with pytest.raises(InputError):
-        channel_addowner_v1(admin['auth_user_id'], 1, member['auth_user_id'])
+        channel_addowner_v1(admin['auth_user_id'], 100, member['auth_user_id'])
 
     clear_v1()
 
