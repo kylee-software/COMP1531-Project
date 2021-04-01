@@ -228,7 +228,7 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     owner_channel_status = find_user_channel_owner_status(
         channel_id, first_user_owner['permission_id'], data)
 
-    if first_user_owner_status is True or owner_channel_status is True:
+    if first_user_owner_status == 1 or owner_channel_status == 1:
         if is_user_in_channel(channel_id, u_id, data) is True:
             for member in channel['members']:
                 if member['user_id'] == u_id:
