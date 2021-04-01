@@ -226,13 +226,13 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     owner_channel_status = find_user_channel_owner_status(
         channel_id, auth_user_id, data)
 
-    if first_user_owner['global_owner_status'] is True or owner_channel_status is True:
+    if first_user_owner['permission_id'] is True or owner_channel_status is True:
         if is_user_in_channel(channel_id, u_id, data) is True:
             for member in channel['members']:
                 if member['user_id'] == u_id:
-                    member['channel_owner_status'] = True
+                    member['permission_id'] = True
         else:
-            new_owner = {'user_id': u_id, 'channel_owner_status': True}
+            new_owner = {'user_id': u_id, 'permission_id': True}
             channel['members'].append(new_owner)
 
         save_data(data)
