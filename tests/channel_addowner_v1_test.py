@@ -4,7 +4,7 @@ from src.channel import channel_addowner_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.error import InputError, AccessError
-from src.helper import is_user_in_channel, load_data, find_user_channel_owner_status
+from src.helper import is_user_in_channel, load_data, find_user_channel_owner_status, save_data
 
 
 def test_invalid_channel():
@@ -67,6 +67,8 @@ def test_successful_addowner():
     channel_id = channels_create_v1(admin['token'], 'channel_1', True)
     channel_addowner_v1(
         admin['auth_user_id'], channel_id['channel_id'], member['auth_user_id'])
+
+    data = save_data()
 
     assert is_user_in_channel(channel_id['channel_id'], data)
     assert find_user_channel_owner_status(
