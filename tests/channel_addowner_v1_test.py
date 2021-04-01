@@ -68,9 +68,10 @@ def test_successful_addowner():
     channel_addowner_v1(
         admin['auth_user_id'], channel_id['channel_id'], member['auth_user_id'])
 
-    data = save_data()
+    save_data(data)
 
-    assert is_user_in_channel(channel_id['channel_id'], data)
+    assert is_user_in_channel(
+        channel_id['channel_id'], member['auth_user_id'], data)
     assert find_user_channel_owner_status(
         channel_id['channel_id'], member['auth_user_id'], data) == 1
 
