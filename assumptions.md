@@ -7,6 +7,9 @@
 - if user tries to invite someone to channel they are already in, nothing is done to the data store and the function returns successful
 - if global owner is not in channel they also cannot invite users to the channel (they have no special power there)
 
+## Channel_addowner_v1
+- If the user to be added as a owner is not a member of the channel they are added as a member and their channel_owner_status is set to True 
+
 ## channels_listall_v1
 - channel_create works and creates correct channel names and id's
 - only have to test for length of returns channels list
