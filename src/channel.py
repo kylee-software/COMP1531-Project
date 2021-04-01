@@ -210,18 +210,23 @@ def channel_join_v1(auth_user_id, channel_id):
 
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     data = load_data()
-    # Check if channel exists or not 
-    channel = find_channel(channel_id, data)
-    if channel is None:
+    # Check if channel exists or not
+    channel_found = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_found = True
+
+    if channel_found is False:
         return InputError("Channel doesn't exist.")
-    
-    # Check if member is already an owner 
-    potential_owner_status = find_user_channel_owner_status(channel_id, u_id, data)
-    if potential_owner_status is True: 
-        return InputError("User is already an owner.")    
-    
+
+    # Check if member is already an owner
+    potential_owner_status = find_user_channel_owner_status(
+        channel_id, u_id, data)
+    if potential_owner_status is True:
+        return InputError("User is already an owner.")
+
     # Check if auth_user_id is an owner
-    first_user_owner = find_user(auth_user_id, data) 
+    first_user_owner = find_user(auth_user_id, data)
     owner_channel_status = find_user_channel_owner_status(
         channel_id, auth_user_id, data)
 
@@ -233,10 +238,10 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
         else:
             new_owner = {'user_id': u_id, 'channel_owner_status': True}
             channel['members'].append(new_owner)
-        
-        save_data(data) 
+
+        save_data(data)
     else:
-        raise AccessError("Not an owner of this channel.") 
+        raise AccessError("Not an owner of this channel.")
     return {
     }
 
