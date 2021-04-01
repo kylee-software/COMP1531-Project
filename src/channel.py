@@ -237,7 +237,7 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
 
         save_data(data)
     else:
-        raise AccessError("Not an owner of this channel.")
+        raise InputError("Not an owner of this channel.")
     return {
     }
 
