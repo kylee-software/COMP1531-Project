@@ -212,7 +212,7 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     data = load_data()
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)
-    if channel_id_valid is False:
+    if channel_id_valid == False:
         return InputError("Channel doesn't exist.")
 
     # Check if member is already an owner
