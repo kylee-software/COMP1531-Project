@@ -23,7 +23,7 @@ def test_last_name_incorrect_length():
     user_1 = auth_register_v1('test@unsw.au', 'password', 'first', 'last')
 
     with pytest.raises(InputError):
-        user_profile_setname_v1(user['auth_user_id'], 'firstname',
+        user_profile_setname_v1(user_1['auth_user_id'], 'firstname',
                                 'thislastnamecontainsspecialcharacters##^^&&**!!123123123')
 
     clear_v1()
