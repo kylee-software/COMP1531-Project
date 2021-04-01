@@ -154,4 +154,4 @@ def find_user_channel_owner_status(channel_id, user_id, data):
     channel = find_channel(channel_id, data)
     for member in channel['members']:
         if member['user_id'] == user_id:
-            return member['channel_owner_status']
+            return member['permission_id']
