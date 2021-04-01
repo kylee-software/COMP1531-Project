@@ -211,15 +211,14 @@ def channel_join_v1(auth_user_id, channel_id):
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     data = load_data()
     # Check if channel exists or not
-    channel = find_channel(channel_id, data)
-    if channel is None:
+    channel_id_valid = is_valid_channel_id(channel_id)
+    if channel_id_valid is False:
         return InputError("Channel doesn't exist.")
 
     # Check if member is already an owner
-    potential_owner_status = find_user_channel_owner_status(
-        channel_id, u_id, data)
-    if potential_owner_status is True:
-        return InputError("User is already an owner.")
+    for member in channel['members']:
+        if member['user_id'] == u_id:
+            if member['permission_id'] =
 
     # Check if auth_user_id is an owner
     first_user_owner = find_user(auth_user_id, data)
