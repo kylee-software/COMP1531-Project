@@ -13,7 +13,7 @@ def test_invalid_token():
 
 def test_first_name_incorrect_length():
     requests.delete(config.url + '/clear/v1')
-    registration = requests.post(config.url + '/register/v2',
+    registration = requests.post(config.url + '/auth/register/v2',
                                  json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
     registration_details = registration.json()
     setname_call = requests.put(config.url + '/user/profile/setname/v2',
@@ -23,7 +23,7 @@ def test_first_name_incorrect_length():
 
 def test_last_name_incorrect_length():
     requests.delete(config.url + '/clear/v1')
-    registration = requests.post(config.url + '/register/v2',
+    registration = requests.post(config.url + '/auth/register/v2',
                                  json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
     registration_details = registration.json()
     setname_call = requests.put(config.url + '/user/profile/setname/v2',
@@ -33,7 +33,7 @@ def test_last_name_incorrect_length():
 
 def test_successful_setname():
     requests.delete(config.url + '/clear/v1')
-    registration = requests.post(config.url + '/register/v2',
+    registration = requests.post(config.url + '/auth/register/v2',
                                  json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
     registration_details = registration.json()
     setname_call = requests.put(config.url + '/user/profile/setname/v2',
