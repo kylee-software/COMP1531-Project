@@ -78,13 +78,20 @@ def is_valid_token(token):
     Return Value:
         Returns False if the token is invalid, returns the payload if the token is valid
     '''
+    data = load_data()
     try:
         payload = jwt.decode(token, SECRET, algorithms=['HS256'])
     except:
         jwt.exceptions.InvalidSignatureError()
         return False
     else:
-        return payload
+        user = next((user for user in data['users'] if user['user_id'] == payload['user_id']), False)
+        if user:
+            if user['sessions'].count(payload['session_id']) != 0:
+                return payload
+        return False
+
+
 
 def save_data(data):
     '''
@@ -98,11 +105,11 @@ def save_data(data):
             {'users':[], 'channels':[]} an exception is raised
     '''
 
-    if 'users' in data and 'channels' in data:
+    if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
         with open('src/data.json', 'w') as FILE:
             json.dump(data, FILE)
     else:
-        raise Exception("attempting to save incorrrect data format, must be {'users':[], 'channels':[]}")
+        raise Exception("attempting to save incorrrect data format, must be {'users':[], 'channels':[], 'dms':[], 'msg_counter':0'}")
 
 
 def load_data():
@@ -118,10 +125,10 @@ def load_data():
     '''
     with open('src/data.json','r') as FILE:
         data = json.load(FILE)
-        if 'users' in data and 'channels' in data:
+        if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
             return data
         else:
-            return {'users':[], 'channels':[],}
+            return {'users':[], 'channels':[], 'dms':[], 'msg_counter':0}
 
 
 def find_user(user_id, data):
