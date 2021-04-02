@@ -175,14 +175,16 @@ def channel_leave_v1(token, channel_id):
     found_member = False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            for member, idx in enumerate(channel['members']):
+            for idx, member in enumerate(channel['members']):
                 if member['user_id'] == auth_user_id:
                     found_member = True
                     del channel['members'][idx]
                     break
             if found_member == False:
                 raise AccessError(description=f"user is not a member of this channel")
-                
+    save_data(data)
+
+       
     return {
     }
 
