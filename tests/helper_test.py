@@ -29,9 +29,9 @@ def test_invalid_channel_id():
 
 def test_valid_channel_id():
     clear_v1()
-    user_id = auth_register_v2(
-        "test@gmail.com", "password", "first", "last")['auth_user_id']
-    channel_id = channels_create_v2(user_id, "Channelname", True)['channel_id']
+    token = auth_register_v2(
+        "test@gmail.com", "password", "first", "last")['token']
+    channel_id = channels_create_v2(token, "Channelname", True)['channel_id']
     assert is_valid_channel_id(channel_id) == True
     clear_v1()
 
