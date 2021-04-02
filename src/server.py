@@ -59,7 +59,7 @@ def register_v2():
 def channels_create():
     data = request.get_json()
     dict = channels_create_v2(data['token'], data['name'], data['is_public'])
-    return dumps(dict)
+    return jsonify(dict)
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
