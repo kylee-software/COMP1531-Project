@@ -5,7 +5,9 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.auth import auth_login_v2, auth_register_v2
+from src.channel import channel_addowner_v1
 from src.other import clear_v1
+from src.helper import is_valid_token
 
 
 def defaultHandler(err):
@@ -55,6 +57,13 @@ def login_v2():
 def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
+
+
+@APP.route("/channel/addowner/v1", methods=['POST'])
+def channel_addowner():
+    data = request.get_json()
+    decoded_token = is_valid_token(data['token'])
+    return jsonify(channel_addowner_v1(decoded_token['user_id'], data['channel_id'], data['u_id']))
 
 
 if __name__ == "__main__":
