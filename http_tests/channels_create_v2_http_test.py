@@ -1,7 +1,6 @@
 import pytest
 import requests
 from src import config
-from src.helper import create_token
 
 @pytest.fixture
 def token():
@@ -15,7 +14,7 @@ def token():
     password = "Testpass12345"
     first_name = "firstname"
     last_name = "lastname"
-    auth_resp = requests.post(config.url + 'auth/register/v2', json={
+    auth_resp = requests.post(config.url + '/auth/register/v2', json={
         'email': email,
         'password': password,
         'name_first': first_name,
