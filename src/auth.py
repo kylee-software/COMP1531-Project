@@ -151,5 +151,6 @@ def auth_logout(token):
             for session in user['sessions']:
                 if decoded_token['session_id'] == session:
                     del session
+                    save_data(data)
                     return True
     return False
