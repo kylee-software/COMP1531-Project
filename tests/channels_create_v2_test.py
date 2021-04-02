@@ -21,23 +21,15 @@ def test_invalid_name(token):
         channels_create_v2(token, "fffffffffffffffffffff", True)
 
 
-def test_valid_name_public(token):
-    # Given a valid name and is_public set to true, assert that the return value channel_id is a dictionary
-    assert channels_create_v2(token, "channelName1", True) == {'channel_id': 1}
-
-
-def test_valid_name_private(token):
-    # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert channels_create_v2(token, "channelName2", False) == {'channel_id': 2}
-
-
 def test_invalid_token():
     with pytest.raises(AccessError):
         channels_create_v2("invalid_token", "channelName3", True)
 
 
 def test_valid_channel_id(token):
-    channel_id = channels_create_v2(token, 'channel_name', True)['channel_id']
-    assert channel_id == 3
+    channel_id_1 = channels_create_v2(token, 'channelName1', True)['channel_id']
+    channel_id_2 = channels_create_v2(token, 'channelName2', False)['channel_id']
+    assert channel_id_1 == 1
+    assert channel_id_2 == 2
     clear_v1()
 

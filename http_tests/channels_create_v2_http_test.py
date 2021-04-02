@@ -3,19 +3,11 @@ import requests
 from src import config
 from src.helper import create_token
 
-def clear():
-    '''
-    Reset the data
-    '''
-    requests.delete(config.url + 'clear/v1').json()
-    return
-
 @pytest.fixture
 def token():
     '''
     create a token
     '''
-    clear()
     email = "testmail@gamil.com"
     password = "Testpass12345"
     first_name = "firstname"
@@ -72,11 +64,23 @@ def test_invalid_token():
     assert status_code == 403
 
 def test_valid_channel_id(token):
-    channel_resp = requests.post(config.url + 'channels/create/v2', json={
+    channel_public = requests.post(config.url + 'channels/create/v2', json={
         'token': token,
         'name': "channelName1",
         'is_public': True
     })
 
-    channel_id = channel_resp.json()['channel_id']
-    assert channel_id == 1
+    channel_private = requests.post(config.url + 'channels/create/v2', json={
+        'token': token,
+        'name': "channelName2",
+        'is_public': False
+    })
+
+    channel_id_1 = channel_public.json()['channel_id']
+    channel_id_2 = channel_private.json()['channel_id']
+    assert channel_id_1 == 1
+    assert channel_id_2 == 2
+
+    # Reset data
+    requests.delete(config.url + 'clear/v1').json()
+
