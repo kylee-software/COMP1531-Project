@@ -5,10 +5,10 @@ from src.helper import is_valid_token
 
 def test_invalid_channel():
     requests.delete(config.url + '/clear/v1')
-    admin = requests.post(config.url + '/register/v2',
-                          json={'email': 'test@unsw.edu.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
-    member = requests.post(config.url + '/register/v2',
-                           json={'email': 'test1@unsw.edu.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    member = requests.post(config.url + '/auth/register/v2',
+                           json={'email': 'test1@unsw.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
     admin_details = admin.json()
     member_details = member.json()
     addowner = requests.post(config.url + '/channel/addowner/v1',
@@ -18,10 +18,10 @@ def test_invalid_channel():
 
 def test_user_nonexistent():
     requests.delete(config.url + '/clear/v1')
-    admin = requests.post(config.url + '/register/v2',
-                          json={'email': 'test@unsw.edu.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
     admin_details = admin.json()
-    channel = requests.post(config.url + 'channels/create/v2',
+    channel = requests.post(config.url + '/channels/create/v2',
                             json={'token': admin_details['token'], 'name': 'channel_1', 'is_public': True})
     channel_id = channel.json()
     addowner = requests.post(config.url + '/channel/addowner/v1',
@@ -31,9 +31,9 @@ def test_user_nonexistent():
 
 def test_user_already_owner():
     requests.delete(config.url + '/clear/v1')
-    admin = requests.post(config.url + '/register/v2',
-                          json={'email': 'test@unsw.edu.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
-    channel = requests.post(config.url + 'channels/create/v2',
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    channel = requests.post(config.url + '/channels/create/v2',
                             json={'token': admin['token'], 'name': 'channel_1', 'is_public': True})
     admin_details = admin.json()
     channel_id = channel.json()
@@ -44,16 +44,16 @@ def test_user_already_owner():
 
 def test_not_owner_of_channel_or_dreams():
     requests.delete(config.url + '/clear/v1')
-    admin = requests.post(config.url + '/register/v2',
-                          json={'email': 'test@unsw.edu.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
-    member_1 = requests.post(config.url + '/register/v2',
-                             json={'email': 'test1@unsw.edu.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
-    member_2 = requests.post(config.url + '/register/v2',
-                             json={'email': 'test2@unsw.edu.au', 'password': 'password2', 'name_first': 'test2', 'name_last': 'last2'})
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    member_1 = requests.post(config.url + '/auth/register/v2',
+                             json={'email': 'test1@unsw.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
+    member_2 = requests.post(config.url + '/auth/register/v2',
+                             json={'email': 'test2@unsw.au', 'password': 'password2', 'name_first': 'test2', 'name_last': 'last2'})
     admin_details = admin.json()
     member_1_details = member_1.json()
     member_2_details = member_2.json()
-    channel = requests.post(config.url + 'channels/create/v2',
+    channel = requests.post(config.url + '/channels/create/v2',
                             json={'token': admin_details['token'], 'name': 'channel_1', 'is_public': True})
     channel_id = channel.json()
     addowner = requests.post(config.url + '/channel/addowner/v1',
@@ -64,13 +64,13 @@ def test_not_owner_of_channel_or_dreams():
 def test_successful_addowner():
     requests.delete(config.url + '/clear/v1')
 
-    admin = requests.post(config.url + '/register/v2',
-                          json={'email': 'test@unsw.edu.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
-    member_1 = requests.post(config.url + '/register/v2',
-                             json={'email': 'test1@unsw.edu.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    member_1 = requests.post(config.url + '/auth/register/v2',
+                             json={'email': 'test1@unsw.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
     admin_details = admin.json()
     member_1_details = member_1.json()
-    channel = requests.post(config.url + 'channels/create/v2',
+    channel = requests.post(config.url + '/channels/create/v2',
                             json={'token': admin_details['token'], 'name': 'channel_1', 'is_public': True})
     addowner = requests.post(config.url + '/channel/addowner/v1',
                              json={'token': admin_details['token'], 'channel_id': channel['channel_id'], 'u_id': member_1_details['auth_user_id']})
