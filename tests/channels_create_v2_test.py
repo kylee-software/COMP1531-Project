@@ -31,5 +31,5 @@ def test_valid_channel_id(token):
     channel_id_1 = channels_create_v2(token, 'channelName1', True)['channel_id']
     channel_id_2 = channels_create_v2(token, 'channelName2', False)['channel_id']
     assert channel_id_1 == 1
-    assert channel_id_2 == 1
+    assert channel_id_2 == 2
 
