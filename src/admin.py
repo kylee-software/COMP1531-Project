@@ -17,22 +17,23 @@ def admin_changepermission_v1(token, u_id, permission_id):
         raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_user_id (u_id) == False:
-        raise InputError(descripton=f"invalid u_id: {u_id}")
+        raise InputError(description=f"invalid u_id: {u_id}")
 
     if permission_id != OWNER_PERMISSION and permission_id != MEMBER_PERMISSION:
         raise InputError(description=f"invalid permission_id: {permission_id}")
 
     for user in data['users']:
         if user['user_id'] == auth_user_id:
-            user_permission = user['global_owner_status']
+            user_permission = user['permission_id']
             break
     
     if user_permission != OWNER_PERMISSION:
-        raise AccessError(description=f"authorised user is not an owner")
+        raise AccessError(description=f"authorised user is not an owner ")
     
     for user in data['users']:
         if user['user_id'] == u_id:
-            user['global_owner_status'] = permission_id
+            user['permission_id'] = permission_id
             break
-    
+    save_data(data)
+
     return {}

@@ -1,6 +1,6 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v1
+from src.auth import auth_register_v2
 from src.error import InputError, AccessError
 from src.admin import admin_changepermission_v1
 
@@ -18,7 +18,7 @@ def user1():
     password = "TestTest"
     firstname = "firstname"
     lastname = "lastname"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def user2():
@@ -26,7 +26,7 @@ def user2():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def user3():
@@ -34,7 +34,7 @@ def user3():
     password = "TestTest3"
     firstname = "firstname3"
     lastname = "lastname3"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 def test_invalid_u_id(clear, user1):
     with pytest.raises(InputError):
