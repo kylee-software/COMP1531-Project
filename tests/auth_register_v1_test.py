@@ -18,6 +18,8 @@ def test_given_email_is_invalid():
     
     with pytest.raises(InputError):
         auth_register_v1('test_special!!!@unsw.edu.au', 'password', 'firstspecial', 'lastspecial')
+    
+    clear_v1() 
 
 # Test exception - Email entered already exists (belongs to an existing user)
 def test_email_already_exists():
@@ -34,6 +36,8 @@ def test_email_already_exists():
     auth_register_v1('testing890@unsw.au', 'password', 'first890', 'last890')
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', 'hello890', 'first3', 'last3')
+    
+    clear_v1() 
 
 # Test exception - Password given is less than 6 Characters
 def test_password_incorrect_length():
@@ -47,6 +51,8 @@ def test_password_incorrect_length():
     
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', '@3456', 'first3', 'last3') 
+    
+    clear_v1() 
 
 # Test exception - First name given is between 1 and 50 inclusive 
 def test_first_name_valid_length():
@@ -59,7 +65,9 @@ def test_first_name_valid_length():
         auth_register_v1('testing567@unsw.au', 'password', 'thisfirstnameismorethanfiftycharacterslong123123123123123', 'last2')
     
     with pytest.raises(InputError):
-        auth_register_v1('testing890@unsw.au', 'password', 'thisfirstnamecontainsspecialcharacters##^^&&**!!123123123', 'last3')   
+        auth_register_v1('testing890@unsw.au', 'password', 'thisfirstnamecontainsspecialcharacters##^^&&**!!123123123', 'last3')  
+
+    clear_v1()  
 
 # Test exception - Last name given is between 1 and 50 inclusive 
 def test_last_name_valid_length():
@@ -73,6 +81,8 @@ def test_last_name_valid_length():
     
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', 'password', 'first3', 'thislastnamecontainsspecialcharacters##^^&&**!!123123123')
+    
+    clear_v1() 
 
 # Test - if handle generated has whitespace it raises an error as not allowed 
 def test_no_whitespace():
@@ -86,6 +96,8 @@ def test_no_whitespace():
 
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', 'password', 'first', 'last   ')
+    
+    clear_v1() 
 
 # Test - if handle generated has @ it raises an error as not allowed
 def test_no_at_symbol():
@@ -99,6 +111,8 @@ def test_no_at_symbol():
 
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', 'password', 'first', 'last@')
+    
+    clear_v1() 
 
 # Test - if handle generated contains both @ and whitespace it raises an error as not allowed 
 def test_no_at_and_whitespace():
@@ -112,6 +126,8 @@ def test_no_at_and_whitespace():
 
     with pytest.raises(InputError):
         auth_register_v1('testing890@unsw.au', 'password', 'first @@@' , 'last @@@ ') 
+    
+    clear_v1() 
 
 # Test registration of details was successful - if registration is successful then you can login 
 def test_registration_successful():
@@ -125,5 +141,6 @@ def test_registration_successful():
     assert auth_login_v1('testing567@unsw.au', 'password') == userid_2
     assert auth_login_v1('testing890@unsw.au', 'password') == userid_3
 
+    clear_v1() 
     
 

@@ -1,7 +1,6 @@
-from src.data import data
 from src.error import AccessError, InputError
-from src.helper import check_auth_user_id_v1 as check_user_id
-from src.helper import check_channel_id_v1
+from src.helper import is_valid_user_id 
+from src.helper import is_valid_channel_id, load_data, save_data
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
@@ -19,14 +18,14 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     Return Value:
         Returns {} on successfully added u_id to channel_id
     '''
-    global data
-    if check_channel_id_v1(channel_id) == False:
+    data = load_data()
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
     
-    if check_user_id(auth_user_id) == False:
+    if is_valid_user_id (auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
-    if check_user_id(u_id) == False:
+    if is_valid_user_id (u_id) == False:
         raise InputError(f"invalid u_id: {u_id}")
         
     #check auth_user is in channel
@@ -54,6 +53,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
                     return {}
             channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
     
+    save_data(data)
     return {
     }
 
@@ -73,11 +73,11 @@ def channel_details_v1(auth_user_id, channel_id):
         Returns {name, owner_members, all_members} on successful obtaining of channel details
     '''
     
-    global data
+    data = load_data()
 
-    if check_channel_id_v1(channel_id) == False:
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
-    if check_user_id(auth_user_id) == False:
+    if is_valid_user_id (auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
     owner_ids = []
@@ -122,7 +122,7 @@ def channel_details_v1(auth_user_id, channel_id):
             owner_details.append(owner)
 
 
-    
+    save_data(data)
     return {
         'name': channel_name,
         'owner_members': owner_details,
@@ -164,11 +164,11 @@ def channel_join_v1(auth_user_id, channel_id):
         Returns {} on successfully joining a channel
     '''
     
-    global data
-    if check_user_id(auth_user_id) == False:
+    data = load_data()
+    if is_valid_user_id (auth_user_id) == False:
         raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
     
-    if check_channel_id_v1(channel_id) == False:
+    if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
 
     # Next we find out if the auth_user_id user is a global owner
@@ -196,6 +196,7 @@ def channel_join_v1(auth_user_id, channel_id):
                 raise AccessError(f"channel is private and user is not global owner")
             break
     
+    save_data(data)
     return {
     }
 

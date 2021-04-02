@@ -24,10 +24,12 @@ def test_oneChannel(clear, auth_user_id):
     channels_create_v1(auth_user_id, 'testChannel01', False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 1
+    clear_v1() 
     
 ##test if there are no channels
 def test_noChannels(clear, auth_user_id):
     assert channels_listall_v1(auth_user_id) == {'channels': []}
+    clear_v1() 
 
 ##test with multiple channels and public to true
 ##test with multiple channels 
@@ -36,6 +38,7 @@ def test_fiveChannels_public(clear, auth_user_id, names):
         channels_create_v1(auth_user_id, name, True)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
+    clear_v1() 
     
 ##test with multiple channels 
 def test_fiveChannels(clear, auth_user_id, names):
@@ -43,9 +46,11 @@ def test_fiveChannels(clear, auth_user_id, names):
         channels_create_v1(auth_user_id, values, False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
+    clear_v1() 
 
 def test_invalid_authId(clear):
     auth_user_id =  4
     with pytest.raises(AccessError):
         channels_listall_v1(auth_user_id)
+    clear_v1() 
     
