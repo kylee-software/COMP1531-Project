@@ -21,7 +21,9 @@ def test_invalid_email():
     
     invalid_email_4 = 'test_special!!!@unsw.au'
     with pytest.raises(InputError):
-        auth_login_v1(invalid_email_4, 'password')  
+        auth_login_v1(invalid_email_4, 'password') 
+
+    clear_v1() 
 
 # Test exception - Email given does not match a user's email (email doesn't exist)
 def test_email_nonexistent():
@@ -38,6 +40,8 @@ def test_email_nonexistent():
     auth_register_v1('testing890@unsw.au', 'password', 'first890', 'last890') 
     with pytest.raises(InputError):
         auth_login_v1('testfail3@unsw.au', 'password') 
+    
+    clear_v1()
 
 # Test exception - password given is not correct  
 def test_password_incorrect():
@@ -54,6 +58,8 @@ def test_password_incorrect():
     auth_register_v1('testing890@unsw.au', 'password', 'first890', 'last890') 
     with pytest.raises(InputError):
         auth_login_v1('testing890@unsw.au', 'failed890')
+    
+    clear_v1()
 
 # Test - email and password given are correct
 def test_correct_login_details():
@@ -66,3 +72,5 @@ def test_correct_login_details():
     assert auth_login_v1('testing123@unsw.au', 'password') == userid_1  
     assert auth_login_v1('testing567@unsw.au', 'password') == userid_2 
     assert auth_login_v1('testing890@unsw.au', 'password') == userid_3   
+
+    clear_v1()
