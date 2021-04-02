@@ -1,6 +1,6 @@
 import re
 from src.error import InputError
-from src.data import data
+from src.helper import save_data, load_data
 
 """
 user_login_v1 takes in an email and password. 
@@ -24,7 +24,7 @@ Return Value:
 """
 
 def auth_login_v1(email, password):
-
+    data = load_data()
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
         raise InputError('Please enter a valid email address.')
 
@@ -68,7 +68,7 @@ Return Value:
 """
 
 def auth_register_v1(email, password, name_first, name_last):
-    global data
+    data = load_data()
     password_length = len(password)
     first_name_length = len(name_first)
     last_name_length = len(name_last)
@@ -124,5 +124,6 @@ def auth_register_v1(email, password, name_first, name_last):
     }
 
     user_list.append(new_user)
-
+    
+    save_data(data)
     return {'auth_user_id': new_user['user_id']}

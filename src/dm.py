@@ -1,4 +1,4 @@
-from src.helper import is_valid_token, load
+from src.helper import is_valid_token, load_data
 from src.error import AccessError, InputError
 
 
@@ -7,7 +7,7 @@ def dm_details(token, dm_id):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
     
-    data = load()
+    data = load_data()
 
     dm_dict = next((dm for dm in data['dm'] if dm['dm_id'] == dm_id), False)
     #dm_dict = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
