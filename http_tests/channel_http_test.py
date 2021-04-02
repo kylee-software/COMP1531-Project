@@ -55,6 +55,7 @@ def test_channel_details(clear, channel_id, channel_owner):
                                                         }, ],
                                                         
                                         }
+    
 
 def test_channel_join(clear, channel_id, user1):
     '''
