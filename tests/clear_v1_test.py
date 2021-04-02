@@ -13,6 +13,7 @@ def test_one_user():
     #test that auth_login_v1 fails
 
 def test_one_channel():
+    clear_v1()
     auth_register_v1("test@unsw.au", "testPassword8", "Test", "User")
     auth_user_id = auth_login_v1("test@unsw.au", "testPassword8")['auth_user_id']
     channels_create_v1(auth_user_id, 'testChannel', False)
