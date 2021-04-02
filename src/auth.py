@@ -34,7 +34,7 @@ def create_session(user):
     return unique_id_json
 
 
-def auth_login_v1(email, password):
+def auth_login_v2(email, password):
     """
     user_login_v2 takes in an email and password. 
     It checks that the email is a valid format, belongs to a registered user and that the password belongs to the user.
@@ -72,7 +72,7 @@ def auth_login_v1(email, password):
     raise InputError('Email not found.')
 
 
-def auth_register_v1(email, password, name_first, name_last):
+def auth_register_v2(email, password, name_first, name_last):
     """
 auth_register_v1 is a function that takes in an email, password and a new user's first and last name.
 It then checks the email, password, first and last names are all valid.
