@@ -1,5 +1,3 @@
-from jwt import algorithms
-import pytest
 import jwt
 from src.auth import auth_logout, auth_register_v1
 
@@ -12,5 +10,5 @@ def test_valid_token():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    token = auth_register_v1(email,password,firstname, lastname)['auth_user_id']
+    token = auth_register_v1(email,password,firstname, lastname)
     assert auth_logout(token) == True
