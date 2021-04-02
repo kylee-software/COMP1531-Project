@@ -52,10 +52,8 @@ def test_invalid_token():
 
         Status code for AccessError is 403
     '''
-    clear()
-    token = create_token(5, 1)
     resp = requests.post(config.url + 'channels/create/v2', json={
-        'token': token,
+        'token': "invalid_token",
         'name': "channelName1",
         'is_public': True
     })
