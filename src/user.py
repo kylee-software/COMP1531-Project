@@ -14,7 +14,7 @@ def user_profile_v1(auth_user_id, u_id):
     }
 
 
-def user_profile_setname_v1(auth_user_id, name_first, name_last):
+def user_profile_setname_v2(auth_user_id, name_first, name_last):
     if is_valid_user_id(auth_user_id) is False:
         raise InputError("Authorised user id invalid.")
 
