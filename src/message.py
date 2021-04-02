@@ -31,7 +31,6 @@ def message_senddm_v1(token, dm_id, message):
 
     found_dm = False
     found_user = False
-    message_id = data['message_counter']
 
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
@@ -39,6 +38,7 @@ def message_senddm_v1(token, dm_id, message):
         for member in dm['members']:
             if member == auth_user_id:
                 found_user = True
+            message_id = data['message_counter'] += 1
             dm['messages'].insert(0, {'message':message, 'message_id':message_id})
             data['message_counter'] += 1
     
