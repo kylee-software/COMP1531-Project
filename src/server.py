@@ -33,7 +33,7 @@ def echo():
         'data': data
     })
 
-@APP.route("dm/create/v1", methods=['POST'])
+@APP.route("/dm/create/v1", methods=['POST'])
 def dm_create_v1():
     token = request.args.get('token')
     u_ids = request.args.get('u_ids')
