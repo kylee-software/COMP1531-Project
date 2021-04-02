@@ -92,7 +92,7 @@ def is_valid_token(token):
         user = next(
             (user for user in data['users'] if user['user_id'] == payload['user_id']), False)
         if user:
-            if user['sessions'].count(payload['session_id']) != 0:
+            if user['session_list'].count(payload['session_id']) != 0:
                 return payload
         return False
 
