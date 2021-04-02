@@ -1,7 +1,7 @@
 import pytest
 from src.auth import auth_register_v2
 from src.user import user_profile_setname_v2
-from src.error import InputError
+from src.error import InputError, AccessError
 from src.other import clear_v1
 from src.helper import find_user, load_data
 
@@ -9,7 +9,7 @@ from src.helper import find_user, load_data
 def test_auth_user_id_valid():
     clear_v1()
 
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         user_profile_setname_v2(100, 'firstname', 'lastname')
 
     clear_v1()

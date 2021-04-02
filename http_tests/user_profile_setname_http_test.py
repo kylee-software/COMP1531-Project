@@ -1,14 +1,16 @@
 import requests
+import pytest
 from src import config
-from src.helper import create_token
+from src.helper import create_token, is_valid_token
+from src.error import AccessError
 
 
-def test_invalid_token():
+def test_user_nonexistent_token():
     requests.delete(config.url + '/clear/v1')
-    invalid_token = create_token(100, 10)
-    setname_call = requests.put(config.url + '/user/profile/setname/v2',
-                                json={'token': invalid_token, 'name_first': 'firstname', 'name_last': 'lastname'})
-    assert setname_call.status_code == 400
+    token = create_token(100, 10)
+    setname_access_invalid = requests.put(config.url + '/user/profile/setname/v2',
+                                          json={'token': token, 'name_first': 'firstname', 'name_last': 'lastname'})
+    assert setname_access_invalid.status_code == 403
 
 
 def test_first_name_incorrect_length():

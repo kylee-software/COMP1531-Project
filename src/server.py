@@ -2,7 +2,7 @@ import sys
 from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from src.error import InputError
+from src.error import InputError, AccessError
 from src import config
 from src.auth import auth_login_v2, auth_register_v2
 from src.channel import channel_addowner_v1
@@ -64,6 +64,8 @@ def register_v2():
 def channel_addowner():
     data = request.get_json()
     decoded_token = is_valid_token(data['token'])
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
     return jsonify(channel_addowner_v1(decoded_token['user_id'], data['channel_id'], data['u_id']))
 
 
@@ -71,7 +73,11 @@ def channel_addowner():
 def user_profile_setname():
     data = request.get_json()
     decoded_token = is_valid_token(data['token'])
-    return jsonify(user_profile_setname_v2(decoded_token['user_id'], 'firstname123123', 'lastname123123'))
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
+    user_profile_setname_v2(
+        decoded_token['user_id'], data['name_first'], data['name_last'])
+    return jsonify({})
 
 
 if __name__ == "__main__":
