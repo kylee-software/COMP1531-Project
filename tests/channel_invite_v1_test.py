@@ -36,23 +36,28 @@ def clear():
 def test_invalid_channel_id(clear, create_user1, create_user2):
     with pytest.raises(InputError):
         channel_invite_v1(create_user1, 1, create_user2)
+    clear_v1() 
 
 def test_invalid_u_id(clear, create_public_channel):
     auth_user_id = auth_login_v1("channelcreator@gmail.com", "TestTest")['auth_user_id']
     user_id = auth_user_id + 1
     with pytest.raises(InputError):
         channel_invite_v1(auth_user_id, create_public_channel, user_id)
+    clear_v1() 
 
 def test_unauthorised_user(clear, create_user1, create_user2, create_public_channel):
     with pytest.raises(AccessError):
         channel_invite_v1(create_user2, create_public_channel, create_user1)
+    clear_v1() 
 
 def test_all_valid(clear, create_user1, create_public_channel):
     auth_user_id = auth_login_v1("channelcreator@gmail.com", "TestTest")['auth_user_id']
     assert channel_invite_v1(auth_user_id, create_public_channel, create_user1) == {}
+    clear_v1() 
 
 def test_user_already_in_channel(clear, create_user1, create_public_channel):
     auth_user_id = auth_login_v1("channelcreator@gmail.com", "TestTest")['auth_user_id']
     channel_invite_v1(auth_user_id, create_public_channel, create_user1)
     assert channel_invite_v1(auth_user_id, create_public_channel, create_user1) == {}
+    clear_v1()
     
