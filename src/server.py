@@ -57,12 +57,11 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 @APP.route("/dm/create/v1", methods=['POST'])
-def dm_create_v1():
-    token = request.args.get('token')
-    u_ids = request.args.get('u_ids')
-    dm_dict = dm_create_v1(token, u_ids)
+def dm_create():
+    data = request.args.get()
+    dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
-    return dumps(dm_dict)
+    return jsonify(dm_dict)
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port

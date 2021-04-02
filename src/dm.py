@@ -1,5 +1,5 @@
-from error import AccessError, InputError
-from helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
+from src.error import AccessError, InputError
+from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
 
 def dm_create_v1(token, u_ids):
     '''
@@ -45,7 +45,7 @@ def dm_create_v1(token, u_ids):
         'creator': user_id,
         'dm_id': dm_id,
         'name': dm_name,
-        'members': handles,
+        'members': u_ids,
         'messages': []
     }
 
