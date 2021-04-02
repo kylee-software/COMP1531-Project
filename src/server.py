@@ -32,5 +32,24 @@ def echo():
         'data': data
     })
 
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+
+    return dumps(channel_details_v1(token, channel_id))
+
+@APP.route("/channel/join", methods=['GET'])
+def channel_details():
+    data = request.args.get('data')
+
+@APP.route("/channel/invite", methods=['GET'])
+def channel_details():
+    data = request.args.get('data')
+
+
+
+
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
