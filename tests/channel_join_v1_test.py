@@ -2,7 +2,7 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2
 from src.channel import channel_join_v1
-from src.channels import channels_create_v1
+from src.channels import channels_create_v2
 from src.error import InputError, AccessError
 
 
@@ -20,7 +20,7 @@ def create_public_channel():
     name = "Testchannel"
     user_id = auth_register_v2(
         "channelcreator@gmail.com", "TestTest1", "channelcreator", "lastname")['auth_user_id']
-    return channels_create_v1(user_id, name, True)['channel_id']
+    return channels_create_v2(user_id, name, True)['channel_id']
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def create_private_channel():
     name = "Testchannel"
     user_id = auth_register_v2("channelcreator1@gmail.com",
                                "TestTest1", "channelcreator1", "lastname1")['auth_user_id']
-    return channels_create_v1(user_id, name, False)['channel_id']
+    return channels_create_v2(user_id, name, False)['channel_id']
 
 
 @pytest.fixture
@@ -64,7 +64,7 @@ def test_not_global_user_private_channel(clear, create_private_channel, create_u
 
 def test_channel_member_joining_again(clear, create_user):
 
-    channel_id = channels_create_v1(
+    channel_id = channels_create_v2(
         create_user, "testchannel", True)['channel_id']
     assert channel_join_v1(create_user, channel_id) == {}
     clear_v1()

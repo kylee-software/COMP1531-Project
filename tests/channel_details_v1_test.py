@@ -2,7 +2,7 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2, auth_login_v2
 from src.channel import channel_join_v1, channel_details_v1
-from src.channels import channels_create_v1
+from src.channels import channels_create_v2
 from src.error import InputError, AccessError
 
 
@@ -20,7 +20,7 @@ def create_channel():
     name = "Testchannel"
     user_id = auth_register_v2(
         "channelcreator@gmail.com", "TestTest1", "first", "last")["auth_user_id"]
-    return channels_create_v1(user_id, name, True)['channel_id']
+    return channels_create_v2(user_id, name, True)['channel_id']
 
 
 @pytest.fixture

@@ -1,8 +1,6 @@
 import pytest
-
-
 from src.error import AccessError
-from src.channels import channels_create_v1, channels_listall_v1
+from src.channels import channels_create_v2, channels_listall_v1
 from src.other import clear_v1
 from src.auth import auth_register_v2
 
@@ -26,7 +24,7 @@ def clear():
 
 
 def test_oneChannel(clear, auth_user_id):
-    channels_create_v1(auth_user_id, 'testChannel01', False)
+    channels_create_v2(auth_user_id, 'testChannel01', False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 1
     clear_v1()
@@ -44,7 +42,7 @@ def test_noChannels(clear, auth_user_id):
 
 def test_fiveChannels_public(clear, auth_user_id, names):
     for name in names:
-        channels_create_v1(auth_user_id, name, True)
+        channels_create_v2(auth_user_id, name, True)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
     clear_v1()
@@ -54,7 +52,7 @@ def test_fiveChannels_public(clear, auth_user_id, names):
 
 def test_fiveChannels(clear, auth_user_id, names):
     for values in names:
-        channels_create_v1(auth_user_id, values, False)
+        channels_create_v2(auth_user_id, values, False)
     channelDict = channels_listall_v1(auth_user_id)
     assert len(channelDict['channels']) == 5
     clear_v1()
