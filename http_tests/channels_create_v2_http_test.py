@@ -8,7 +8,7 @@ def token():
     create a token
     '''
     # Reset data
-    requests.delete(config.url + 'clear/v1').json()
+    requests.delete(config.url + 'clear/v1')
 
     email = "testmail@gamil.com"
     password = "Testpass12345"
