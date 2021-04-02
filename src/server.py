@@ -4,11 +4,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-from src.helper import is_valid_token
-from src.error import AccessError
-from src.data import data
 from src.auth import auth_login_v2, auth_register_v2
 from src.other import clear_v1
+from src.user import user_profile_v2
 
 
 def defaultHandler(err):
@@ -44,23 +42,14 @@ def echo():
 @APP.route("/user/profile/v2", methods=['GET'])
 def user_profile():
     token = request.args.get('token')
-    if not is_valid_token(token):
-        raise AccessError("Invalid User")
-    token = is_valid_token(token)
-    user = next(user for user in data['users'] if user['user_id'] == token['user_id'])
-    return jsonify({'user' : {  'u_id' : token['user_id'],
-                        'email' : user['email'],
-                        'name_first' : user['first_name'],
-                        'name_last' : user['lase_name'],
-                        'handle_str' : user['handle'],                            
-                     }
-            })
+    u_id = request.args.get('u_id')
+    details = user_profile_v2(token, u_id)
+    return dumps(details)
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     clear_v1()
     return jsonify({})
-
 
 @ APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
