@@ -56,14 +56,9 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 @APP.route("channels/create/v2", methods=['POST'])
-def channels_create_v2():
-    token = request.get_json()['token']
-    name = request.get_json()['name']
-    is_public = request.get_json()['is_public']
-
-    # Get the return value
-    dict = channels_create_v2(token, name, is_public)
-
+def channels_create():
+    data = request.get_json()
+    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
     return dumps(dict)
 
 if __name__ == "__main__":
