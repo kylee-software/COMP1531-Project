@@ -5,7 +5,7 @@ from src.error import AccessError, InputError
 def dm_details(token, dm_id):
     if not is_valid_token(token):
         raise AccessError("Invalid token")
-    token_payload = is_valid_token(token)
+    token = is_valid_token(token)
     
     data = load()
 
@@ -14,7 +14,16 @@ def dm_details(token, dm_id):
     if not dm_dict:
         raise InputError("dm_id is invalid")
 
-    if dm_dict['members'].count(token_payload['user_id']) == 0:
+    if dm_dict['members'].count(token['user_id']) == 0:
         raise AccessError("User is not in this DM")
-    
-    return {'name': dm_dict['name'], 'members' : dm_dict['members']}
+
+    return_dict = {'name' : dm_dict['name'], 'members' : []}
+    for member in dm_dict['members']:
+        user = next(user for user in data['users'] if user['user_id'] == member['user_id'])
+        return_dict['members'].append({'user_id': user['user_id'],
+                                     'email': user['email_address'],
+                                     'name_first': user['first_name'], 
+                                     'name_last': user['last_name'],
+                                     'handle_str': user['account_handle'],
+                                     })
+    return return_dict
