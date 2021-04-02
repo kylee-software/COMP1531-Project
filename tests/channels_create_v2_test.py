@@ -28,7 +28,7 @@ def test_valid_name_public(token):
 
 def test_valid_name_private(token):
     # Given a valid name and is_public set to false, assert that the return value channel_id is a dictionary
-    assert channels_create_v2(token, "channelName2", False) == {'channel_id': 1}
+    assert channels_create_v2(token, "channelName2", False) == {'channel_id': 2}
 
 
 def test_invalid_token():
@@ -38,6 +38,6 @@ def test_invalid_token():
 
 def test_valid_channel_id(token):
     channel_id = channels_create_v2(token, 'channel_name', True)['channel_id']
-    assert channel_id == 1
+    assert channel_id == 3
     clear_v1()
 
