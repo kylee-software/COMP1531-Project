@@ -215,6 +215,11 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     if channel_id_valid is False:
         raise InputError("Channel doesn't exist.")
 
+    # Check if user exists
+    user_exist = find_user(u_id, data)
+    if user_exist is None:
+        raise InputError("User doesn't exist.")
+
     # Check if member is already an owner
     channel = find_channel(channel_id, data)
     for member in channel['members']:
