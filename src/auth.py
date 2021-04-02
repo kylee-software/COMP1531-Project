@@ -2,8 +2,7 @@ import re
 
 from jwt import decode
 from src.error import InputError
-from src.data import data
-from src.helper import valid_token, decode_token
+from src.helper import save_data, load_data, is_valid_token
 
 """
 user_login_v1 takes in an email and password. 
@@ -27,7 +26,7 @@ Return Value:
 """
 
 def auth_login_v1(email, password):
-
+    data = load_data()
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
         raise InputError('Please enter a valid email address.')
 
@@ -71,7 +70,7 @@ Return Value:
 """
 
 def auth_register_v1(email, password, name_first, name_last):
-    global data
+    data = load_data()
     password_length = len(password)
     first_name_length = len(name_first)
     last_name_length = len(name_last)
@@ -127,7 +126,8 @@ def auth_register_v1(email, password, name_first, name_last):
     }
 
     user_list.append(new_user)
-
+    
+    save_data(data)
     return {'auth_user_id': new_user['user_id']}
 
 
@@ -142,13 +142,14 @@ def auth_logout(token):
     Returns:
         boolean: True if successfully logged out, False if otherwise
     """
-    if not valid_token:
+    if not is_valid_token(token):
         return False
     else: 
-        decoded_token = decode_token(token)
+        data = load_data()
+        decoded_token = is_valid_token(token)
         for user in data['users']:
             for session in user['sessions']:
-                if decoded_token == session:
+                if decoded_token['session_id'] == session:
                     del session
                     return True
     return False
