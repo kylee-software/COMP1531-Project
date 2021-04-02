@@ -6,6 +6,7 @@ from src.error import InputError
 from src import config
 from src.auth import auth_login_v2, auth_register_v2
 from src.channel import channel_addowner_v1
+from src.user import user_profile_setname_v2
 from src.other import clear_v1
 from src.helper import is_valid_token
 
@@ -66,5 +67,11 @@ def channel_addowner():
     return jsonify(channel_addowner_v1(decoded_token['user_id'], data['channel_id'], data['u_id']))
 
 
+@APP.route("/user/profile/setname/v2", methods=['PUT'])
+def user_profile_setname():
+    data = request.get_json()
+    decoded_token = is_valid_token(data['token'])
+    return jsonify(user_profile_setname_v2(decoded_token['user_id'], 'firstname123123', 'lastname123123')))
+
 if __name__ == "__main__":
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port = config.port)  # Do not edit this port
