@@ -125,4 +125,4 @@ dmypy.json
 
 # Other
 *.py~
-src/data.json
+data.json
