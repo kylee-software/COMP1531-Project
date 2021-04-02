@@ -1,7 +1,6 @@
 import pytest
 from src.auth import auth_register_v1
 from src.dm import dm_create, dm_invite, dm_details
-from src.helper import is_valid_token
 from src.error import InputError, AccessError
 from src.other import clear_v1
 import jwt
