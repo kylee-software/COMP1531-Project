@@ -31,7 +31,7 @@ def message_senddm_v1(token, dm_id, message):
 
     found_dm = False
     found_user = False
-    message_id = len(data['messages']) + 1
+    message_id = data['message_counter']
 
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
@@ -40,6 +40,7 @@ def message_senddm_v1(token, dm_id, message):
             if member == auth_user_id:
                 found_user = True
             dm['messages'].insert(0, {'message':message, 'message_id':message_id})
+            data['message_counter'] += 1
     
     if found_dm == False:
         raise InputError(description=f"invalid dm id")
