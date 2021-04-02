@@ -56,6 +56,10 @@ def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
+@ APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    data = request.get_json()
+    return dumps(message_senddm_v1(data['token'], data['dm_id'], data['message']))
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
