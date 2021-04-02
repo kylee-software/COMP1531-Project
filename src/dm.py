@@ -22,7 +22,8 @@ def dm_remove(token, dm_id):
             del dm 
             break
             
-    if found_dm = False:
+    if found_dm == False:
         raise InputError(description=f"Dm id was invalid")
 
+    save_data(data)
     return {}

@@ -1,6 +1,6 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v2, auth_login_v2
 from src.dm import dm_create, dm_remove
 from src.error import InputError, AccessError
 
@@ -10,7 +10,7 @@ def user0():
     password = "TestTest"
     firstname = "firstname"
     lastname = "lastname"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def user1():
@@ -18,7 +18,7 @@ def user1():
     password = "TestTest1"
     firstname = "firstname1"
     lastname = "lastname1"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def user2():
@@ -26,12 +26,12 @@ def user2():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def dm1():
     name = "Testchannel"
-    owner_token = auth_register_v1("dmcreator@gmail.com", "TestTest1", "first", "last")
+    owner_token = auth_register_v2("dmcreator@gmail.com", "TestTest1", "first", "last")
     return channels_create_v1(owner_token, name, True)['channel_id']
 
 @pytest.fixture
@@ -44,7 +44,7 @@ def test_invalid_dm_id(clear, user0):
     clear_v1()
 
 def test_invalid_token(clear, user0):
-    owner_token = auth_register_v1("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
+    owner_token = auth_register_v2("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
     dm = dm_create(owner_token, [user0['auth_user_id']])
     
     with pytest.raises(AccessError):
@@ -52,7 +52,7 @@ def test_invalid_token(clear, user0):
     clear_v1()
 
 def test_not_creator(clear, user0):
-    owner_token = auth_register_v1("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
+    owner_token = auth_register_v2("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
     dm = dm_create(owner_token, [user0['auth_user_id']])
     
     with pytest.raises(AccessError):
@@ -60,7 +60,7 @@ def test_not_creator(clear, user0):
     clear_v1()
 
 def test_successful_remove(clear, user0):
-    owner_token = auth_register_v1("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
+    owner_token = auth_register_v2("dmcreator@gmail.com", "TestTest1", "first", "last")['token']
     dm = dm_create(owner_token, [user0['auth_user_id']])
     
     assert dm_remove(owner_token, dm['dm_id']) == {}
