@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError  
-from src.helper import is_valid_user_id, load_data, save_data
+from src.helper import is_valid_token, is_valid_user_id, load_data, save_data
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
@@ -27,21 +27,22 @@ def channels_list_v1(auth_user_id):
 
     return returnDict
 
-def channels_listall_v1(auth_user_id):
+def channels_listall_v1(token):
     """Returns a list of all channels
 
     Args:
-        auth_user_id (int): a valid user_id
+        token (int): a valid user_id
 
     Raises:
-        AccessError: occurs when auth_user_id is invalid
+        AccessError: occurs when token is invalid
 
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
     data = load_data()
-    if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(f"Auth_user_id: {auth_user_id} is invalid")
+    if not is_valid_token(token):
+        raise AccessError(f"Auth_user_id: {token} is invalid")
+    token = is_valid_token(token)
 
     returnDict = {'channels': []}
     for channel in data['channels']:

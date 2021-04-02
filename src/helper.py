@@ -1,4 +1,5 @@
 import hashlib
+from types import prepare_class
 import jwt
 import json
 
@@ -78,13 +79,18 @@ def is_valid_token(token):
     Return Value:
         Returns False if the token is invalid, returns the payload if the token is valid
     '''
+    data = load_data()
     try:
         payload = jwt.decode(token, SECRET, algorithms=['HS256'])
     except:
         jwt.exceptions.InvalidSignatureError()
         return False
     else:
-        return payload
+        user = next((user for user in data['users'] if user['user_id'] == payload['user_id']), False)
+        if user:
+            if user['sessions'].count(payload['session_id']) != 0:
+                return payload
+        return False
 
 def save_data(data):
     '''
