@@ -35,10 +35,10 @@ def dm_create_v1(token, u_ids):
         if not is_valid_user_id(id):
             raise InputError(f"u_id: {id} is not a valid user.")
 
-        user_handle = find_user(id)['account_handle']
+        user_handle = find_user(id, data)['account_handle']
         handles.append(user_handle)
 
-    handles.append(find_user(user_id)['account_handle'])
+    handles.append(find_user(user_id, data)['account_handle'])
     dm_name = ','.join(handles.sort())
 
     dm_dict = {
