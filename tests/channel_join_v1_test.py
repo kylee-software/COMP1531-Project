@@ -12,12 +12,8 @@ def user1():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-<<<<<<< HEAD
-    return auth_register_v1(email,password,firstname, lastname)
-=======
     return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
 
->>>>>>> master
 
 @pytest.fixture
 def public_channel_id():

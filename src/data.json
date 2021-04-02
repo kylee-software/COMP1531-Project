@@ -1,1 +1,1 @@
-{"users": [{"first_name": "firstname", "last_name": "lastname", "email_address": "test@unsw.au", "account_password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", "permission_id": 1, "account_handle": "firstnamelastname", "session_list": ["\"e247a5b0-0c62-4884-9de2-6036f6379428\""], "user_id": 1}], "channels": [], "dms": [], "msg_counter": 0}
+{"users": [], "channels": [], "dms": [], "msg_counter": 0}

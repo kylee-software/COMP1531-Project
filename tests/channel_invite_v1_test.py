@@ -14,12 +14,8 @@ def user1():
     password = "TestTest1"
     firstname = "firstname1"
     lastname = "lastname1"
-<<<<<<< HEAD
-    return auth_register_v1(email,password,firstname, lastname)
-=======
-    return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
 
->>>>>>> master
+    return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
 
 @pytest.fixture
 def user2():
@@ -27,12 +23,8 @@ def user2():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-<<<<<<< HEAD
-    return auth_register_v1(email,password,firstname, lastname)
-=======
     return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
 
->>>>>>> master
 
 @pytest.fixture
 def channel_id():
