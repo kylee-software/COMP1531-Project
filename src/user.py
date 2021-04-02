@@ -3,6 +3,19 @@ from src.error import AccessError, InputError
 
 
 def user_profile_v2(token, u_id):
+    """Given a valid u_id returns details about the user 
+
+    Args:
+        token (str): a jwt encoded dict with keys session_id and user_id
+        u_id (int): the users id that the token wants details about
+
+    Raises:
+        AccessError: raises if token is invalid
+        InputError: raises if user_id is invalid
+
+    Returns:
+        {user}: a dictionary with values u_id, email, name_first, name_last and handle_str
+    """
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     if not is_valid_user_id(u_id):

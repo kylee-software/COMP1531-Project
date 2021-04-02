@@ -12,35 +12,38 @@ def user():
     password = "TestTest1"
     firstname = "firstname1"
     lastname = "lastname1"
-    return auth_register_v2(email, password, firstname, lastname)
+    user = requests.post(config.url + '/auth/register/v2',
+                                 json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
+    return user.json()
 
 @pytest.fixture
 def clear():
-    clear_v1()
+    requests.delete(config.url + 'clear/v1')
 
 def test_invalid_token(clear, user):
-    call = requests.get(config.url + '/user/profile/v2', params={'token' : 'testToken', 'u_id': user['auth_user_id']})
+    call = requests.get(config.url + 'user/profile/v2', params={'token' : 'testToken', 'u_id': user['auth_user_id']})
     assert call.status_code == 403
 
 def test_invalid_user_id(clear, user):
-    call = requests.get(config.url + '/user/profile/v2', params={'token' : user['token'], 'u_id': 4})
+    call = requests.get(config.url + 'user/profile/v2', params={'token' : user['token'], 'u_id': 5})
     assert call.status_code == 400 
-    clear_v1()
 
 def test_correct_output(clear, user):
     email = "test2email@gmail.com"
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    user2 = auth_register_v2(email, password, firstname, lastname)
+    user2 = requests.post(config.url + '/auth/register/v2',
+                                 json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
+    user2 = user2.json()
 
     p = {'token' : user['token'], 'u_id' : user2['auth_user_id']}
-    call = requests.get(config.url + '/user/profile/v2', params=p)
-    test_user = json.loads(call.text)
-    assert call.status_code == 400
+    call = requests.get(config.url + 'user/profile/v2', params=p)
+    test_user = call.json()
+    test_user = test_user['user']
 
-    assert isinstance(test_user["user"]["u_id"], int)
+    assert isinstance(test_user["u_id"], int)
     assert test_user["email"] == email
     assert test_user["name_first"] == firstname
     assert test_user["name_last"] == lastname
-    assert test_user["handle_str"] == 'firstname2lastname2'
+    assert test_user["handle_str"] == 'firstname2lastname2' 

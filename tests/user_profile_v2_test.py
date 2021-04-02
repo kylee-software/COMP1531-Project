@@ -23,7 +23,7 @@ def test_invalid_token(clear, user):
 
 def test_invalid_user_id(clear, user):
     with pytest.raises(InputError):
-        user_profile_v2(user['token'],  4)
+        user_profile_v2(user['token'],  'testToken')
 
 def test_correct_output(clear, user):
     email = "test2email@gmail.com"
@@ -33,7 +33,7 @@ def test_correct_output(clear, user):
     user_details = auth_register_v2(email,password, firstname, lastname)
 
     test_user = user_profile_v2(user['token'], user_details['auth_user_id'])['user']
-    
+
     assert isinstance(test_user['u_id'], int)
     assert test_user['email'] == email
     assert test_user['name_first'] == firstname

@@ -24,6 +24,8 @@ def defaultHandler(err):
 APP = Flask(__name__)
 CORS(APP)
 
+APP.debug = True
+
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
@@ -43,8 +45,11 @@ def echo():
 def user_profile():
     token = request.args.get('token')
     u_id = request.args.get('u_id')
-    details = user_profile_v2(token, u_id)
-    return dumps(details)
+    if u_id.isdigit():
+        details = user_profile_v2(token, int(u_id))
+    else:
+        details = user_profile_v2(token, u_id)
+    return jsonify(details)
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
