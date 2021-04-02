@@ -1,0 +1,1 @@
+{"users": [{"first_name": "first", "last_name": "last", "email_address": "testemail@gmail.com", "account_password": "a8d627d93f518e9096b6f40e36d27b7660fa26d318ef1adc43da750e49ebe4be", "permission_id": 1, "account_handle": "firstlast", "session_list": ["\"ad8ded90-83c8-4b13-a7fa-e434c367ca29\""], "user_id": 1}], "channels": [], "dms": [], "msg_counter": 0}
