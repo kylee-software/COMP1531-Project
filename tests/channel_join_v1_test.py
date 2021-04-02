@@ -1,6 +1,6 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v1
+from src.auth import auth_register_v2
 from src.channel import channel_join_v1
 from src.channels import channels_create_v1
 from src.error import InputError, AccessError
@@ -12,19 +12,24 @@ def user1():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
+
 
 @pytest.fixture
 def public_channel_id():
     name = "Testchannel"
-    user_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "channelcreator", "lastname")['auth_user_id']
+    user_id = auth_register_v2(
+        "channelcreator@gmail.com", "TestTest1", "channelcreator", "lastname")['auth_user_id']
     return channels_create_v1(user_id, name, True)['channel_id']
+
 
 @pytest.fixture
 def private_channel_id():
     name = "Testchannel"
-    user_id = auth_register_v1("channelcreator1@gmail.com", "TestTest1", "channelcreator1", "lastname1")['auth_user_id']
+    user_id = auth_register_v2("channelcreator1@gmail.com",
+                               "TestTest1", "channelcreator1", "lastname1")['auth_user_id']
     return channels_create_v1(user_id, name, False)['channel_id']
+
 
 @pytest.fixture
 def clear():
@@ -67,3 +72,7 @@ def test_invalid_token(clear, public_channel_id):
         channel_join_v1('bad.token.given', public_channel_id)
     clear_v1()
 
+    channel_id = channels_create_v1(
+        create_user, "testchannel", True)['channel_id']
+    assert channel_join_v1(create_user, channel_id) == {}
+    clear_v1()
