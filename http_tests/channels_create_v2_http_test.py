@@ -8,6 +8,9 @@ def token():
     '''
     create a token
     '''
+    # Reset data
+    requests.delete(config.url + 'clear/v1').json()
+
     email = "testmail@gamil.com"
     password = "Testpass12345"
     first_name = "firstname"
@@ -77,8 +80,5 @@ def test_valid_channel_id(token):
     channel_id_1 = channel_public.json()['channel_id']
     channel_id_2 = channel_private.json()['channel_id']
     assert channel_id_1 == 1
-    assert channel_id_2 == 2
-
-    # Reset data
-    requests.delete(config.url + 'clear/v1').json()
+    assert channel_id_2 == 1
 

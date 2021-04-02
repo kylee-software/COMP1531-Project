@@ -7,6 +7,7 @@ from src.error import InputError, AccessError
 
 @pytest.fixture
 def token():
+    clear_v1()
     # create a test user and return auth_id
     email = "testmail@gamil.com"
     password = "Testpass12345"
@@ -30,6 +31,5 @@ def test_valid_channel_id(token):
     channel_id_1 = channels_create_v2(token, 'channelName1', True)['channel_id']
     channel_id_2 = channels_create_v2(token, 'channelName2', False)['channel_id']
     assert channel_id_1 == 1
-    assert channel_id_2 == 2
-    clear_v1()
+    assert channel_id_2 == 1
 
