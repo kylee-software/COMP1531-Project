@@ -1,7 +1,6 @@
 from error import AccessError, InputError
 from helper import is_valid_user_id, load_data, save_data, is_valid_token
 
-
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
 
@@ -90,6 +89,7 @@ def channels_create_v2(token, name, is_public):
     # Add the new channel info to the data
     new_channel = {'channel_id': channel_id,
                    'name': name,
+                   'owner': [user_id],
                    'members': [
                        {'user_id': user_id,  # add the owner to the members list
                         'permission_id': 1}  # owner has permission_id = 1
