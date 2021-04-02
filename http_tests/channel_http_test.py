@@ -3,7 +3,7 @@ import requests
 import json
 from src import config
 from src.other import clear_v1
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v2, auth_login_v2
 from src.channel import channel_join_v1, channel_details_v1
 from src.channels import channels_create_v1
 from src.error import InputError, AccessError
@@ -14,13 +14,13 @@ def user1():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 
 @pytest.fixture
 def channel_id():
     name = "Testchannel"
-    owner_id = auth_register_v1("channelcreator@gmail.com", "TestTest1", "first", "last")
+    owner = auth_register_v2("channelcreator@gmail.com", "TestTest1", "first", "last")
     return channels_create_v1(owner['token'], name, True)['channel_id']
 
 @pytest.fixture
@@ -67,6 +67,6 @@ def test_channel_invite(clear, channel_id, channel_owner, user1):
     '''
     A simple test to check channel invite
     '''
-    resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id, user1['auth_user_id']})
+    resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
     assert json.loads(resp.text) == {}
    

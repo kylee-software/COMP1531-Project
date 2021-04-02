@@ -12,7 +12,7 @@ def user1():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v2(email, password, firstname, lastname)['auth_user_id']
+    return auth_register_v2(email, password, firstname, lastname)
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ def test_global_user_private_channel(clear, user1, private_channel_id):
     clear_v1() 
 
 
-def test_not_global_user_private_channel(clear, private_channel_id, create_user):
+def test_not_global_user_private_channel(clear, private_channel_id, user1):
 
     with pytest.raises(AccessError):
         channel_join_v1(user1['token'], private_channel_id) == {}
@@ -67,12 +67,12 @@ def test_channel_member_joining_again(clear, user1):
     assert channel_join_v1(user1['token'], channel_id) == {}
     clear_v1() 
 
-def test_invalid_token(clear, public_channel_id):
+def test_invalid_token(clear, public_channel_id, user1):
     with pytest.raises(AccessError):
         channel_join_v1('bad.token.given', public_channel_id)
     clear_v1()
 
     channel_id = channels_create_v1(
-        create_user, "testchannel", True)['channel_id']
-    assert channel_join_v1(create_user, channel_id) == {}
+        user1, "testchannel", True)['channel_id']
+    assert channel_join_v1(user1, channel_id) == {}
     clear_v1()

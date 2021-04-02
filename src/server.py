@@ -50,8 +50,8 @@ def channel_join():
     data = request.get_json()
     return dumps(channel_join_v1(data['token'], data['channel_id']))
 
-@APP.route("/channel/invite", methods=['GET'])
-def channel_details():
+@APP.route("/channel/invite/v2", methods=['GET'])
+def channel_invite():
     data = request.get_json()
     return dumps(channel_invite_v1(data['token'], data['channel_id'], data['u_id']))
 

@@ -14,7 +14,7 @@ def user1():
     password = "TestTest1"
     firstname = "firstname1"
     lastname = "lastname1"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def user2():
@@ -22,7 +22,7 @@ def user2():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v1(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
 def channel_id():
@@ -42,7 +42,7 @@ def test_invalid_channel_id(clear, user1, user2):
     clear_v1() 
 
 def test_invalid_u_id(clear, channel_id):
-    auth_user = auth_login_v1("channelcreator@gmail.com", "TestTest")
+    auth_user = auth_login_v2("channelcreator@gmail.com", "TestTest")
     user_id = auth_user['auth_user_id'] + 1
     with pytest.raises(InputError):
         channel_invite_v1(auth_user['token'], channel_id, user_id)
@@ -54,14 +54,14 @@ def test_unauthorised_user(clear, user1, user2, channel_id):
     clear_v1() 
 
 def test_all_valid(clear, user1, channel_id):
-    auth_user = auth_login_v1("channelcreator@gmail.com", "TestTest")
+    auth_user = auth_login_v2("channelcreator@gmail.com", "TestTest")
     assert channel_invite_v1(auth_user['token'], channel_id, user1['auth_user_id']) == {}
     clear_v1() 
 
 def test_user_already_in_channel(clear, user1, channel_id):
-    auth_user = auth_login_v1("channelcreator@gmail.com", "TestTest")
-    channel_invite_v1(auth_user_id['token'], channel_id, user1['auth_user_id'])
-    assert channel_invite_v1(auth_user_id['token'], channel_id, user1['auth_user_id']) == {}
+    auth_user = auth_login_v2("channelcreator@gmail.com", "TestTest")
+    channel_invite_v1(auth_user['token'], channel_id, user1['auth_user_id'])
+    assert channel_invite_v1(auth_user['token'], channel_id, user1['auth_user_id']) == {}
     clear_v1()
 
 def test_invalid_token(clear, user1, channel_id):
