@@ -57,5 +57,10 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 
+@ APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave():
+    data = request.get_json()
+    return dumps(channel_leave_v1(data['token'], data['channel_id']))
+
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
