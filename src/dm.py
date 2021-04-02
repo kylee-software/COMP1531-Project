@@ -50,7 +50,7 @@ def dm_create_v1(token, u_ids):
     }
 
     dms.append(dm_dict)
-    save_data()
+    save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
 
