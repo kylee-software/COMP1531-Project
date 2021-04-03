@@ -3,13 +3,28 @@ from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, f
 
 
 def dm_details(token, dm_id):
+    """Given a valid token from a user that is part of the given dm, returns the details of the given dm
+
+    Args:
+        token (string): jwt encode dict with keys session_id and user_id
+        dm_id (int): id of the given dm
+
+    Raises:
+        AccessError: raises if the token is invalid
+        InputError: if the dm_id is not a valid dm
+        AccessError: raises if the authorised user is not a part of the dm
+
+    Returns:
+        {name, members}: name is str of the name of the dm, 
+        members is a list of dicts with values, u_id, email, name_first, name_last and handle_str
+    """
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
     
     data = load_data()
 
-    dm_dict = next((dm for dm in data['dm'] if dm['dm_id'] == dm_id), False)
+    dm_dict = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
     #dm_dict = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
     if not dm_dict:
         raise InputError("dm_id is invalid")
@@ -19,7 +34,7 @@ def dm_details(token, dm_id):
 
     return_dict = {'name' : dm_dict['name'], 'members' : []}
     for member in dm_dict['members']:
-        user = next(user for user in data['users'] if user['user_id'] == member['user_id'])
+        user = next(user for user in data['users'] if user['user_id'] == member)
         return_dict['members'].append({'user_id': user['user_id'],
                                      'email': user['email_address'],
                                      'name_first': user['first_name'], 
