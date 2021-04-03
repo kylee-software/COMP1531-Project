@@ -26,7 +26,7 @@ def clear():
 
 def test_no_channels(clear, token):
     returnDict = requests.get(config.url + '/channels/list/v2', params={'token' : token})
-    assert returnDict['channels'] == []
+    assert returnDict.json()['channels'] == []
 
 
 def test_lists_a_single_channel(clear,token):
@@ -36,7 +36,7 @@ def test_lists_a_single_channel(clear,token):
         'is_public': True
     })
     returnDict = requests.get(config.url + '/channels/list/v2', params={'token' : token})
-    assert len(returnDict['channels']) == 1
+    assert len(returnDict.json()['channels']) == 1
 
 
 def test_can_see_five_channels(clear, token, names):
@@ -46,7 +46,7 @@ def test_can_see_five_channels(clear, token, names):
             'is_public': True
         })
     returnDict = requests.get(config.url + '/channels/list/v2', params={'token' : token})
-    assert len(returnDict['channels']) == 5
+    assert len(returnDict.json()['channels']) == 5
 
 
 def test_can_only_see_one_of_six(clear, token, names):
@@ -64,14 +64,14 @@ def test_can_only_see_one_of_six(clear, token, names):
             'name': 'testChannel06',
             'is_public': False
         })
-    returnDict = requests.get(config.url + '/channels/list/v2', params={'token' : token2['token']})
-    for channel in returnDict['channels']:
+    returnDict = requests.get(config.url + '/channels/list/v2', params={'token' : token2})
+    for channel in returnDict.json()['channels']:
         assert channel['name'] == 'testChannel06'
  
         
 def test_invalid_token(clear):
     token = 4
     response = requests.get(config.url + '/channels/list/v2', params={'token' : token})
-    assert response.status_code == 400
+    assert response.status_code == 403
 
 

@@ -5,7 +5,7 @@ def channels_list_v2(token):
     """Returns a list of channels that the given auth_user_id is a part of
 
     Args:
-        token (string): a valid token, decodes into dict with fiels user_id ans session_id
+        token (string): a valid token, decodes into dict with fiels user_id and session_id
 
     Raises:
         AccessError: occurs when token is invalid

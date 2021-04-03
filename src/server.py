@@ -1,12 +1,13 @@
 import sys
 from json import dumps
+from types import prepare_class
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
 from src.other import clear_v1
-from src.channels import channels_create_v2
+from src.channels import channels_create_v2, channels_list_v2
 from src.auth import auth_login_v2, auth_register_v2
 
 
@@ -72,6 +73,12 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+@APP.route('/channels/list/v2', methods=['GET'])
+def list_channels():
+    token = request.args.get('token')
+    list = channels_list_v2(token)
+    return jsonify(list)
 
 
 if __name__ == "__main__":
