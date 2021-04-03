@@ -1,3 +1,8 @@
+from src.channels import channels_create_v2
+from src.helper import is_valid_token
+from src.other import clear_v1
+from src.channel import channel_addowner_v1
+from src.auth import auth_login_v2, auth_register_v2
 import sys
 from json import dumps
 from flask import Flask, request, jsonify
@@ -9,6 +14,7 @@ from src.channel import channel_addowner_v1
 from src.user import user_profile_setname_v2
 from src.other import clear_v1
 from src.helper import is_valid_token
+from src.dm import dm_create_v1
 
 
 def defaultHandler(err):
@@ -78,6 +84,21 @@ def user_profile_setname():
     user_profile_setname_v2(
         decoded_token['user_id'], data['name_first'], data['name_last'])
     return jsonify({})
+
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create():
+    data = request.get_json()
+    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
+    return jsonify(dict)
+
+
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    data = request.get_json()
+    dm_dict = dm_create_v1(data['token'], data['u_ids'])
+
+    return jsonify(dm_dict)
 
 
 if __name__ == "__main__":
