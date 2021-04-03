@@ -14,20 +14,20 @@ def test_auth_user_id_nonexistent():
 def test_success_case():
     requests.delete(config.url + '/clear/v1')
 
-    admin = requests.post(config.url + '/admin/register/v2', json={
-                          'email': ' test1@unsw.au', 'password': 'password1', 'name_first': 'first1', 'name_last': 'last1'})
-    member_1 = requests.post(config.url + '/admin/register/v2', json={
-                             'email': ' test2@unsw.au', 'password': 'password2', 'name_first': 'first2', 'name_last': 'last2'})
-    member_2 = requests.post(config.url + '/admin/register/v2', json={
-                             'email': ' test3@unsw.au', 'password': 'password3', 'name_first': 'first3', 'name_last': 'last3'})
+    admin = requests.post(config.url + '/auth/register/v2', json={
+                          'email': 'test1@unsw.au', 'password': 'password1', 'name_first': 'first1', 'name_last': 'last1'})
+    member_1 = requests.post(config.url + '/auth/register/v2', json={
+                             'email': 'test2@unsw.au', 'password': 'password2', 'name_first': 'first2', 'name_last': 'last2'})
+    member_2 = requests.post(config.url + '/auth/register/v2', json={
+                             'email': 'test3@unsw.au', 'password': 'password3', 'name_first': 'first3', 'name_last': 'last3'})
 
     admin_details = admin.json()
     member_1_details = member_1.json()
     member_2_details = member_2.json()
 
     member_list = []
-    member_list.append(member_1_details['user_id'])
-    member_list.append(member_2_details['user_id'])
+    member_list.append(member_1_details['auth_user_id'])
+    member_list.append(member_2_details['auth_user_id'])
 
     requests.post(config.url + '/dm/create/v1',
                   json={'token': admin_details['token'], 'u_ids': member_list})

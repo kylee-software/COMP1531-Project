@@ -1,6 +1,6 @@
 import pytest
 from src.other import clear_v1
-from src.error import AccessError
+from src.error import AccessError, InputError
 from src.auth import auth_register_v2
 from src.dm import dm_list_v1, dm_create_v1
 from src.helper import create_token
