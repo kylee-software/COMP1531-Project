@@ -58,7 +58,7 @@ def register_v2():
 
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create():
-    data = request.args.get()
+    data = request.get_json()
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
