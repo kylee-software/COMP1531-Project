@@ -10,9 +10,6 @@ from flask_cors import CORS
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
-<< << << < HEAD
-== == == =
->>>>>> > master
 
 
 def defaultHandler(err):
