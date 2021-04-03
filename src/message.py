@@ -31,11 +31,8 @@ def message_send_v1(token, channel_id, message):
 
         for user in channel['users']:
             if tagged_handles.count(user['account_handle']) != 0:
-               notification_message = f"{user_handle} tagged you in {channel['name']}: {message[0:20]}"
-               if user.get['notifications'] == None:
-                   user['notificatiosn'] = [{channel_id, -1, notification_message}]
-               else:
-                   user['notifications'].insert(0, {channel_id, -1, notification_message})
+                notification_message = f"{user_handle} tagged you in {channel['name']}: {message[0:20]}"
+                user['notifications'].insert(0, {channel_id, -1, notification_message})
 
         data['msg_id_counter'] += 1
         save_data(data)
