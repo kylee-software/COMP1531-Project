@@ -6,11 +6,15 @@ import jwt
 from src.other import clear_v1
 
 @pytest.fixture
-def users():
+def num_members():
+    return 5
+
+@pytest.fixture
+def users(num_members):
 
     u_ids = []
     tokens = []
-    for i in range(5):
+    for i in range(num_members):
         email = f"test{i}email@gmail.com"
         password = f"TestTest{i}"
         firstname = f"firstname{i}"
@@ -38,6 +42,8 @@ def test_invalid_dm_id(clear, users):
     with pytest.raises(InputError):
         dm_details_v1(users['tokens'][0], 'test_dm_id')
 
-def test_user_in_dm(clear, users):
+def test_user_in_dm(clear, users, num_members):
     dm = dm_create_v1(users['tokens'][0], users['u_ids'])
-    assert len(dm_details_v1(users['tokens'][1], dm['dm_id'])) == 2
+    details = dm_details_v1(users['tokens'][1], dm['dm_id'])
+    assert len(details) == 2
+    assert len(details['members']) == num_members
