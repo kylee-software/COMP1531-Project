@@ -39,7 +39,7 @@ def dm_create_v1(token, u_ids):
         handles.append(user_handle)
 
     handles.append(find_user(user_id, data)['account_handle'])
-    dm_name = ','.join(handles.sort())
+    dm_name = ','.join(sorted(handles))
 
     dm_dict = {
         'creator': user_id,
