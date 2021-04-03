@@ -10,7 +10,7 @@ from flask_cors import CORS
 from src.error import InputError, AccessError
 from src import config
 from src.user import user_profile_setname_v2
-from src.dm import dm_create_v1, dm_list_v1
+from src.dm import dm_create_v1, dm_list_v1, dm_leave_v1
 
 
 def defaultHandler(err):
@@ -103,6 +103,14 @@ def dm_list():
     dm_list_generated = dm_list_v1(data['token'])
 
     return jsonify(dm_list_generated)
+
+
+@APP.route("dm/leave/v1", methods=['POST'])
+def dm_leave():
+    data = request.get_json()
+    dm_leave_v1(data['token'], data['dm_id'])
+
+    return jsonify({})
 
 
 if __name__ == "__main__":
