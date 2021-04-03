@@ -15,6 +15,7 @@ def token():
         'name_last': last_name
     }).json()
 
+    print(resp)
     token = resp['token']
     return token
 
