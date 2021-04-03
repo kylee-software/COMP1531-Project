@@ -24,7 +24,8 @@ def test_dm_not_valid():
     dm_1 = requests.post(config.url + '/dm/create/v1',
                          json={'token': admin_details['token'], 'u_ids': member_list})
 
-    member_2_leave = requests.post(config.url + '/dm/leave/v1', json={'token': member_2_details['token'], 1000})
+    member_2_leave = requests.post(
+        config.url + '/dm/leave/v1', json={'token': member_2_details['token'], 'dm_id': 1000})
 
     assert member_2_leave.status_code == 400
 
