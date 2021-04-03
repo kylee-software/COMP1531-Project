@@ -3,20 +3,18 @@ from src.helper import is_valid_token, load_data, is_valid_user_id, save_data, f
 
 
 def dm_list_v1(token):
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
 
-    if is_valid_token(token) is False:
-        return AccessError("Invalid Token.")
-
-    dm_list = []
-    user_ids = is_valid_token(token)
     data = load_data()
+    dm_list = []
 
-    for dms in data:
-        for dm in dms:
-            for member in dm['members']:
-                if member == user_ids['user_id']:
-                    dm_list.append(dm['dm_id'])
-                    break
+    for dm in data['dms']:
+        for member in dm['members']:
+            if member == decoded_token['user_id']:
+                dm_list.append(dm['dm_id'])
+                break
 
     return {'dms': dm_list}
 
