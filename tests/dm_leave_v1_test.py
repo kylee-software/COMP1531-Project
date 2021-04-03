@@ -57,6 +57,8 @@ def test_success_case():
 
     dm_leave_v1(member_2['token'], dm_1['dm_id'])
 
-    assert len(dm_1['members']) == 1
+    member_2_dm_list = dm_list_v1(member_2['token'])
+
+    assert member_2_dm_list['dms'] == []
 
     clear_v1()
