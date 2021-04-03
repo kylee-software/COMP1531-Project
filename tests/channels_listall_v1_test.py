@@ -2,13 +2,13 @@ import pytest
 
 import jwt
 from src.error import AccessError
-from src.channels import channels_create_v1, channels_listall_v1
+from src.channels import channels_create_v2, channels_listall_v1
 from src.other import clear_v1
-from src.auth import auth_register_v1
+from src.auth import auth_register_v2
 
 @pytest.fixture
 def token():
-    return auth_register_v1("test@unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v2("test@unsw.com", 'testPassword8', 'Test', "User")
 
 @pytest.fixture
 def names():
@@ -21,7 +21,7 @@ def clear():
 ##create one channel with one member and
 #  no messages and
 def test_oneChannel(clear, token):
-    channels_create_v1(token, 'testChannel01', False)
+    channels_create_v2(token, 'testChannel01', False)
     channelDict = channels_listall_v1(token)
     assert len(channelDict['channels']) == 1
     clear_v1() 
@@ -35,7 +35,7 @@ def test_noChannels(clear, token):
 ##test with multiple channels 
 def test_fiveChannels_public(clear, token, names):
     for name in names:
-        channels_create_v1(token, name, True)
+        channels_create_v2(token, name, True)
     channelDict = channels_listall_v1(token)
     assert len(channelDict['channels']) == 5
     clear_v1() 
@@ -43,7 +43,7 @@ def test_fiveChannels_public(clear, token, names):
 ##test with multiple channels 
 def test_fiveChannels(clear, token, names):
     for values in names:
-        channels_create_v1(token, values, False)
+        channels_create_v2(token, values, False)
     channelDict = channels_listall_v1(token)
     assert len(channelDict['channels']) == 5
     clear_v1() 
