@@ -19,7 +19,9 @@ def is_valid_user_id(auth_user_id):
 
     data = load_data()
     for user in data['users']:
-        if user['user_id'] == auth_user_id:
+        first_name = user['first_name']
+        last_name = user['last_name']
+        if (user['user_id'] == auth_user_id) and (f"{first_name} {last_name}" != "Removed user"):
             return True
     return False
 
