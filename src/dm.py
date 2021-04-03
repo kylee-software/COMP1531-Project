@@ -71,3 +71,36 @@ def dm_create_v1(token, u_ids):
     save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
+
+
+def dm_leave_v1(token, dm_id):
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
+
+    data = load_data()
+
+    dm_id_found = False
+    user_in_dm = False
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm_id_found = True
+            for member in dm['members']:
+                if member == decoded_token['user_id']:
+                    user_in_dm = True
+            break
+
+    if dm_id_found is False:
+        raise InputError('Valid DM not found.')
+
+    if user_in_dm is False:
+        raise AccessError('User is not a member of this DM.')
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm['members'].remove(decoded_token['user_id'])
+
+    save_data(data)
+
+    return {}
