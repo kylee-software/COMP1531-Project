@@ -105,7 +105,7 @@ def dm_list():
     return jsonify(dm_list_generated)
 
 
-@APP.route("dm/leave/v1", methods=['POST'])
+@APP.route("/dm/leave/v1", methods=['POST'])
 def dm_leave():
     data = request.get_json()
     dm_leave_v1(data['token'], data['dm_id'])
