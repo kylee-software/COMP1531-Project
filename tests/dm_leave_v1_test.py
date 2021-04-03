@@ -9,20 +9,10 @@ from src.helper import create_token
 def test_dm_not_valid():
     clear_v1()
 
-    admin = auth_register_v2('test1@unsw.au', 'password1', 'first1', 'last1')
-    member_1 = auth_register_v2(
-        'test2@unsw.au', 'password2', 'first2', 'last2')
-    member_2 = auth_register_v2(
-        'test3@unsw.au', 'password3', 'first3', 'last3')
-
-    member_list = []
-    member_list.append(member_1['auth_user_id'])
-    member_list.append(member_2['auth_user_id'])
-
-    dm_1 = dm_create_v1(admin['token'], member_list)
+    user = auth_register_v2('test1@unsw.au', 'password1', 'first1', 'last1')
 
     with pytest.raises(InputError):
-        dm_leave_v1(member_2['token'], 300)
+        dm_leave_v1(user['token'], 300)
 
     clear_v1()
 
