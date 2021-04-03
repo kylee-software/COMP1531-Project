@@ -5,8 +5,9 @@ from flask_cors import CORS
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
-from src.auth import auth_login_v2, auth_register_v2
 from src.other import clear_v1
+from src.channels import channels_create_v2
+from src.auth import auth_login_v2, auth_register_v2
 
 
 def defaultHandler(err):
@@ -39,6 +40,7 @@ def echo():
         'data': data
     })
 
+
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     clear_v1()
@@ -56,12 +58,21 @@ def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create():
+    data = request.get_json()
+    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
+    return jsonify(dict)
+
+
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create():
     data = request.get_json()
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
