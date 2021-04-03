@@ -31,7 +31,7 @@ def channels_listall_v2(token):
     """Returns a list of all channels
 
     Args:
-        token (int): a valid user_id
+        token (str): jwt encode dict with keys 'session_id' and 'auth_user_id'
 
     Raises:
         AccessError: occurs when token is invalid
