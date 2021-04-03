@@ -27,7 +27,7 @@ def channels_list_v1(auth_user_id):
 
     return returnDict
 
-def channels_listall_v1(token):
+def channels_listall_v2(token):
     """Returns a list of all channels
 
     Args:

@@ -2,13 +2,13 @@ import pytest
 
 import jwt
 from src.error import AccessError
-from src.channels import channels_create_v2, channels_listall_v1
+from src.channels import channels_create_v2, channels_listall_v2
 from src.other import clear_v1
 from src.auth import auth_register_v2
 
 @pytest.fixture
 def token():
-    return auth_register_v2("test@unsw.com", 'testPassword8', 'Test', "User")
+    return auth_register_v2("test@unsw.com", 'testPassword8', 'Test', "User")['token']
 
 @pytest.fixture
 def names():
@@ -22,13 +22,13 @@ def clear():
 #  no messages and
 def test_oneChannel(clear, token):
     channels_create_v2(token, 'testChannel01', False)
-    channelDict = channels_listall_v1(token)
+    channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 1
     clear_v1() 
     
 ##test if there are no channels
 def test_noChannels(clear, token):
-    assert channels_listall_v1(token) == {'channels': []}
+    assert channels_listall_v2(token) == {'channels': []}
     clear_v1() 
 
 ##test with multiple channels and public to true
@@ -36,7 +36,7 @@ def test_noChannels(clear, token):
 def test_fiveChannels_public(clear, token, names):
     for name in names:
         channels_create_v2(token, name, True)
-    channelDict = channels_listall_v1(token)
+    channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 5
     clear_v1() 
     
@@ -44,13 +44,13 @@ def test_fiveChannels_public(clear, token, names):
 def test_fiveChannels(clear, token, names):
     for values in names:
         channels_create_v2(token, values, False)
-    channelDict = channels_listall_v1(token)
+    channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 5
     clear_v1() 
 
 def test_invalid_token(clear):
     token = jwt.encode({'test':'token'}, 'testSecret', algorithm='HS256')
     with pytest.raises(AccessError):
-        channels_listall_v1(token)
+        channels_listall_v2(token)
     clear_v1() 
     
