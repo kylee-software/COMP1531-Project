@@ -8,7 +8,7 @@ from src import config
 from src.other import clear_v1
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
-
+from src.user import user_profile_setemail_v2
 
 def defaultHandler(err):
     response = err.get_response()
@@ -72,6 +72,13 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+
+@APP.route("/user/profile/setemail/v2", methods=['PUT'])
+def user_profile_setemail():
+    data = request.get_json()
+    user_profile_setemail_v2(data['token'], data['email'])
+    return dumps({})
 
 
 if __name__ == "__main__":
