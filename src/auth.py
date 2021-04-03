@@ -1,42 +1,79 @@
 import re
 from src.error import InputError
-from src.helper import save_data, load_data
+from src.helper import save_data, load_data, create_token, hash_password
+import uuid
+import jwt
+import json
+import src.data
 
-"""
-user_login_v1 takes in an email and password. 
-It checks that the email is a valid format, belongs to a registered user and that the password belongs to the user.
-If conditions are met the user is logged in and the function returns user id.
-Otherwise, an error is raised.
 
-Arguments:
-    email (string) - The email inputted by the user.
-    password (string) - The password inputted by the user.
+class uuidencode(json.JSONEncoder):
+    """
+        Creation of class to help with the json encoding of UUID
+    """
 
-Exceptions:
-    InputError  - Occurs when email does not match valid email format.
-    InputError - Occurs when email does not belong to a registered user.
-    InputError - Occurs when the password does not belong to the registered user.
+    def default(self, uuid_id):
+        if isinstance(uuid_id, uuid.UUID):
+            return str(uuid_id)
+        return json.JSONEncoder.default(self, uuid_id)
 
-Return Value:
-    Returns {'auth_user_id': user['user_id']} on the condition that the email is valid, 
-    belongs to a registered user and that the password belongs to the registered user.
 
-"""
+def create_session(user):
+    """
+    Generates a unique session id, appends it to the user's session list and returns the json encoded uuid.
 
-def auth_login_v1(email, password):
+    Arguments:
+        user - element in dictionary - a user's account details
+
+    Return Value:
+        Returns unique_id_json after generating a unique session id for the user and appending it to the user's session list.
+    """
+    unique_id = uuid.uuid4()
+    unique_id_json = json.dumps(unique_id, cls=uuidencode)
+    user['session_list'].append(unique_id_json)
+    return unique_id_json
+
+
+def auth_login_v2(email, password):
+    """
+    user_login_v2 takes in an email and password. 
+    It checks that the email is a valid format, belongs to a registered user and that the password belongs to the user.
+    If conditions are met the user is logged in and the function returns user id.
+    Otherwise, an error is raised.
+
+    Arguments:
+        email (string) - The email inputted by the user.
+        password (string) - The password inputted by the user.
+
+    Exceptions:
+        InputError  - Occurs when email does not match valid email format.
+        InputError - Occurs when email does not belong to a registered user.
+        InputError - Occurs when the password does not belong to the registered user.
+
+    Return Value:
+        Returns {'token': login_token, 'auth_user_id': user['user_id']} on the condition that the email is valid, 
+        belongs to a registered user and that the password belongs to the registered user.
+
+    """
     data = load_data()
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
         raise InputError('Please enter a valid email address.')
 
     for user in data['users']:
         if user['email_address'] == email:
-            if user['account_password'] == password:
-                return {'auth_user_id': user['user_id']}
+            hashed_password = hash_password(password)
+            if user['account_password'] == hashed_password:
+                login_session_id = create_session(user)
+                save_data(data)
+                login_token = create_token(user['user_id'], login_session_id)
+                return {'token': login_token, 'auth_user_id': user['user_id']}
             else:
                 raise InputError('Incorrect Password.')
     raise InputError('Email not found.')
 
-"""
+
+def auth_register_v2(email, password, name_first, name_last):
+    """
 auth_register_v1 is a function that takes in an email, password and a new user's first and last name.
 It then checks the email, password, first and last names are all valid.
 It then creates a handle for the new user.
@@ -59,15 +96,12 @@ Exceptions:
     InputError - Occurs when first name is less than 1 character and greater than 50 characters in length.
     InputError - Occurs when last name is less than 1 character and greater than 50 characters in length.
     InputError - Occurs when the handle has either '@' or whitespace.
-      
+
 Return Value:
-    Returns {'auth_user_id': new_user['user_id']} on the condition that the email is valid and not previously registered.
+    Returns {'token': login_token, 'auth_user_id': new_user['user_id']} on the condition that the email is valid and not previously registered.
     Additionally, that the password, first and last names are the correct length.
     Further that the handle has no '@' or whitespace.
-
-"""
-
-def auth_register_v1(email, password, name_first, name_last):
+    """
     data = load_data()
     password_length = len(password)
     first_name_length = len(name_first)
@@ -90,14 +124,14 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError('Last name is not a valid length.')
 
     handle = name_first + name_last
-    
+
     for character in handle:
         if character == '@' or character.isspace():
             raise InputError("No @ or whitespace allowed in handles.")
 
     if len(handle) > 20:
         handle = handle[0:20]
-        handle = handle.lower() 
+        handle = handle.lower()
 
     user_list = data['users']
     i = 0
@@ -117,13 +151,17 @@ def auth_register_v1(email, password, name_first, name_last):
         'first_name': name_first,
         'last_name': name_last,
         'email_address': email,
-        'account_password': password,
+        'account_password': hash_password(password),
         'permission_id': permission_id,
         'account_handle': updated_handle,
+        'session_list': [],
         'user_id': len(data['users']) + 1,
     }
+    login_session_id = create_session(new_user)
 
     user_list.append(new_user)
-    
     save_data(data)
-    return {'auth_user_id': new_user['user_id']}
+
+    login_token = create_token(new_user['user_id'], login_session_id)
+
+    return {'token': login_token, 'auth_user_id': new_user['user_id']}
