@@ -10,7 +10,7 @@ from flask_cors import CORS
 from src.error import InputError, AccessError
 from src import config
 from src.user import user_profile_setname_v2
-from src.dm import dm_create_v1
+from src.dm import dm_create_v1, dm_list_v1
 
 
 def defaultHandler(err):
@@ -95,6 +95,14 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    data = request.get_json()
+    dm_list_generated = dm_list_v1(data['token'])
+
+    return jsonify(dm_list_generated)
 
 
 if __name__ == "__main__":
