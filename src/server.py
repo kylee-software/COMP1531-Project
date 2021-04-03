@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1
+from src.dm import dm_create_v1, dm_details_v1
 from src import config
 from src.auth import auth_login_v2, auth_register_v2
 from src.other import clear_v1
@@ -62,6 +62,17 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+@APP.route('/dm/details/v1', methods=['GET'])
+def dm_details():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    if dm_id.isdigit():
+        details = dm_details_v1(token, int(dm_id))
+    else:
+        details = dm_details_v1(token, dm_id)
+    
+    return jsonify(details)
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port

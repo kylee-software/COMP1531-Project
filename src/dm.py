@@ -2,7 +2,7 @@ from src.error import AccessError, InputError
 from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
 
 
-def dm_details(token, dm_id):
+def dm_details_v1(token, dm_id):
     """Given a valid token from a user that is part of the given dm, returns the details of the given dm
 
     Args:

@@ -34,20 +34,20 @@ def test_invalid_token(clear, users):
     dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][0], 'u_ids': users['u_ids']})
     dm = dm.json()
     p = {'token' : jwt.encode({'test' : 'token'}, 'testSecret', algorithm='HS256'), 'dm_id' : dm['dm_id']}
-    with pytest.raises(AccessError):
-        requests.get(config.url + 'dm/details/v1', params=p)
+    response = requests.get(config.url + 'dm/details/v1', params=p)
+    assert response.status_code == 403
 
 def test_user_not_in_dm(clear, users):
     dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][1], 'u_ids': users['u_ids'][1:]})
     dm = dm.json()
     p = {'token' : users['tokens'][0], 'dm_id' : dm['dm_id']}
-    with pytest.raises(AccessError):
-        requests.get(config.url + 'dm/details/v1', params=p)
+    response = requests.get(config.url + 'dm/details/v1', params=p)
+    assert response.status_code == 403
 
 def test_invalid_dm_id(clear, users):
     p = {'token' : users['tokens'][0], 'dm_id' : 'dm_id'}
-    with pytest.raises(AccessError):
-        requests.get(config.url + 'dm/details/v1', params=p)
+    response = requests.get(config.url + 'dm/details/v1', params=p)
+    assert response.status_code == 400
 
 def test_user_in_dm(clear, users):
     dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][0], 'u_ids': users['u_ids']})

@@ -1,7 +1,7 @@
 import pytest
 from src.auth import auth_register_v2
 from src.error import AccessError, InputError
-from src.dm import dm_details, dm_create_v1
+from src.dm import dm_details_v1, dm_create_v1
 import jwt
 from src.other import clear_v1
 
@@ -27,17 +27,17 @@ def clear():
 
 def test_invalid_token(clear):
     with pytest.raises(AccessError):
-        dm_details(jwt.encode({'test' : 'token'}, 'testSecret', algorithm='HS256'), 5)
+        dm_details_v1(jwt.encode({'test' : 'token'}, 'testSecret', algorithm='HS256'), 5)
 
 def test_user_not_in_dm(clear, users):
     dm = dm_create_v1(users['tokens'][1], users['u_ids'][1:])
     with pytest.raises(AccessError):
-        dm_details(users['tokens'][0], dm['dm_id'])
+        dm_details_v1(users['tokens'][0], dm['dm_id'])
 
 def test_invalid_dm_id(clear, users):
     with pytest.raises(InputError):
-        dm_details(users['tokens'][0], 'test_dm_id')
+        dm_details_v1(users['tokens'][0], 'test_dm_id')
 
 def test_user_in_dm(clear, users):
     dm = dm_create_v1(users['tokens'][0], users['u_ids'])
-    assert len(dm_details(users['tokens'][1], dm['dm_id'])) == 2
+    assert len(dm_details_v1(users['tokens'][1], dm['dm_id'])) == 2
