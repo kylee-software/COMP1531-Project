@@ -24,12 +24,10 @@ def test_oneChannel(clear, token):
     channels_create_v2(token, 'testChannel01', False)
     channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 1
-    clear_v1() 
     
 ##test if there are no channels
 def test_noChannels(clear, token):
     assert channels_listall_v2(token) == {'channels': []}
-    clear_v1() 
 
 ##test with multiple channels and public to true
 ##test with multiple channels 
@@ -38,7 +36,6 @@ def test_fiveChannels_public(clear, token, names):
         channels_create_v2(token, name, True)
     channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 5
-    clear_v1() 
     
 ##test with multiple channels 
 def test_fiveChannels(clear, token, names):
@@ -46,11 +43,9 @@ def test_fiveChannels(clear, token, names):
         channels_create_v2(token, values, False)
     channelDict = channels_listall_v2(token)
     assert len(channelDict['channels']) == 5
-    clear_v1() 
 
 def test_invalid_token(clear):
     token = jwt.encode({'test':'token'}, 'testSecret', algorithm='HS256')
     with pytest.raises(AccessError):
         channels_listall_v2(token)
-    clear_v1() 
     
