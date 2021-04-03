@@ -156,6 +156,7 @@ Return Value:
         'account_handle': updated_handle,
         'session_list': [],
         'user_id': len(data['users']) + 1,
+        'notifications': []
     }
     login_session_id = create_session(new_user)
 
