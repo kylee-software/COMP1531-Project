@@ -92,6 +92,7 @@ def test_last_message(clear, token, channel_id):
         'start': 0
     }).json()
 
+    print(messages_dict)
     end = messages_dict['end']
     assert end == -1
     clear()
@@ -112,6 +113,7 @@ def test_more_messages(clear, token, channel_id):
         'channel_id': channel_id,
         'start': 0
     }).json()
+    print(resp_1)
     message_1 = resp_1['messages'][49]['message']
     assert message_1 == '49'
 
