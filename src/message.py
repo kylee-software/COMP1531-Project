@@ -4,6 +4,24 @@ from datetime import datetime
 
 
 def message_send_v2(token, channel_id, message):
+    """Sends a message from the user referenced by the token to the channel referenced by
+    channel_id
+
+    Args:
+        token (str): jwt encode dict with keys session_id and user_id
+        channel_id (int): id of a channel, may or may not be valid
+        message (str): the message to be sent
+
+    Raises:
+        AccessError: raised when token is invalid
+        InputError: raised when message being sent is longer than 1000 characters
+        InputError: raised when channel referenced by channel_id does not exist
+        AccessError: raised when the user reference by token is not part of channel
+        referenced by channel_id
+
+    Returns:
+        int: a unique number identifying the message
+    """
     data = load_data()
     if not is_valid_token(token):
         raise AccessError('Unauthorised User')
@@ -36,10 +54,10 @@ def message_send_v2(token, channel_id, message):
         save_data(data)
         return data['msg_counter']
 
-"""def message_remove_v1(auth_user_id, message_id):
+def message_remove_v1(auth_user_id, message_id):
     return {
     }
 
 def message_edit_v1(auth_user_id, message_id, message):
     return {
-    }"""
+    }

@@ -26,17 +26,17 @@ def clear():
 def test_message_too_long(clear, token, channel_id):
     message = ''.join(random.choices(string.ascii_letters, k = 1001))
     response = requests.post(config.url + '/message/send/v2', json={'token': token, 'channel_id': channel_id, 'message': message})
-    assert response.status_call == 400
+    assert response.status_code == 400
 
 def test_invalid_token(clear, token, channel_id):
     response = requests.post(config.url + '/message/send/v2', json={'token': 'invalid_token', 'channel_id': channel_id, 'message': 'test_message'})
-    assert response.status_call == 403
+    assert response.status_code == 403
 
 def test_user_not_in_channel(clear, token, channel_id):
     second_token = requests.post(config.url + 'auth/register/v2', json={'email': 'test2@unsw.au', 'password': 'testPassword', 'name_first': 'secondFirst', 'name_last': 'secondLast'})
     second_token = second_token.json()['token']
     response = requests.post(config.url + '/message/send/v2', json={'token': second_token, 'channel_id': channel_id, 'message': 'test_message'})
-    assert response.status_call == 403
+    assert response.status_code == 403
 
 def test_message_ids_are_unique(clear, token, channel_id):
     m_id1 = requests.post(config.url + '/message/send/v2', json={'token': token, 'channel_id': channel_id, 'message': 'test_message'})
@@ -52,4 +52,4 @@ def test_message_with_notification(clear, token, channel_id):
 
 def test_invalid_channel_id(clear, token):
     response = requests.post(config.url + '/message/send/v2', json={'token': token, 'channel_id': 'channel_id', 'message': 'test message'})
-    assert response.status_call == 400
+    assert response.status_code == 400
