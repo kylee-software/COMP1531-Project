@@ -85,6 +85,7 @@ def test_invalid_start(token, channel_id):
     assert status_code == 400
 
 def test_last_message(token, channel_id):
+    requests.delete(config.url + '/clear/v1')
     requests.post(config.url + '/message/send/v2', json={
         'token': token,
         'channel_id': channel_id,
@@ -102,6 +103,7 @@ def test_last_message(token, channel_id):
     assert end == -1
 
 def test_more_messages(token, channel_id):
+    requests.delete(config.url + '/clear/v1')
     count = 60
     while count >= 0:
         requests.post(config.url + '/message/send/v2', json={
