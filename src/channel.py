@@ -157,11 +157,19 @@ def channel_messages_v2(token, channel_id, start):
     if not is_valid_channel_id(channel_id):
         raise InputError(description="Channel ID is invalid.")
 
-    if not is_user_in_channel(channel_id, user_id, data):
-        raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
-
     channel_info = find_channel(channel_id, data)
     channel_messages = channel_info['messages']
+
+    # if not is_user_in_channel(channel_id, user_id, data):
+    #     raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
+
+    is_member = False
+    for member in channel_info['members']:
+        if member['user_id'] == user_id:
+            is_member = True
+    if not is_member:
+        raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
+
     # Check valid start number
     if start >= len(channel_messages):
         raise InputError(description="Start is greater than the total number of messages in the channel.")
