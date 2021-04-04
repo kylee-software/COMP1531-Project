@@ -158,6 +158,8 @@ def channel_messages_v2(token, channel_id, start):
     if not is_valid_channel_id(channel_id):
         raise InputError(description="Channel ID is invalid.")
 
+    print(data)
+
     if not is_user_in_channel(channel_id, user_id, data):
         raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
 
