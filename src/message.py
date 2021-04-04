@@ -40,8 +40,10 @@ def message_send_v2(token, channel_id, message):
     else:
         new_message = {'message_id' : data['msg_counter'] + 1, 'message_author' : token['user_id'],
                             'message' : message, "time_created" :str(datetime.now())}
-        channel['messages'].insert(0, new_message)     
-        msg_user['sent_messages'].insert(0, data['msg_counter'] + 1)
+        channel['messages'].insert(0, new_message)
+        
+        auth_messages = next(user['sent_messages'] for user in data['users'] if user['user_id'] == token['user_id'])     
+        auth_messages.insert(0, data['msg_counter'] + 1)
 
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         user_handle = next(user['account_handle'] for user in data['users'] if user['user_id'] == token['user_id'])
