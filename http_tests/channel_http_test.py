@@ -5,7 +5,7 @@ from src import config
 from src.other import clear_v1
 from src.auth import auth_register_v2, auth_login_v2
 from src.channel import channel_join_v1, channel_details_v1
-from src.channels import channels_create_v1
+from src.channels import channels_create_v2
 from src.error import InputError, AccessError
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def user1():
 def channel_id():
     name = "Testchannel"
     owner = auth_register_v2("channelcreator@gmail.com", "TestTest1", "first", "last")
-    return channels_create_v1(owner['token'], name, True)['channel_id']
+    return channels_create_v2(owner['token'], name, True)['channel_id']
 
 @pytest.fixture
 def channel_owner():
