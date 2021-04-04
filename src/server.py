@@ -113,6 +113,10 @@ def message_send():
     msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
     return jsonify(msg_id)
 
+@APP.route('/dm/remove/v1', methods=['DELETE'])
+def dm_remove():
+    data = request.get_json()
+    return jsonify(dm_remove_v1(data['token'], data['dm_id']))
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
