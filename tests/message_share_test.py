@@ -46,7 +46,8 @@ def clear():
     clear_v1()
 
 
-def test_invalid_token(clear, ):
+def test_invalid_token(clear, channel_id, user1, dm):
+
 
 def test_invalid_og_message_id():
 
