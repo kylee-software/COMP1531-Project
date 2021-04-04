@@ -6,7 +6,7 @@ from src.error import InputError, AccessError
 from src.dm import dm_create_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
-from src.other import clear_v1
+from src.other import clear_v1, notifications_get_v1
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
@@ -47,9 +47,8 @@ def echo():
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications():
     token = request.args.get('token')
-    if not is_valid_token(token):
-        raise AccessError("Invalid User")
-    return {'notifications' : 'notifications'}
+    notifications = notifications_get_v1(token)
+    return jsonify(notifications)
     
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
