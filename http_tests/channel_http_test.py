@@ -40,24 +40,24 @@ def test_channel_details(clear, channel_id, channel_owner):
     resp = requests.get(config.url + 'channel/details/v2', params={'token': channel_owner['token'], 'channel_id':channel_id})
     resp = resp.json()
     assert resp == {
-                                        'name':"Testchannel",
-                                        'is_public':True,
-                                        'owner_members':[{
-                                                            'u_id':channel_owner['auth_user_id'], 
-                                                            "email":"channelcreator@gmail.com", 
-                                                            'name_first':"first",
-                                                            'name_last':"last",
-                                                            'handle_str':"firstlast",
-                                                            },],
-                                        'all_members':[{
-                                                            'u_id':channel_owner['auth_user_id'], 
-                                                            "email":"channelcreator@gmail.com", 
-                                                            'name_first':"first",
-                                                            'name_last':"last",
-                                                            'handle_str':"firstlast",
-                                                        }, ],
-                                                        
-                                        }
+                        'name':"Testchannel",
+                        'is_public':True,
+                        'owner_members':[{
+                                            'u_id':channel_owner['auth_user_id'], 
+                                            "email":"channelcreator@gmail.com", 
+                                            'name_first':"first",
+                                            'name_last':"last",
+                                            'handle_str':"firstlast",
+                                            },],
+                        'all_members':[{
+                                            'u_id':channel_owner['auth_user_id'], 
+                                            "email":"channelcreator@gmail.com", 
+                                            'name_first':"first",
+                                            'name_last':"last",
+                                            'handle_str':"firstlast",
+                                        }, ],
+                                        
+                        }
     
 
 def test_channel_join(clear, channel_id, user1):
