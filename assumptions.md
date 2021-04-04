@@ -34,3 +34,6 @@
 
 ## message_send
 - You are allowed to tag yourself in a message
+
+## user_profile_sethandle
+- If you try to 'change' your handle to what it already is input error is raised (because the handle already exists)

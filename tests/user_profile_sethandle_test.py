@@ -2,7 +2,7 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2
 from src.error import InputError, AccessError
-from src.user import user_profile_sethandle_v1, user_profile_v1
+from src.user import user_profile_sethandle_v1, user_profile_v2
 
 @pytest.fixture
 def user1():
@@ -50,15 +50,8 @@ def test_already_taken(clear, user1, user2):
 
 def test_valid_handle(clear, user1):
     # first check existing handle
-    assert user_profile_v1(user1['token'], user1['auth_user_id'])['handle_str'] == 'firstlast'
+    assert user_profile_v2(user1['token'], user1['auth_user_id'])['user']['handle_str'] == 'firstlast'
     # change handle
     assert user_profile_sethandle_v1(user1['token'], "validhandle") == {}
     # check new handle has been saved
-    assert user_profile_v1(user1['token'], user1['auth_user_id'])['handle_str'] == 'validhandle'
-
-#assuming if they are trying to change to the same handle they already have nothing happens but it returns successful
-def test_same_handle(clear, user1):
-    assert user_profile_v1(user1['token'], user1['auth_user_id'])['handle_str'] == 'firstlast'
-    assert user_profile_sethandle_v1(user1['token'], "firstlast") == {}
-    assert user_profile_v1(user1['token'], user1['auth_user_id'])['handle_str'] == 'firstlast'
-
+    assert user_profile_v2(user1['token'], user1['auth_user_id'])['user']['handle_str'] == 'validhandle'
