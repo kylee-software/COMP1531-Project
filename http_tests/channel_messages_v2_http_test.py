@@ -9,7 +9,7 @@ from src.helper import load_data
 #     requests.delete(config.url + '/clear/v1')
 
 @pytest.fixture
-def token(clear):
+def token():
     requests.delete(config.url + '/clear/v1')
     email = "testmail@gamil.com"
     password = "Testpass12345"
