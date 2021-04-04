@@ -2,19 +2,9 @@ import pytest
 import requests
 from src import config
 
-def clear():
-    '''
-        Reset the data
-    '''
-    requests.delete(config.url + 'clear/v1').json()
-    return
 
 @pytest.fixture
 def token():
-    '''
-        Create a token for the user
-    '''
-    clear()
     email = "testmail@gamil.com"
     password = "Testpass12345"
     first_name = "firstname"
@@ -30,9 +20,6 @@ def token():
 
 @pytest.fixture
 def channel_id(token):
-    '''
-        Create a channel with "token" and return the channel_id
-    '''
     resp = requests.post(config.url + 'channels/create/v2', json={
         'token': token,
         'name': "channelName1",
@@ -44,9 +31,6 @@ def channel_id(token):
 
 @pytest.fixture
 def unauthorised_user():
-    '''
-        Create a token for an unauthorised user
-    '''
     email = "testmail2@gamil.com"
     password = "Testpass1234567"
     first_name = "first"
@@ -61,10 +45,6 @@ def unauthorised_user():
     return token
 
 def test_invalid_token(channel_id):
-    '''
-        Test for invalid token
-        Status code for AccessError is 403
-    '''
     resp = requests.get(config.url + 'channels/messages/v2', json={
         'token': "invalid_token",
         'channel_id': channel_id,
@@ -75,10 +55,6 @@ def test_invalid_token(channel_id):
     assert status_code == 403
 
 def test_invalid_channel_id(token, channel_id):
-    '''
-        Test for invalid channel id
-        Status code for InputError is 400
-    '''
     resp = requests.get(config.url + 'channels/messages/v2', json={
         'token': token,
         'channel_id': channel_id + 1,
@@ -89,10 +65,6 @@ def test_invalid_channel_id(token, channel_id):
     assert status_code == 400
 
 def test_unauthorised_user(unauthorised_user, channel,_id):
-    '''
-        Test an user that does not belong to the channel with the given channel_id
-        Status code for AccessError is 403
-    '''
     resp = requests.get(config.url + 'channels/messages/v2', json={
         'token': unauthorised_user,
         'channel_id': channel_id,
@@ -103,10 +75,6 @@ def test_unauthorised_user(unauthorised_user, channel,_id):
     assert status_code == 403
 
 def test_invalid_start(token, channel_id):
-    '''
-        Test invalid start
-        Status code for InputError is 400
-    '''
     resp = requests.get(config.url + 'channels/messages/v2', json={
         'token': token,
         'channel_id': channel_id,
@@ -117,9 +85,6 @@ def test_invalid_start(token, channel_id):
     assert status_code == 400
 
 def test_last_message(token, channel_id):
-    '''
-        Test if end = -1 when there are no more messages to load after the current return
-    '''
     resp = requests.post(config.url + 'message/send/v2', json={
         'token': token,
         'channel_id': channel_id,
@@ -129,7 +94,6 @@ def test_last_message(token, channel_id):
     assert end == -1
 
 def test_more_messages(token, channel_id):
-    clear()
     count = 60
     while count >= 0:
         requests.post(config.url + 'message/send/v2', json={
@@ -174,3 +138,5 @@ def test_more_messages(token, channel_id):
     })
     message_4 = resp_4.json()['messages'][0]['message']
     assert message_4 == '60'
+
+    requests.delete(config.url + 'clear/v1')
