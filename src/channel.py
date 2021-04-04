@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_token, load_data, save_data, is_valid_channel_id, find_channel, is_user_in_channel
+from src.helper import is_valid_token, is_valid_user_id, load_data, save_data, is_valid_channel_id, find_channel, is_user_in_channel
 
 def channel_invite_v1(token, channel_id, u_id):
     '''
@@ -11,22 +11,28 @@ def channel_invite_v1(token, channel_id, u_id):
         u_id (int)              - user_id of the person being invited to the channel
 
     Exceptions:
-        InputError  - Occurs when channel_id, u_id or token are not valid ids
-        AccessError - Occurs when token is not already a member of the channel
+        InputError  - Occurs when channel_id, u_id are not valid ids
+        AccessError - Occurs when token is invalid, auth_user_id is invalid or is not already a member of the channel
 
     Return Value:
         Returns {} on successfully added u_id to channel_id
     '''
     data = load_data()
-    if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
+    token_data = is_valid_token(token)
 
-    if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
     
-    if is_valid_token(u_id) == False:
-        raise InputError(f"invalid u_id: {u_id}")
-        
+    auth_user_id = token_data['user_id']
+    if is_valid_user_id (auth_user_id) == False:
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+
+    if is_valid_user_id (u_id) == False:
+        raise InputError(description=f"invalid u_id: {u_id}")
+
+    if is_valid_channel_id(channel_id) == False:
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
+
     #check auth_user is in channel
     auth_in_channel = False
     for channel in data['channels']:
@@ -36,7 +42,7 @@ def channel_invite_v1(token, channel_id, u_id):
                     auth_in_channel = True
                     break
     if auth_in_channel == False:
-        raise AccessError(f"token was not in channel")
+        raise AccessError(description=f"auth_user_id was not in channel")
 
     # check if user being added is global owner
     global_owner = 2
@@ -66,25 +72,33 @@ def channel_details_v1(token, channel_id):
 
     Exceptions:
         InputError  - Occurs when channel id is not valid
-        AccessError - Occurs when auth user id is not a member of the channel
+        AccessError - Occurs when token is invalid or auth user id is not a member of the channel
 
     Return Value:
-        Returns {name, owner_members, all_members} on successful obtaining of channel details
+        Returns {name, is_public, owner_members, all_members} on successful obtaining of channel details
     '''
     
     data = load_data()
+    token_data = is_valid_token(token)
 
-    if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
-    if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
     
+    auth_user_id = token_data['user_id']
+    if is_valid_user_id (auth_user_id) == False:
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+    
+    if is_valid_channel_id(channel_id) == False:
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
+
     owner_ids = []
     member_ids = []
+    
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             found_member = False
             channel_name = channel['name']
+            public_status = channel['public_status']
 
             for member in channel['members']:
                 member_ids.append(member['user_id'])
@@ -94,7 +108,7 @@ def channel_details_v1(token, channel_id):
                     found_member = True
             
             if found_member == False:
-                raise AccessError("token is not a channel member")
+                raise AccessError(description=f"auth_user_id is not a channel member")
             
             break
     
@@ -119,10 +133,11 @@ def channel_details_v1(token, channel_id):
                         'handle_str':user['account_handle'],
                     }
             owner_details.append(owner)
-
+    channel
     save_data(data)
     return {
         'name': channel_name,
+        'is_public': public_status,
         'owner_members': owner_details,
         'all_members': member_details,
     }
@@ -221,11 +236,17 @@ def channel_join_v1(token, channel_id):
     '''
     
     data = load_data()
-    if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+    token_data = is_valid_token(token)
+
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
+    
+    auth_user_id = token_data['user_id']
+    if is_valid_user_id (auth_user_id) == False:
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
     
     if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     # Next we find out if the token user is a global owner
     global_status = 2
@@ -249,7 +270,7 @@ def channel_join_v1(token, channel_id):
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
-                raise AccessError(f"channel is private and user is not global owner")
+                raise AccessError(description=f"channel is private and user is not global owner")
             break
     
     save_data(data)

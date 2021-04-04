@@ -5,6 +5,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
+from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
 from src.other import clear_v1
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
@@ -42,6 +43,29 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    try:
+        channel_id = int(channel_id)
+    except:
+        pass
+    return dumps(channel_details_v1(token, channel_id))
+
+@APP.route("/channel/join/v2", methods=['POST'])
+def channel_join():
+    data = request.get_json()
+    return dumps(channel_join_v1(data['token'], data['channel_id']))
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_invite():
+    data = request.get_json()
+    u_id = data['u_id']
+    channel_id = data['channel_id']
+    return jsonify(channel_invite_v1(data['token'], channel_id, u_id))
+
 
 @APP.route("/user/profile/v2", methods=['GET'])
 def user_profile():
