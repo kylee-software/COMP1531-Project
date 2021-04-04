@@ -1,6 +1,5 @@
 from error import AccessError, InputError
 from helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
-from message import message_senddm_v1
 
 def dm_create_v1(token, u_ids):
     '''
@@ -36,22 +35,22 @@ def dm_create_v1(token, u_ids):
         if not is_valid_user_id(id):
             raise InputError(f"u_id: {id} is not a valid user.")
 
-        user_handle = find_user(id)['account_handle']
+        user_handle = find_user(id, data)['account_handle']
         handles.append(user_handle)
 
-    handles.append(find_user(user_id)['account_handle'])
-    dm_name = ','.join(handles.sort())
+    handles.append(find_user(user_id, data)['account_handle'])
+    dm_name = ','.join(sorted(handles))
 
     dm_dict = {
         'creator': user_id,
         'dm_id': dm_id,
         'name': dm_name,
-        'members': handles,
+        'members': u_ids,
         'messages': []
     }
 
     dms.append(dm_dict)
-    save_data()
+    save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
 
