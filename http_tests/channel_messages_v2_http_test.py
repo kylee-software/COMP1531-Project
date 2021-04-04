@@ -67,7 +67,7 @@ def test_invalid_channel_id(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 400
 
-def test_unauthorised_user(clear, token, unauthorised_user, channel_id):
+def test_unauthorised_user(clear, unauthorised_user, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': unauthorised_user,
         'channel_id': channel_id,
