@@ -54,6 +54,7 @@ def test_invalid_token(channel_id):
 
     status_code = resp.status_code
     assert status_code == 403
+    requests.delete(config.url + 'clear/v1')
 
 def test_invalid_channel_id(token, channel_id):
     resp = requests.get(config.url + 'channel/messages/v2', params={
@@ -64,6 +65,7 @@ def test_invalid_channel_id(token, channel_id):
 
     status_code = resp.status_code
     assert status_code == 400
+    requests.delete(config.url + 'clear/v1')
 
 def test_unauthorised_user(unauthorised_user, channel_id):
     resp = requests.get(config.url + 'channel/messages/v2', params={
@@ -74,6 +76,7 @@ def test_unauthorised_user(unauthorised_user, channel_id):
 
     status_code = resp.status_code
     assert status_code == 403
+    requests.delete(config.url + 'clear/v1')
 
 def test_invalid_start(token, channel_id):
     resp = requests.get(config.url + 'channel/messages/v2', params={
@@ -84,6 +87,7 @@ def test_invalid_start(token, channel_id):
 
     status_code = resp.status_code
     assert status_code == 400
+    requests.delete(config.url + 'clear/v1')
 
 def test_last_message(token, channel_id):
     resp = requests.post(config.url + 'message/send/v2', json={
@@ -93,6 +97,7 @@ def test_last_message(token, channel_id):
     }).json()
     end = resp['end']
     assert end == -1
+    requests.delete(config.url + 'clear/v1')
 
 def test_more_messages(token, channel_id):
     count = 60
