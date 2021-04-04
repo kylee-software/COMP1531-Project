@@ -6,9 +6,11 @@ from src.error import InputError, AccessError
 from src.dm import dm_create_v1
 from src import config
 from src.other import clear_v1
+from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
 from src.helper import is_valid_token
+from src.message import message_send_v2
 
 
 def defaultHandler(err):
@@ -47,12 +49,21 @@ def notifications():
     if not is_valid_token(token):
         raise AccessError("Invalid User")
     return {'notifications' : 'notifications'}
+    
+@APP.route("/user/profile/v2", methods=['GET'])
+def user_profile():
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    if u_id.isdigit():
+        details = user_profile_v2(token, int(u_id))
+    else:
+        details = user_profile_v2(token, u_id)
+    return jsonify(details)
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     clear_v1()
     return jsonify({})
-
 
 @ APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
@@ -79,6 +90,12 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+@APP.route('/message/send/v2', methods=['POST'])
+def message_send():
+    data = request.get_json()
+    msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
+    return jsonify(msg_id)
 
 
 if __name__ == "__main__":
