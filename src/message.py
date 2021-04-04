@@ -4,6 +4,26 @@ from datetime import datetime
 
 
 def message_send_v2(token, channel_id, message):
+    """Sends a message from the user referenced by the token to the channel referenced by
+    channel_id
+    Also adds the msg_id to the 'sent_message' list for the user referenced by token and
+    add notifications to those users that were mentioned in the message
+
+    Args:
+        token (str): jwt encode dict with keys session_id and user_id
+        channel_id (int): id of a channel, may or may not be valid
+        message (str): the message to be sent
+
+    Raises:
+        AccessError: raised when token is invalid
+        InputError: raised when message being sent is longer than 1000 characters
+        InputError: raised when channel referenced by channel_id does not exist
+        AccessError: raised when the user reference by token is not part of channel
+        referenced by channel_id
+
+    Returns:
+        int: a unique number identifying the message
+    """
     data = load_data()
     if not is_valid_token(token):
         raise AccessError('Unauthorised User')
@@ -12,63 +32,32 @@ def message_send_v2(token, channel_id, message):
         raise InputError('Message is longer than 1000 characters')
     
     
-    channel = next(channel for channel in data['channels'] if channel['channel_id'] == channel_id)
+    channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
+    if not channel:
+        raise InputError('Channel does not exist')
+
     msg_user = next((user for user in channel['members'] if user['user_id'] == token['user_id']), False)
     if not msg_user:
         raise AccessError('You have not joined this channel')
     else:
-
         new_message = {'message_id' : data['msg_counter'] + 1, 'message_author' : token['user_id'],
-                            'message' : message, "time_created" : datetime.now()}
+                            'message' : message, "time_created" :str(datetime.now())}
+        channel['messages'].insert(0, new_message)
+
+        auth_messages = next(user['sent_messages'] for user in data['users'] if user['user_id'] == token['user_id'])     
+        auth_messages.insert(0, data['msg_counter'] + 1)
 
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         user_handle = next(user['account_handle'] for user in data['users'] if user['user_id'] == token['user_id'])
+        for user in channel['members']:
+            user = next((member for member in data['users'] if member['user_id'] == user['user_id']), False)
+            if user and tagged_handles.count(user['account_handle']) != 0:
+                notification_message = f"{user_handle} tagged you in {channel['name']}: {message[:20]}"
+                user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1, 'notification_message': notification_message})
 
-        if channel.get('messages') == None:
-            channel['messages'] = [new_message]
-        else:
-            channel['messages'].insert(0, new_message)     
-
-        for user in channel['users']:
-            if tagged_handles.count(user['account_handle']) != 0:
-                notification_message = f"{user_handle} tagged you in {channel['name']}: {message[0:20]}"
-                user['notifications'].insert(0, {channel_id, -1, notification_message})
-
-        data['msg_id_counter'] += 1
+        data['msg_counter'] += 1
         save_data(data)
         return data['msg_counter']
-
-    """found_user = False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            for user in channel['users']:
-                if user['user_id'] == user_id:
-                    found_user = True
-                    if channel.get('messages') == None:
-                        channel['messages'] = [new_message]
-                    else:
-                        channel['messages'].insert(0, new_message)
-
-    if found_user:
-        for channel in data['channels']:
-            if channel['channel_id'] == channel_id:
-                for user in channel['users']:
-                    for user1 in data['users']:
-                        if user['user_id'] == user1['user_id']:
-                            if tagged_handles.count(user1['handle']) != 0:
-                                notification_message = f"{user_handle} tagged you in {channel['name']}: {message[0:20]}"
-                                if user.get['notifications'] == None:
-                                    user['notificatiosn'] = [{channel_id, -1, notification_message}]
-                                else:
-                                    user['notifications'].insert(0, {channel_id, -1, notification_message})
-    else:
-        pass
-
-    data['msg_id_counter'] += 1
-
-    return data['msg_id_counter']"""
-
-
 
 def message_remove_v1(auth_user_id, message_id):
     return {

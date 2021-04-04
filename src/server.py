@@ -10,6 +10,8 @@ from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
 from src.channel import channel_messages_v2
+from src.message import message_send_v2
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -81,6 +83,12 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+@APP.route('/message/send/v2', methods=['POST'])
+def message_send():
+    data = request.get_json()
+    msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
+    return jsonify(msg_id)
 
 
 @APP.route("/channel/messages/v2", methods=['GET'])

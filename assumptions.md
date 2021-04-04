@@ -33,4 +33,4 @@
 - auth_login_v1
 
 ## message_send
-- The channel_id is always valid
+- You are allowed to tag yourself in a message
