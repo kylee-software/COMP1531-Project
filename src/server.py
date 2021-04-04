@@ -115,4 +115,4 @@ def message_send():
 
 
 if __name__ == "__main__":
-    APP.run(port=8001)  # Do not edit this port
+    APP.run(port=config.port)  # Do not edit this port
