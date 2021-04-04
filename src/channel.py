@@ -152,8 +152,7 @@ def channel_messages_v2(token, channel_id, start):
             start (int)         - show messages starting from start; start = 0 means the most recent message
 
         Exceptions:
-            AccessError - Occurs when the token is invalid
-                        - authorised user is not a member of the channel
+            AccessError - Occurs when the token is invalid and authorised user is not a member of the channel
 
             InputError  - Occurs when channel_id is invalid and "start" is greater than\
             the total number of messages in the channel
@@ -173,11 +172,11 @@ def channel_messages_v2(token, channel_id, start):
     if not is_valid_channel_id(channel_id):
         raise InputError("Channel ID is invalid.")
 
-    if not is_user_in_channel(channel_id, user_id, data):
-        raise AccessError(f"User is not a member of the channel with channel id {channel_id}")
-
     channel_info = find_channel(channel_id, data)
     channel_messages = channel_info['messages']
+
+    if not is_user_in_channel(channel_id, user_id, data):
+        raise AccessError(f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
     if start >= len(channel_messages):
