@@ -78,7 +78,7 @@ def test_invalid_u_ids(token, user1):
     }).status_code
 
     assert status_code1 == 400  # Status code for InputError
-    assert status_code1 == 400
+    assert status_code2 == 400
     requests.delete(config.url + 'clear/v1')
 
 def test_valid_return(token, user1, user2):
