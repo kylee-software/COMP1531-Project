@@ -33,6 +33,8 @@ def channel_owner():
 def clear():
     clear_v1()
 
+##### Channel Details Tests #####
+
 def test_channel_details(clear, channel_id, channel_owner):
     '''
     A simple test to check channel details
@@ -60,11 +62,11 @@ def test_channel_details(clear, channel_id, channel_owner):
                         }
 
 def test_channel_details_access_error(clear, channel_id, channel_owner):
-    resp = requests.post(config.url + 'channel/details/v2', params={'token': 'bad.token.input', 'channel_id':channel_id})
+    resp = requests.get(config.url + 'channel/details/v2', params={'token': 'bad.token.input', 'channel_id':channel_id})
     assert resp.status_code == 403
 
 def test_channel_details_input_error(clear, channel_id, channel_owner):
-    resp = requests.post(config.url + 'channel/details/v2', params={'token': channel_owner['token'], 'channel_id':channel_id + 1})
+    resp = requests.get(config.url + 'channel/details/v2', params={'token': channel_owner['token'], 'channel_id':channel_id + 1})
     assert resp.status_code == 400
 
 
