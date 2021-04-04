@@ -20,7 +20,7 @@ def token():
 
 @pytest.fixture
 def channel_id(token):
-    resp = requests.post(config.url + 'channels/create/v2', json={
+    resp = requests.post(config.url + '/channels/create/v2', json={
         'token': token,
         'name': "channelName1",
         'is_public': True
@@ -46,10 +46,10 @@ def unauthorised_user():
 
 @pytest.fixture
 def clear():
-    requests.delete(config.url + 'clear/v1')
+    requests.delete(config.url + '/clear/v1')
 
 def test_invalid_token(clear, channel_id):
-    resp = requests.get(config.url + 'channel/messages/v2', params={
+    resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': "invalid_token",
         'channel_id': channel_id,
         'start': 0
@@ -59,7 +59,7 @@ def test_invalid_token(clear, channel_id):
     assert status_code == 403
 
 def test_invalid_channel_id(clear, token, channel_id):
-    resp = requests.get(config.url + 'channel/messages/v2', params={
+    resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id + 1,
         'start': 0
@@ -69,7 +69,7 @@ def test_invalid_channel_id(clear, token, channel_id):
     assert status_code == 400
 
 def test_unauthorised_user(clear, unauthorised_user, channel_id):
-    resp = requests.get(config.url + 'channel/messages/v2', params={
+    resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': unauthorised_user,
         'channel_id': channel_id,
         'start': 0
@@ -79,7 +79,7 @@ def test_unauthorised_user(clear, unauthorised_user, channel_id):
     assert status_code == 403
 
 def test_invalid_start(clear, token, channel_id):
-    resp = requests.get(config.url + 'channel/messages/v2', params={
+    resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 51
@@ -89,7 +89,7 @@ def test_invalid_start(clear, token, channel_id):
     assert status_code == 400
 
 def test_last_message(clear, token, channel_id):
-    resp = requests.post(config.url + 'message/send/v2', json={
+    resp = requests.post(config.url + '/message/send/v2', json={
         'token': token,
         'channel_id': channel_id,
         'message': "Hi, everyone!"
@@ -100,7 +100,7 @@ def test_last_message(clear, token, channel_id):
 def test_more_messages(clear, token, channel_id):
     count = 60
     while count >= 0:
-        requests.post(config.url + 'message/send/v2', json={
+        requests.post(config.url + '/message/send/v2', json={
             'token': token,
             'channel_id': channel_id,
             'message': f"{count}"
@@ -108,7 +108,7 @@ def test_more_messages(clear, token, channel_id):
         count -= 1
 
     # Test first 50 newest messages
-    resp_1 = requests.get(config.url + 'channel/messages/v2', params={
+    resp_1 = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 0
@@ -117,7 +117,7 @@ def test_more_messages(clear, token, channel_id):
     assert message_1 == '49'
 
     # Test the first message in the returned message dictionary
-    resp_2 = requests.get(config.url + 'channel/messages/v2', params={
+    resp_2 = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 10
@@ -126,7 +126,7 @@ def test_more_messages(clear, token, channel_id):
     assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
-    resp_3 = requests.get(config.url + 'channel/messages/v2', params={
+    resp_3 = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 30
@@ -135,7 +135,7 @@ def test_more_messages(clear, token, channel_id):
     assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
-    resp_4 = requests.get(config.url + 'channel/messages/v2', params={
+    resp_4 = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 60
