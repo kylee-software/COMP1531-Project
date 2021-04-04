@@ -72,6 +72,8 @@ def test_invalid_u_ids(token, user1):
         'name_last': "user"
     }).json()['auth_user_id']
 
+    requests.delete(config.url + 'clear/v1')
+
     status_code2 = requests.post(config.url + 'dm/create/v1', json={
         'token': token,
         'u_ids': [user1, u_id]
