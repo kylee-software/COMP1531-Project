@@ -120,7 +120,7 @@ def dm_messages_v1():
     dm_id = request.args.get('dm_id')
     start = request.args.get('start')
 
-    messages_dict = dm_messages_v1(token, dm_id, start)
+    messages_dict = dm_messages_v1(token, int(dm_id), int(start))
     return dumps(messages_dict)
 
 
