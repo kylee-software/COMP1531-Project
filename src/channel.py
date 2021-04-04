@@ -181,6 +181,7 @@ def channel_messages_v2(token, channel_id, start):
     messages_dict['start'] = start
     messages_dict['end'] = end
 
+    save_data(data)
     return messages_dict
     # example
     # {
