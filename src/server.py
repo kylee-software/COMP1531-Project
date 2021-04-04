@@ -1,9 +1,13 @@
 import sys
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src import config, channel
+from src.dm import dm_create_v1
+from src import config
+from src.other import clear_v1
+from src.channels import channels_create_v2
+from src.auth import auth_login_v2, auth_register_v2
 
 def defaultHandler(err):
     response = err.get_response()
@@ -16,6 +20,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
+
 APP = Flask(__name__)
 CORS(APP)
 
@@ -23,6 +28,8 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 # Example
+
+
 @APP.route("/echo", methods=['GET'])
 def echo():
     data = request.args.get('data')
@@ -32,14 +39,46 @@ def echo():
         'data': data
     })
 
-@APP.route("channel/messages/v2", methods=['GET'])
-def channel_messages_v2():
-    token = request.get_json()['token']
-    channel_id = request.get_json()['channel_id']
-    start = request.get_json()['start']
 
-    messages_dict = channel.channel_messages_v2(token, channel_id, start)
-    return dumps(messages_dict)
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear():
+    clear_v1()
+    return jsonify({})
+
+
+@ APP.route("/auth/login/v2", methods=['POST'])
+def login_v2():
+    data = request.get_json()
+    return jsonify(auth_login_v2(data['email'], data['password']))
+
+
+@ APP.route("/auth/register/v2", methods=['POST'])
+def register_v2():
+    data = request.get_json()
+    return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
+
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create():
+    data = request.get_json()
+    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
+    return jsonify(dict)
+
+
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    data = request.get_json()
+    dm_dict = dm_create_v1(data['token'], data['u_ids'])
+
+    return jsonify(dm_dict)
+
+
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages_v2():
+    data = request.get_json()
+    messages_dict = channel_messages_v2(data['token'], data['channel_id'], data['start'])
+    return jsonify(messages_dict)
+
 
 if __name__ == "__main__":
-    APP.run(port=config.port) # Do not edit this port
+    APP.run(port=config.port)  # Do not edit this port

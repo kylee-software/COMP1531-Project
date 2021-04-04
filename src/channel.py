@@ -20,7 +20,7 @@ def channel_invite_v1(token, channel_id, u_id):
     data = load_data()
     if is_valid_channel_id(channel_id) == False:
         raise InputError(f"Channel_id: {channel_id} is invalid")
-    
+
     if is_valid_token(token) == False:
         raise AccessError(f"Auth_user_id: {token} is invalid")
     
@@ -51,8 +51,8 @@ def channel_invite_v1(token, channel_id, u_id):
                 if member['user_id'] == u_id:
                     return {}
             channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
-
-    save_data()
+    
+    save_data(data)
     return {
     }
 
@@ -120,8 +120,7 @@ def channel_details_v1(token, channel_id):
                     }
             owner_details.append(owner)
 
-    save_data()
-    
+    save_data(data)
     return {
         'name': channel_name,
         'owner_members': owner_details,
@@ -257,9 +256,8 @@ def channel_join_v1(token, channel_id):
                 # If not this means the channel is private and the user doesn't have access
                 raise AccessError(f"channel is private and user is not global owner")
             break
-
-    save_data()
     
+    save_data(data)
     return {
     }
 
