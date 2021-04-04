@@ -121,7 +121,7 @@ def dm_messages_v1():
     start = request.args.get('start')
 
     messages_dict = dm_messages_v1(token, int(dm_id), int(start))
-    return dumps(messages_dict)
+    return jsonify(messages_dict)
 
 
 if __name__ == "__main__":
