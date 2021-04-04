@@ -13,8 +13,6 @@ def admin_changepermission_v1(token, u_id, permission_id):
         raise AccessError(description=f"Token invalid")
     
     auth_user_id = token_data['user_id']
-    if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_user_id (u_id) == False:
         raise InputError(description=f"invalid u_id: {u_id}")
