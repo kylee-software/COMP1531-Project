@@ -19,9 +19,7 @@ def is_valid_user_id(auth_user_id):
 
     data = load_data()
     for user in data['users']:
-        first_name = user['first_name']
-        last_name = user['last_name']
-        if (user['user_id'] == auth_user_id) and (f"{first_name} {last_name}" != "Removed user"):
+        if user['user_id'] == auth_user_id:
             return True
     return False
 
@@ -144,6 +142,7 @@ def find_user(user_id, data):
             return user
 
 
+
 def find_channel(channel_id, data):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
@@ -154,5 +153,24 @@ def is_user_in_channel(channel_id, user_id, data):
     channel = find_channel(channel_id, data)
     for member in channel['members']:
         if member['user_id'] == user_id:
+            return True
+    return False
+
+def is_dreams_user(auth_user_id):
+    '''
+    checks the given auth_user_id is valid
+
+    Arguments:
+        auth_user_id (int)      - user_id that needs checking
+
+    Return Value:
+        Returns True is user id is valid, False if it is not
+    '''
+
+    data = load_data()
+    for user in data['users']:
+        first_name = user['first_name']
+        last_name = user['last_name']
+        if (user['user_id'] == auth_user_id) and (f"{first_name} {last_name}" != "Removed user"):
             return True
     return False

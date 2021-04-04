@@ -1,4 +1,5 @@
-from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, save_data, find_channel, find_user, is_user_in_channel
+from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, \
+    save_data, find_channel, find_user, is_user_in_channel, is_dreams_user
 from src.auth import auth_register_v2, auth_login_v2
 from src.other import clear_v1
 from src.error import AccessError, InputError
@@ -104,3 +105,19 @@ def test_is_user_in_channel():
                                       {'channel_id': 2, 'members': [{'user_id': 1}]}]}
     assert is_user_in_channel(2, 1, data) == True
     assert is_user_in_channel(1, 1, data) == False
+
+def test_invalid_dream_user():
+    clear_v1()
+    user_id = auth_register_v2(
+        "test@gmail.com", "password", "Removed", "user")['auth_user_id']
+    assert is_dreams_user(1) == False
+    assert is_dreams_user(user_id) == False
+    clear_v1()
+
+
+def test_valid_dreams_user():
+    clear_v1()
+    user_id = auth_register_v2(
+        "test@gmail.com", "password", "first", "last")['auth_user_id']
+    assert is_dreams_user(user_id) == True
+    clear_v1()
