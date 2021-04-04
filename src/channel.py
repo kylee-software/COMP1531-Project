@@ -19,13 +19,13 @@ def channel_invite_v1(token, channel_id, u_id):
     '''
     data = load_data()
     if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+        raise AccessError(description=f"Auth_user_id: {token} is invalid")
     
     if is_valid_token(u_id) == False:
-        raise InputError(f"invalid u_id: {u_id}")
+        raise InputError(description=f"invalid u_id: {u_id}")
         
     #check auth_user is in channel
     auth_in_channel = False
@@ -36,7 +36,7 @@ def channel_invite_v1(token, channel_id, u_id):
                     auth_in_channel = True
                     break
     if auth_in_channel == False:
-        raise AccessError(f"token was not in channel")
+        raise AccessError(description=f"token was not in channel")
 
     # check if user being added is global owner
     global_owner = 2
@@ -75,9 +75,9 @@ def channel_details_v1(token, channel_id):
     data = load_data()
 
     if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
     if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+        raise AccessError(description=f"Auth_user_id: {token} is invalid")
     
     owner_ids = []
     member_ids = []
@@ -94,7 +94,7 @@ def channel_details_v1(token, channel_id):
                     found_member = True
             
             if found_member == False:
-                raise AccessError("token is not a channel member")
+                raise AccessError(description="token is not a channel member")
             
             break
     
@@ -149,23 +149,23 @@ def channel_messages_v2(token, channel_id, start):
     data = load_data()
 
     if not is_valid_token(token):
-        raise AccessError("Token is invalid")
+        raise AccessError(description="Token is invalid")
 
     user_id = is_valid_token(token)['user_id']
 
     # Check valid channel_id
     if not is_valid_channel_id(channel_id):
-        raise InputError("Channel ID is invalid.")
+        raise InputError(description="Channel ID is invalid.")
 
     channel_info = find_channel(channel_id, data)
     channel_messages = channel_info['messages']
 
     if not is_user_in_channel(channel_id, user_id, data):
-        raise AccessError(f"User is not a member of the channel with channel id {channel_id}")
+        raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
     if start >= len(channel_messages):
-        raise InputError("Start is greater than the total number of messages in the channel.")
+        raise InputError(description="Start is greater than the total number of messages in the channel.")
 
     # calculate the ending return value
     end = start + 50 if (start + 50 < len(data['channels']) - 1) else -1
@@ -221,10 +221,10 @@ def channel_join_v1(token, channel_id):
     
     data = load_data()
     if is_valid_token(token) == False:
-        raise AccessError(f"Auth_user_id: {token} is invalid")
+        raise AccessError(description=f"Auth_user_id: {token} is invalid")
     
     if is_valid_channel_id(channel_id) == False:
-        raise InputError(f"Channel_id: {channel_id} is invalid")
+        raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     # Next we find out if the token user is a global owner
     global_status = 2
@@ -248,7 +248,7 @@ def channel_join_v1(token, channel_id):
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
-                raise AccessError(f"channel is private and user is not global owner")
+                raise AccessError(description=f"channel is private and user is not global owner")
             break
     
     save_data(data)
