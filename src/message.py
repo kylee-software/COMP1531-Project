@@ -6,6 +6,8 @@ from datetime import datetime
 def message_send_v2(token, channel_id, message):
     """Sends a message from the user referenced by the token to the channel referenced by
     channel_id
+    Also adds the msg_id to the 'sent_message' list for the user referenced by token and
+    add notifications to those users that were mentioned in the message
 
     Args:
         token (str): jwt encode dict with keys session_id and user_id
@@ -41,7 +43,7 @@ def message_send_v2(token, channel_id, message):
         new_message = {'message_id' : data['msg_counter'] + 1, 'message_author' : token['user_id'],
                             'message' : message, "time_created" :str(datetime.now())}
         channel['messages'].insert(0, new_message)
-        
+
         auth_messages = next(user['sent_messages'] for user in data['users'] if user['user_id'] == token['user_id'])     
         auth_messages.insert(0, data['msg_counter'] + 1)
 
