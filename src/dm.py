@@ -25,7 +25,7 @@ def dm_remove_v1(token, dm_id):
     
     auth_user_id = token_data['user_id']
     if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
 
     found_dm = False
     for dm in data['dms']:
