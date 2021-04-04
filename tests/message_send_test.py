@@ -3,7 +3,7 @@ import jwt
 import string
 import random
 from src.auth import auth_register_v2
-from src.channels import channels_create_v1
+from src.channels import channels_create_v2
 from src.message import message_send_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
@@ -19,7 +19,7 @@ def token():
 
 @pytest.fixture
 def channel_id(token):
-    return channels_create_v1(token, 'testChannel01', False)
+    return channels_create_v2(token, 'testChannel01', False)
 
 @pytest.fixture
 def clear():

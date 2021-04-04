@@ -3,7 +3,7 @@ from src.error import AccessError, InputError
 from datetime import datetime
 
 
-def message_send_v1(token, channel_id, message):
+def message_send_v2(token, channel_id, message):
     data = load_data()
     if not is_valid_token(token):
         raise AccessError('Unauthorised User')
