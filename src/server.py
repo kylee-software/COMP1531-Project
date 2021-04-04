@@ -85,8 +85,8 @@ def dm_create():
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     data = request.get_json()
-    messages_dict = channel_messages_v2(data['token'], data['channel_id'], data['start'])
-    return jsonify(messages_dict)
+    dict = channel_messages_v2(data['token'], data['channel_id'], data['start'])
+    return jsonify(dict)
 
 
 if __name__ == "__main__":
