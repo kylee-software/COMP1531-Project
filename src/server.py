@@ -47,6 +47,8 @@ def echo():
 def channel_details():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
+    if channel_id.isdigit():
+        channel_id = int(channel_id)
     return dumps(channel_details_v1(token, channel_id))
 
 @APP.route("/channel/join/v2", methods=['POST'])
@@ -54,7 +56,7 @@ def channel_join():
     data = request.get_json()
     return dumps(channel_join_v1(data['token'], data['channel_id']))
 
-@APP.route("/channel/invite/v2", methods=['GET'])
+@APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite():
     data = request.get_json()
     u_id = data['u_id']
