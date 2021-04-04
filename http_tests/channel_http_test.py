@@ -36,7 +36,8 @@ def test_channel_details(clear, channel_id, channel_owner):
     A simple test to check channel details
     '''
     resp = requests.get(config.url + 'channel/details/v2', params={'token': channel_owner['token'], 'channel_id':channel_id})
-    assert json.loads(resp.text) == {
+    resp = resp.json()
+    assert resp == {
                                         'name':"Testchannel",
                                         'is_public':True,
                                         'owner_members':[{
