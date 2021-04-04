@@ -53,7 +53,7 @@ def test_invalid_dm_id(clear, users):
     response = requests.get(config.url + 'dm/details/v1', params=p)
     assert response.status_code == 400
 
-def test_user_in_dm(clear, users, num_members):
+def test_dm_details_http_all_works(clear, users, num_members):
     dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][0], 'u_ids': users['u_ids']})
     dm = dm.json()
     p = {'token' : users['tokens'][0], 'dm_id' : dm['dm_id']}
@@ -61,3 +61,5 @@ def test_user_in_dm(clear, users, num_members):
     details = details.json()
     assert len(details['members']) == num_members
     assert len(details) == 2
+    assert details['name'] == dm['dm_name']
+    assert details['members'][0]['user_id'] == users['u_ids'][0]
