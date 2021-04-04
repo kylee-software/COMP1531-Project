@@ -10,10 +10,7 @@ import json
 
 def test_invalid_user_id():
     clear_v1()
-    user_id = auth_register_v2(
-        "test@gmail.com", "password", "Removed", "user")['auth_user_id']
     assert is_valid_user_id(1) == False
-    assert is_valid_user_id(user_id) == False
     clear_v1()
 
 
