@@ -20,10 +20,12 @@ def test_invalid_token():
 def test_invalid_email(user):
     with pytest.raises(InputError):
         user_profile_setemail_v2(user, "testemail.com")
+    clear_v1()
 
 def test_email_existed(user):
     with pytest.raises(InputError):
         user_profile_setemail_v2(user, "testmail@gmail.com")
+    clear_v1()
 
 def test_correct_setup(user):
     user_profile_setemail_v2(user, "newemail@gmail.com")

@@ -31,6 +31,7 @@ def test_invalid_email(user):
     }).status_code
 
     assert status_code == 400
+    requests.delete(config.url + '/clear/v1')
 
 def test_email_existed(user):
     status_code = requests.put(config.url + 'user/profile/setemail/v2', json={
@@ -39,6 +40,7 @@ def test_email_existed(user):
     }).status_code
 
     assert status_code == 400
+    requests.delete(config.url + '/clear/v1')
 
 def test_correct_setup(user):
     requests.put(config.url + 'user/profile/setemail/v2', json={
@@ -52,5 +54,4 @@ def test_correct_setup(user):
     }).status_code
 
     assert status_code == 400
-
     requests.delete(config.url + '/clear/v1')
