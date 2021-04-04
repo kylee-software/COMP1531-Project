@@ -159,6 +159,21 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 def channel_leave_v1(token, channel_id):
+    '''
+    Function to allow a user to leave a channel
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        channel_id (int)     - channel id of the channel the user is leaving
+
+    Exceptions:
+        AccessError  - Occurs when the token invalid or when the user is not in the channel
+        InputError   - Occurs when channel_id does not refer to a valid channel
+
+    Return Value:
+        {} on successful leaving of the channel
+
+    '''
     data = load_data()
     token_data = is_valid_token(token)
 
