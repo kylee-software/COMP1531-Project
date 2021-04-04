@@ -18,6 +18,9 @@ def token():
 def clear():
     clear_v1()
 
+@pytest.fixture
+def channel_id(token):
+    return channels_create_v2(token, 'channel01', True)['channel_id']
 
 def test_invalid_token():
     with pytest.raises(AccessError):
@@ -27,28 +30,24 @@ def test_return_empty_notifications(clear, token):
     notifications = notifications_get_v1(token)
     assert notifications == {'notifications' : []}
 
-def test_return_single_notification(clear, token):
-    channel_id = channels_create_v2(token, 'channel01', True)['channel_id']
+def test_return_single_notification(clear, token, channel_id):
     message_send_v2(token, channel_id, 'Test message @firstname1lastname1')
     notifications = notifications_get_v1(token)
     assert len(notifications['notifications']) == 1
 
-def test_correct_notification_types(clear, token):
-    channel_id = channels_create_v2(token, 'channel01', True)['channel_id']
+def test_correct_notification_types(clear, token, channel_id):
     message_send_v2(token, channel_id, 'Test message @firstname1lastname1')
     notifications = notifications_get_v1(token)
     assert 'channel_id' in notifications['notifications'][0]
     assert 'dm_id' in notifications['notifications'][0]
     assert 'notification_message' in notifications['notifications'][0]
 
-def test_multiple_tagged_only_1_valid(clear, token):
-    channel_id = channels_create_v2(token, 'channel01', True)['channel_id']
+def test_multiple_tagged_only_1_valid(clear, token, channel_id):
     message_send_v2(token, channel_id, 'Test message @firstname1lastname1 @another @attedword @testing @taggedFunction')
     notifications = notifications_get_v1(token)
     assert len(notifications['notifications']) == 1
 
-def test_returns_no_more_than_20_notification(clear, token):
-    channel_id = channels_create_v2(token, 'channel01', True)['channel_id']
+def test_returns_no_more_than_20_notification(clear, token, channel_id):
     for i in range(30):
         message_send_v2(token, channel_id, f'Test {i} message @firstname1lastname1')
     notifications = notifications_get_v1(token)
