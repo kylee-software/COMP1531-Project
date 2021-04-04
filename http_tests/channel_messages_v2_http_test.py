@@ -170,7 +170,7 @@ def test_more_messages(token, channel_id):
     resp_4 = requests.get(config.url + 'channels/messages/v2', json={
         'token': token,
         'channel_id': channel_id,
-        'start': 61
+        'start': 60
     })
     message_4 = resp_4.json()['messages'][0]['message']
-    assert message_4 == '61'
+    assert message_4 == '60'

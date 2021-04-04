@@ -71,8 +71,8 @@ def test_more_messages(token, channel_id):
     message_3 = channel_messages_v2(token, channel_id, 30)['messages'][1]['message']
     assert message_3 == '31'
     # Test the earliest message that was sent to the channel
-    message_4 = channel_messages_v2(token, channel_id, 61)['messages'][0]['message']
-    assert message_4 == '61'
+    message_4 = channel_messages_v2(token, channel_id, 60)['messages'][0]['message']
+    assert message_4 == '60'
 
     clear_v1()
 
