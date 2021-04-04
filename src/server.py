@@ -2,12 +2,9 @@ import sys
 from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-<<<<<<< HEAD
 from src.error import InputError, AccessError
 from src import config
-from src.helper import valid_token
-from src.data import data
-=======
+from src.helper import is_valid_token, load_data
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
@@ -17,7 +14,6 @@ from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
 from src.message import message_send_v2
->>>>>>> master
 
 
 def defaultHandler(err):
@@ -50,16 +46,15 @@ def echo():
         'data': data
     })
 
-<<<<<<< HEAD
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
     token = request.args.get('token')
-    if not valid_token(token):
+    if not is_valid_token(token):
         raise AccessError('Invalid User')
+    data = load_data
     return data['users']
 
-=======
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
     token = request.args.get('token')
@@ -129,7 +124,6 @@ def message_send():
     data = request.get_json()
     msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
     return jsonify(msg_id)
->>>>>>> master
 
 
 if __name__ == "__main__":

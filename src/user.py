@@ -33,6 +33,10 @@ def user_profile_v2(token, u_id):
                      }
             }
 
+def users_all_v1(token):
+
+    return {}
+
 def user_profile_setname_v1(auth_user_id, name_first, name_last):
     return {
     }
