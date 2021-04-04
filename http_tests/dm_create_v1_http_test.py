@@ -59,13 +59,26 @@ def test_invalid_token(user1):
     assert status_code == 403  # Status code for AccessError
     requests.delete(config.url + 'clear/v1')
 
-def test_invalid_u_id(token, user1):
-    status_code = requests.post(config.url + 'dm/create/v1', json={
+def test_invalid_u_ids(token, user1):
+    status_code1 = requests.post(config.url + 'dm/create/v1', json={
         'token': token,
         'u_ids': [user1, 123]
     }).status_code
 
-    assert status_code == 400  # Status code for InputError
+    u_id = requests.post(config.url + 'auth/register/v2', json={
+        'email': "testemail@gmail.com",
+        'password': "testPassword1",
+        'name_first': "Removed",
+        'name_last': "user"
+    }).json()['auth_user_id']
+
+    status_code2 = requests.post(config.url + 'dm/create/v1', json={
+        'token': token,
+        'u_ids': [user1, u_id]
+    }).status_code
+
+    assert status_code1 == 400  # Status code for InputError
+    assert status_code1 == 400
     requests.delete(config.url + 'clear/v1')
 
 def test_valid_return(token, user1, user2):

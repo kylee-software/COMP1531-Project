@@ -36,9 +36,14 @@ def test_invalid_token(user1):
         dm_create_v1("Invalid token", [user1])
     clear_v1()
 
-def test_invalid_u_id(token, user1):
+def test_invalid_u_ids(token, user1):
     with pytest.raises(InputError):
         dm_create_v1(token, [user1, 123])
+
+    u_id = auth_register_v2("testemail@gmail.com", "testPassword1", "Removed", "user")['auth_user_id']
+    with pytest.raises(InputError):
+        dm_create_v1(token, [user1, u_id])
+
     clear_v1()
 
 def test_valid_return(token, user1, user2):

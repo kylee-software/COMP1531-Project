@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
+from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user, is_dreams_user
 
 def dm_create_v1(token, u_ids):
     '''
@@ -19,6 +19,7 @@ def dm_create_v1(token, u_ids):
     Assumption:
         - a new dm is created everytime a creator creates one even there is already
          a dm with the same creator and dm members
+        - a user who is removed from Dreams can not be added to a dm
     '''
 
     data = load_data()
@@ -31,9 +32,9 @@ def dm_create_v1(token, u_ids):
     user_id = is_valid_token(token)['user_id']
     handles = []
 
-    for id in u_ids:
-        if not is_valid_user_id(id):
-            raise InputError(f"u_id: {id} is not a valid user.")
+    for u_id in u_ids:
+        if not is_dreams_user(u_id):
+            raise InputError(f"u_id: {u_id} is not a valid user.")
 
         user_handle = find_user(id, data)['account_handle']
         handles.append(user_handle)
