@@ -26,4 +26,4 @@ def notifications_get_v1(token):
     token = is_valid_token(token)
     data = load_data()
     user = next(user for user in data['users'] if user['user_id'] == token['user_id'])
-    return user['notifications'][:20]
+    return {'notifications': user['notifications'][:20]}
