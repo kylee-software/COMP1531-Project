@@ -1,6 +1,12 @@
 import pytest
 import requests
 from src import config
+from src.helper import load_data
+
+
+@pytest.fixture
+def clear():
+    requests.delete(config.url + '/clear/v1')
 
 @pytest.fixture
 def token():
@@ -27,10 +33,6 @@ def channel_id(token):
 
     channel_id = resp['channel_id']
     return channel_id
-
-@pytest.fixture
-def clear():
-    requests.delete(config.url + '/clear/v1')
 
 def test_invalid_token(clear, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
@@ -65,6 +67,7 @@ def test_user_not_in_channel(clear, token, channel_id):
         'channel_id': channel_id,
         'start': 0
     })
+    print(load_data())
 
     status_code = resp.status_code
     assert status_code == 403
