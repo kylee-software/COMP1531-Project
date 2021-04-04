@@ -14,7 +14,9 @@ def user1():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v2(email,password,firstname, lastname)
+    user = requests.post(config.url + '/auth/register/v2',
+                                 json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
+    return user.json()
 
 
 @pytest.fixture
@@ -71,4 +73,4 @@ def test_channel_invite(clear, channel_id, channel_owner, user1):
     '''
     resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
     assert json.loads(resp.text) == {}
-   
+    clear_v1()
