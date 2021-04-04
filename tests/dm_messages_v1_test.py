@@ -64,12 +64,12 @@ def test_more_messages(token, dm_id):
     assert message_1 == "49"
     # Test the first message in the returned message dictionary
     message_2 = dm_messages_v1(token, dm_id, 10)['messages'][0]['message']
-    assert message_2 == "9"
+    assert message_2 == "10"
     # Test the second message in the returned message dictionary
     message_3 = dm_messages_v1(token, dm_id, 30)['messages'][1]['message']
-    assert message_3 == '30'
+    assert message_3 == '31'
     # Test the earliest message that was sent to the dm
-    message_4 = dm_messages_v1(token, dm_id, 61)['messages'][0]['message']
+    message_4 = dm_messages_v1(token, dm_id, 60)['messages'][0]['message']
     assert message_4 == '60'
 
     clear_v1()

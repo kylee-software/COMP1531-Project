@@ -4,6 +4,8 @@ from src import config
 
 @pytest.fixture
 def token():
+    requests.delete(config.url + 'clear/v1').json()
+
     email = "testmail@gamil.com"
     password = "Testpass12345"
     first_name = "firstname"
@@ -125,7 +127,7 @@ def test_more_messages(token, dm_id):
         'start': 10
     })
     message_2 = resp_2.json()['messages'][0]['message']
-    assert message_2 == '9'
+    assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
     resp_3 = requests.get(config.url + 'dm/messages/v1', json={
@@ -134,15 +136,14 @@ def test_more_messages(token, dm_id):
         'start': 30
     })
     message_3 = resp_3.json()['messages'][1]['message']
-    assert message_3 == '30'
+    assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
     resp_4 = requests.get(config.url + 'dm/messages/v1', json={
         'token': token,
         'dm_id': dm_id,
-        'start': 61
+        'start': 60
     })
     message_4 = resp_4.json()['messages'][0]['message']
     assert message_4 == '60'
 
-    requests.delete(config.url + 'clear/v1').json()

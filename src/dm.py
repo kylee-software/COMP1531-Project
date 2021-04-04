@@ -1,5 +1,5 @@
-from error import AccessError, InputError
-from helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
+from src.error import AccessError, InputError
+from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
 
 def dm_create_v1(token, u_ids):
     '''
@@ -87,7 +87,6 @@ def dm_messages_v1(token, dm_id, start):
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
             is_valid_dm_id = True
-            dm_dict = dm
             for member in dm['members']:
                 if member == user_id:
                     is_member = True
