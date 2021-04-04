@@ -36,7 +36,7 @@ def dm_create_v1(token, u_ids):
         if not is_dreams_user(u_id):
             raise InputError(f"u_id: {u_id} is not a valid user.")
 
-        user_handle = find_user(id, data)['account_handle']
+        user_handle = find_user(u_id, data)['account_handle']
         handles.append(user_handle)
 
     handles.append(find_user(user_id, data)['account_handle'])

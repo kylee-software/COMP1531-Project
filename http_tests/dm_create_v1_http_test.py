@@ -60,11 +60,6 @@ def test_invalid_token(user1):
     requests.delete(config.url + 'clear/v1')
 
 def test_invalid_u_ids(token, user1):
-    status_code1 = requests.post(config.url + 'dm/create/v1', json={
-        'token': token,
-        'u_ids': [user1, 123]
-    }).status_code
-
     u_id = requests.post(config.url + 'auth/register/v2', json={
         'email': "testemail@gmail.com",
         'password': "testPassword1",
@@ -72,7 +67,10 @@ def test_invalid_u_ids(token, user1):
         'name_last': "user"
     }).json()['auth_user_id']
 
-    requests.delete(config.url + 'clear/v1')
+    status_code1 = requests.post(config.url + 'dm/create/v1', json={
+        'token': token,
+        'u_ids': [user1, 123]
+    }).status_code
 
     status_code2 = requests.post(config.url + 'dm/create/v1', json={
         'token': token,
