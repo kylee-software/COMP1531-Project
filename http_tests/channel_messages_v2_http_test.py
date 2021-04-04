@@ -155,7 +155,7 @@ def test_more_messages(token, channel_id):
         'start': 10
     })
     message_2 = resp_2.json()['messages'][0]['message']
-    assert message_2 == '9'
+    assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
     resp_3 = requests.get(config.url + 'channels/messages/v2', json={
@@ -164,7 +164,7 @@ def test_more_messages(token, channel_id):
         'start': 30
     })
     message_3 = resp_3.json()['messages'][1]['message']
-    assert message_3 == '30'
+    assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
     resp_4 = requests.get(config.url + 'channels/messages/v2', json={
@@ -173,4 +173,4 @@ def test_more_messages(token, channel_id):
         'start': 61
     })
     message_4 = resp_4.json()['messages'][0]['message']
-    assert message_4 == '60'
+    assert message_4 == '61'

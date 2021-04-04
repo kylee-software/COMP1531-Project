@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_token, load_data, save_data, is_valid_channel_id
+from src.helper import is_valid_token, load_data, save_data, is_valid_channel_id, find_channel, is_user_in_channel
 
 def channel_invite_v1(token, channel_id, u_id):
     '''
@@ -156,26 +156,19 @@ def channel_messages_v2(token, channel_id, start):
         raise AccessError("Token is invalid")
 
     user_id = is_valid_token(token)['user_id']
-    channels = data['channels']
-    channel_members = channels[channel_id - 1]['members']
-    channel_messages = channels[channel_id - 1]['messages']
-    is_member = False
 
-    # Check valid auth_id
-    for member in channel_members:
-        if member['user_id'] == user_id:
-            is_member = True
-            break
+    channel_info = find_channel(channel_id, data)
+    channel_messages = channel_info['messages']
 
-    if not is_member:
-        raise AccessError("Unauthorised User!")
+    if not is_user_in_channel(user_id):
+        raise AccessError(f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
     if start >= len(channel_messages):
         raise InputError("Start is greater than the total number of messages in the channel.")
 
     # calculate the ending return value
-    end = start + 50 if (start + 50 < len(channels) - 1) else -1
+    end = start + 50 if (start + 50 < len(data['channels']) - 1) else -1
     messages_dict = {'messages': []}
 
     if end == -1:
