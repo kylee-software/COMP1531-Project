@@ -47,7 +47,7 @@ def unauthorised_user():
 def clear():
     requests.delete(config.url + '/clear/v1')
 
-def test_invalid_token(clear, token, channel_id):
+def test_invalid_token(clear, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': "invalid_token",
         'channel_id': channel_id,
@@ -88,11 +88,11 @@ def test_invalid_start(clear, token, channel_id):
     assert status_code == 400
 
 def test_last_message(clear, token, channel_id):
-    resp = requests.post(config.url + '/message/send/v2', json={
+    requests.post(config.url + '/message/send/v2', json={
         'token': token,
         'channel_id': channel_id,
         'message': "Hi, everyone!"
-    }).json()
+    })
 
     messages_dict = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
