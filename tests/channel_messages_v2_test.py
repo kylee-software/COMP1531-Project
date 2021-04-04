@@ -36,7 +36,7 @@ def test_invalid_channel_id(token, channel_id):
         channel_messages_v2(token, channel_id + 1, 0)
     clear_v1()
 
-def test_unauthorised_user(unauthorised_user, channel_id):
+def test_user_not_in_channel(unauthorised_user, channel_id):
     # Test an user that does not belong to the channel with the given channel_id
     with pytest.raises(AccessError):
         channel_messages_v2(unauthorised_user, channel_id, 0)

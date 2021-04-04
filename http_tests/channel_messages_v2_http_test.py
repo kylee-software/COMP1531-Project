@@ -52,21 +52,16 @@ def test_invalid_channel_id(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 400
 
-def test_unauthorised_user(clear, channel_id):
-    email = "testmail2@gamil.com"
-    password = "Testpass1234567"
-    first_name = "first"
-    last_name = "last"
-    auth_resp = requests.post(config.url + '/auth/register/v2', json={
-        'email': email,
-        'password': password,
-        'name_first': first_name,
-        'name_last': last_name
-    }).json()
-    unauthorised_user_token = auth_resp['token']
+def test_user_not_in_channel(clear, token, channel_id):
+    not_member_token = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'test2@unsw.au',
+        'password': 'testPassword',
+        'name_first': 'secondFirst',
+        'name_last': 'secondLast'})
+    not_member_token = not_member_token.json()['token']
 
     resp = requests.get(config.url + '/channel/messages/v2', params={
-        'token': unauthorised_user_token,
+        'token': not_member_token,
         'channel_id': channel_id,
         'start': 0
     })

@@ -132,12 +132,13 @@ def channel_messages_v2(token, channel_id, start):
         Function to return up to 50 messages between "start" and "start + 50"
 
         Arguments:
-            token (int)         - an authorisation hash of the user
+            token (string)      - an authorisation hash of the user
             channel_id (int)    - channel_id of the channel the user is trying to access to
             start (int)         - show messages starting from start; start = 0 means the most recent message
 
         Exceptions:
-            AccessError - Occurs when the token is invalid and authorised user is not a member of the channel
+            AccessError - Occurs when the token is invalid
+                        - authorised user is not a member of the channel
 
             InputError  - Occurs when channel_id is invalid and "start" is greater than\
             the total number of messages in the channel
