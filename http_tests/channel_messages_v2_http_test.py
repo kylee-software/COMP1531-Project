@@ -14,8 +14,8 @@ def token():
         'password': password,
         'name_first': first_name,
         'name_last': last_name
-    })
-    token = auth_resp.json()['token']
+    }).json()
+    token = auth_resp['token']
     return token
 
 @pytest.fixture
@@ -24,9 +24,9 @@ def channel_id(token):
         'token': token,
         'name': "channelName1",
         'is_public': True
-    })
+    }).json()
 
-    channel_id = resp.json()['channel_id']
+    channel_id = resp['channel_id']
     return channel_id
 
 @pytest.fixture
@@ -40,8 +40,8 @@ def unauthorised_user():
         'password': password,
         'name_first': first_name,
         'name_last': last_name
-    })
-    token = auth_resp.json()['token']
+    }).json()
+    token = auth_resp['token']
     return token
 
 def test_invalid_token(channel_id):
@@ -89,8 +89,8 @@ def test_last_message(token, channel_id):
         'token': token,
         'channel_id': channel_id,
         'message': "Hi, everyone!"
-    })
-    end = resp.json()['end']
+    }).json()
+    end = resp['end']
     assert end == -1
 
 def test_more_messages(token, channel_id):
@@ -108,8 +108,8 @@ def test_more_messages(token, channel_id):
         'token': token,
         'channel_id': channel_id,
         'start': 0
-    })
-    message_1 = resp_1.json()['messages'][49]['message']
+    }).json()
+    message_1 = resp_1['messages'][49]['message']
     assert message_1 == '49'
 
     # Test the first message in the returned message dictionary
@@ -117,8 +117,8 @@ def test_more_messages(token, channel_id):
         'token': token,
         'channel_id': channel_id,
         'start': 10
-    })
-    message_2 = resp_2.json()['messages'][0]['message']
+    }).json()
+    message_2 = resp_2['messages'][0]['message']
     assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
@@ -126,8 +126,8 @@ def test_more_messages(token, channel_id):
         'token': token,
         'channel_id': channel_id,
         'start': 30
-    })
-    message_3 = resp_3.json()['messages'][1]['message']
+    }).json()
+    message_3 = resp_3['messages'][1]['message']
     assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
@@ -135,8 +135,8 @@ def test_more_messages(token, channel_id):
         'token': token,
         'channel_id': channel_id,
         'start': 60
-    })
-    message_4 = resp_4.json()['messages'][0]['message']
+    }).json()
+    message_4 = resp_4['messages'][0]['message']
     assert message_4 == '60'
 
     requests.delete(config.url + 'clear/v1')
