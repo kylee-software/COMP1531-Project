@@ -14,7 +14,7 @@ def dm_remove_v1(token, dm_id):
         InputError   - Occurs when dm_id does not refer to a valid dm
 
     Return Value:
-        a dictionary {dm_id, dm_name}
+        {} on successful removal of a dm
 
     '''
     data = load_data()
