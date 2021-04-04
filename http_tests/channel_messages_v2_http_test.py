@@ -45,7 +45,7 @@ def unauthorised_user():
     return token
 
 def test_invalid_token(channel_id):
-    resp = requests.get(config.url + 'channels/messages/v2', json={
+    resp = requests.get(config.url + 'channels/messages/v2', params={
         'token': "invalid_token",
         'channel_id': channel_id,
         'start': 0
@@ -55,7 +55,7 @@ def test_invalid_token(channel_id):
     assert status_code == 403
 
 def test_invalid_channel_id(token, channel_id):
-    resp = requests.get(config.url + 'channels/messages/v2', json={
+    resp = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id + 1,
         'start': 0
@@ -65,7 +65,7 @@ def test_invalid_channel_id(token, channel_id):
     assert status_code == 400
 
 def test_unauthorised_user(unauthorised_user, channel,_id):
-    resp = requests.get(config.url + 'channels/messages/v2', json={
+    resp = requests.get(config.url + 'channels/messages/v2', params={
         'token': unauthorised_user,
         'channel_id': channel_id,
         'start': 0
@@ -75,7 +75,7 @@ def test_unauthorised_user(unauthorised_user, channel,_id):
     assert status_code == 403
 
 def test_invalid_start(token, channel_id):
-    resp = requests.get(config.url + 'channels/messages/v2', json={
+    resp = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 51
@@ -104,7 +104,7 @@ def test_more_messages(token, channel_id):
         count -= 1
 
     # Test first 50 newest messages
-    resp_1 = requests.get(config.url + 'channels/messages/v2', json={
+    resp_1 = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 0
@@ -113,7 +113,7 @@ def test_more_messages(token, channel_id):
     assert message_1 == '49'
 
     # Test the first message in the returned message dictionary
-    resp_2 = requests.get(config.url + 'channels/messages/v2', json={
+    resp_2 = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 10
@@ -122,7 +122,7 @@ def test_more_messages(token, channel_id):
     assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
-    resp_3 = requests.get(config.url + 'channels/messages/v2', json={
+    resp_3 = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 30
@@ -131,7 +131,7 @@ def test_more_messages(token, channel_id):
     assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
-    resp_4 = requests.get(config.url + 'channels/messages/v2', json={
+    resp_4 = requests.get(config.url + 'channels/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
         'start': 60
