@@ -31,3 +31,6 @@
 ## Functions without assumptions
 - channel_details_v1
 - auth_login_v1
+
+## message_send
+- You are allowed to tag yourself in a message
