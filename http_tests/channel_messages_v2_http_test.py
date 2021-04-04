@@ -29,21 +29,6 @@ def channel_id(token):
     return channel_id
 
 @pytest.fixture
-def unauthorised_user():
-    email = "testmail2@gamil.com"
-    password = "Testpass1234567"
-    first_name = "first"
-    last_name = "last"
-    auth_resp = requests.post(config.url + '/auth/register/v2', json={
-        'email': email,
-        'password': password,
-        'name_first': first_name,
-        'name_last': last_name
-    }).json()
-    token = auth_resp['token']
-    return token
-
-@pytest.fixture
 def clear():
     requests.delete(config.url + '/clear/v1')
 
@@ -67,9 +52,21 @@ def test_invalid_channel_id(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 400
 
-def test_unauthorised_user(clear, unauthorised_user, channel_id):
+def test_unauthorised_user(clear, channel_id):
+    email = "testmail2@gamil.com"
+    password = "Testpass1234567"
+    first_name = "first"
+    last_name = "last"
+    auth_resp = requests.post(config.url + '/auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
+    }).json()
+    unauthorised_user_token = auth_resp['token']
+
     resp = requests.get(config.url + '/channel/messages/v2', params={
-        'token': unauthorised_user,
+        'token': unauthorised_user_token,
         'channel_id': channel_id,
         'start': 0
     })
