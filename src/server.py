@@ -57,8 +57,13 @@ def channel_join():
 @APP.route("/channel/invite/v2", methods=['GET'])
 def channel_invite():
     data = request.get_json()
-    return dumps(channel_invite_v1(data['token'], data['channel_id'], data['u_id']))
-
+    u_id = data['u_id']
+    channel_id = data['channel_id']
+    if u_id.isdigit():
+        u_id = int(u_id)
+    if channel_id.isdigit():
+        channel_id = int(channel_id)
+    return jsonify(channel_invite_v1(data['token'], channel_id, u_id))
 
 
 @APP.route("/user/profile/v2", methods=['GET'])
@@ -110,4 +115,4 @@ def message_send():
 
 
 if __name__ == "__main__":
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=8082)  # Do not edit this port
