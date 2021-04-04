@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token
+from src.helper import load_data, save_data, is_valid_token
 import re
 
 def user_profile_v1(auth_user_id, u_id):
@@ -37,11 +37,10 @@ def user_profile_setemail_v2(token, email):
     if not is_valid_token(token):
         raise AccessError("Token is invalid.")
 
-    user_id = is_valid_user_id(token)['user_id']
+    user_id = is_valid_token(token)['user_id']
 
     # check if the email is valid
-    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
-    if not re.search(regex, email):
+    if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None:
         raise InputError(f"Email {email} is not a valid email.")
 
     for user in data['users']:
