@@ -82,24 +82,21 @@ def message_senddm_v1(token, dm_id, message):
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
-    found_dm = False
-    found_user = False
 
-    for dm in data['dms']:
-        if dm['dm_id'] == dm_id:
-            found_dm = True
-        for member in dm['members']:
-            if member == auth_user_id:
-                found_user = True
-            message_id = data['message_counter'] += 1
-            dm['messages'].insert(0, {'message':message, 'message_id':message_id})
-            data['message_counter'] += 1
-    
-    if found_dm == False:
+    dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
+    if dm == False:
         raise InputError(description=f"invalid dm id")
-
+    
+    member = next((member for member in dm['members'] if member == auth_user_id), False)
     if found_user == False:
         raise AccessError(description=f"user not in dm")
+    
+    message_id = data['message_counter'] + 1
+    dm['messages'].insert(0, {'message':message, 'message_id':message_id})
+    user = find_user(member)
+    user['sent_messages'].append(message_id)
+    
+    data['message_counter'] += 1
 
     save_data(data)
     return {message_id}
