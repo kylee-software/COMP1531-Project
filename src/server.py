@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1
+from src.dm import dm_create_v1, dm_remove_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
 from src.other import clear_v1
