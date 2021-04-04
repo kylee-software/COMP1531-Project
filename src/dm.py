@@ -1,6 +1,5 @@
-from error import AccessError, InputError
-from helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
-from message import message_senddm_v1
+from src.error import AccessError, InputError
+from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
 
 def dm_create_v1(token, u_ids):
     '''
@@ -36,86 +35,21 @@ def dm_create_v1(token, u_ids):
         if not is_valid_user_id(id):
             raise InputError(f"u_id: {id} is not a valid user.")
 
-        user_handle = find_user(id)['account_handle']
+        user_handle = find_user(id, data)['account_handle']
         handles.append(user_handle)
 
-    handles.append(find_user(user_id)['account_handle'])
-    dm_name = ','.join(handles.sort())
+    handles.append(find_user(user_id, data)['account_handle'])
+    dm_name = ','.join(sorted(handles))
 
     dm_dict = {
         'creator': user_id,
         'dm_id': dm_id,
         'name': dm_name,
-        'members': handles,
+        'members': u_ids,
         'messages': []
     }
 
     dms.append(dm_dict)
-    save_data()
+    save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
-
-def dm_messages_v1(token, dm_id, start):
-    '''
-    Function to return up to 50 messages between "start" and "start + 50"
-
-    Arguments:
-        token (string)      - an authorisation hash of the user
-        dm_id (int)         - dm_id of the dm the user is part of
-        start (int)         - show messages starting from start; start = 0 means the most recent message
-
-    Exceptions:
-        AccessError - Occurs when the token is invalid and authorised user is not a member of the dm
-
-        InputError  - Occurs when dm_id is invalid and "start" is greater than\
-        the total number of messages in the dm
-
-    Return Value:
-        Returns {messages, start, end} where messages is a dictionary
-    '''
-
-    data = load_data()
-
-    if not is_valid_token(token):
-        raise AccessError("Token is invalid")
-
-    user_id = is_valid_token(token)['user_id']
-    dms = data['dms']
-    is_member = False
-    is_valid_dm_id = False
-    dm_messages = []
-
-    for dm in data['dms']:
-        if dm['dm_id'] == dm_id:
-            is_valid_dm_id = True
-            dm_dict = dm
-            for member in dm['members']:
-                if member == user_id:
-                    is_member = True
-            dm_messages = dm['messages']
-
-    if not is_valid_dm_id:
-        raise InputError("Invalid DM id!")
-
-    if not is_member:
-        raise AccessError("User not part of the dm!")
-
-    # Check valid start number
-    if start >= len(dm_messages):
-        raise InputError("Start is greater than the total number of messages in the dm.")
-
-    # calculate the ending return value
-    end = start + 50 if (start + 50 < len(dms) - 1) else -1
-    messages_dict = {'messages': []}
-
-    if end == -1:
-        for i in range(start, len(dm_messages)):
-            messages_dict['messages'].append(dm_messages[i])
-    else:
-        for i in range(start, end):
-            messages_dict['messages'].append(dm_messages[i])
-
-    messages_dict['start'] = start
-    messages_dict['end'] = end
-
-    return messages_dict

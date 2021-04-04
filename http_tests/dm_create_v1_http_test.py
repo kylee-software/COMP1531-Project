@@ -8,13 +8,14 @@ def token():
     password = "Testpass12345"
     first_name = "firstone"
     last_name = "lastone"
-    token = requests.post(config.url + 'auth/register/v2', json={
+    resp = requests.post(config.url + 'auth/register/v2', json={
         'email': email,
         'password': password,
         'name_first': first_name,
         'name_last': last_name
-    }).json()['token']
+    }).json()
 
+    token = resp['token']
     return token
 
 @pytest.fixture
@@ -23,13 +24,14 @@ def user1():
     password = "Testpass123456"
     first_name = "firsttwo"
     last_name = "lasttwo"
-    u_id = requests.post(config.url + 'auth/register/v2', json={
+    resp = requests.post(config.url + 'auth/register/v2', json={
         'email': email,
         'password': password,
         'name_first': first_name,
         'name_last': last_name
-    }).json()['auth_user_id']
+    }).json()
 
+    u_id = resp['auth_user_id']
     return u_id
 
 @pytest.fixture
@@ -38,21 +40,24 @@ def user2():
     password = "Testpass1234567"
     first_name = "firstthree"
     last_name = "lastthree"
-    u_id = requests.post(config.url + 'auth/register/v2', json={
+    resp = requests.post(config.url + 'auth/register/v2', json={
         'email': email,
         'password': password,
         'name_first': first_name,
         'name_last': last_name
-    }).json()['auth_user_id']
+    }).json()
+
+    u_id = resp['auth_user_id']
     return u_id
 
 def test_invalid_token(user1):
     status_code = requests.post(config.url + 'dm/create/v1', json={
-        'token': "Invalid token",
+        'token': "invalid_token",
         'u_ids': [user1]
     }).status_code
 
     assert status_code == 403  # Status code for AccessError
+    requests.delete(config.url + 'clear/v1')
 
 def test_invalid_u_id(token, user1):
     status_code = requests.post(config.url + 'dm/create/v1', json={
@@ -61,6 +66,7 @@ def test_invalid_u_id(token, user1):
     }).status_code
 
     assert status_code == 400  # Status code for InputError
+    requests.delete(config.url + 'clear/v1')
 
 def test_valid_return(token, user1, user2):
     dm_id1 = requests.post(config.url + 'dm/create/v1', json={
@@ -76,5 +82,4 @@ def test_valid_return(token, user1, user2):
     assert dm_id1 == 1
     assert dm_id2 == 2
 
-    # Reset data
-    requests.delete(config.url + 'clear/v1').json()
+    requests.delete(config.url + 'clear/v1')
