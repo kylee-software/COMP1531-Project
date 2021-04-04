@@ -16,6 +16,7 @@ def token():
         'name_last': last_name
     }).json()
     token = auth_resp['token']
+    print(token)
     return token
 
 @pytest.fixture
