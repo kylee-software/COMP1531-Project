@@ -4,12 +4,13 @@ from src import config
 from src.helper import load_data
 
 
-@pytest.fixture
-def clear():
-    requests.delete(config.url + '/clear/v1')
+# @pytest.fixture
+# def clear():
+#     requests.delete(config.url + '/clear/v1')
 
 @pytest.fixture
-def token():
+def token(clear):
+    requests.delete(config.url + '/clear/v1')
     email = "testmail@gamil.com"
     password = "Testpass12345"
     first_name = "firstname"
@@ -34,7 +35,7 @@ def channel_id(token):
     channel_id = resp['channel_id']
     return channel_id
 
-def test_invalid_token(clear, channel_id):
+def test_invalid_token(channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': "invalid_token",
         'channel_id': channel_id,
@@ -44,7 +45,7 @@ def test_invalid_token(clear, channel_id):
     status_code = resp.status_code
     assert status_code == 403
 
-def test_invalid_channel_id(clear, token, channel_id):
+def test_invalid_channel_id(token, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id + 1,
@@ -54,7 +55,7 @@ def test_invalid_channel_id(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 400
 
-def test_user_not_in_channel(clear, token, channel_id):
+def test_user_not_in_channel(channel_id):
     not_member_token = requests.post(config.url + 'auth/register/v2', json={
         'email': 'test2@unsw.au',
         'password': 'testPassword',
@@ -72,7 +73,7 @@ def test_user_not_in_channel(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 403
 
-def test_invalid_start(clear, token, channel_id):
+def test_invalid_start(token, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': token,
         'channel_id': channel_id,
@@ -82,7 +83,7 @@ def test_invalid_start(clear, token, channel_id):
     status_code = resp.status_code
     assert status_code == 400
 
-def test_last_message(clear, token, channel_id):
+def test_last_message(token, channel_id):
     requests.post(config.url + '/message/send/v2', json={
         'token': token,
         'channel_id': channel_id,
@@ -99,7 +100,7 @@ def test_last_message(clear, token, channel_id):
     end = messages_dict['end']
     assert end == -1
 
-def test_more_messages(clear, token, channel_id):
+def test_more_messages(token, channel_id):
     count = 60
     while count >= 0:
         requests.post(config.url + '/message/send/v2', json={
