@@ -1,6 +1,5 @@
-from werkzeug.exceptions import UnavailableForLegalReasons
 from src.error import InputError, AccessError
-from src.helper import is_valid_token, save_data, load_data, is_valid_user_id
+from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user
 
 def dm_invite(token, dm_id, user_id):
     if not is_valid_token(token):
@@ -13,20 +12,22 @@ def dm_invite(token, dm_id, user_id):
         raise InputError("Invalid dm_id")
 
     if not is_valid_user_id(user_id):
-        raise InputError("User doesn't exist")
+        raise InputError("User you are trying to add doesn't exist")
 
     if dm['members'].count(user_id) != 0:
-        raise InputError("User is already a part of that dm")
+        raise InputError("The user you are trying to add is already a part of that dm")
     
     if dm['members'].count(token['user_id']) == 0:
-        raise InputError("Authorised user is not a part of this dm")
+        raise AccessError("Authorised user is not a part of this dm")
+
+    token_user = find_user(token['user_id'], data)
+    user = next(user for user in data['users'] if user['user_id'] == user_id)
+    user['notifications'].insert(0, {"channel_id": -1, "dm_id": dm_id, "notification_message": f"{token_user['account_handle']} added you to {dm['name']}" })
 
     dm['members'].append(user_id)
     save_data(data)
 
     return {}
-from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
 
 def dm_create_v1(token, u_ids):
     '''
