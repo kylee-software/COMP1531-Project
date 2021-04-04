@@ -5,7 +5,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
-from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
+from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
@@ -96,7 +96,7 @@ def register_v2():
 @ APP.route("/channel/leave/v1", methods=['POST'])
 def channel_leave():
     data = request.get_json()
-    return dumps(channel_leave_v1(data['token'], data['channel_id']))
+    return jsonify(channel_leave_v1(data['token'], data['channel_id']))
 
 
 @APP.route("/channels/create/v2", methods=['POST'])

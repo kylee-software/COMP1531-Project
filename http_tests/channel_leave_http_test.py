@@ -30,7 +30,8 @@ def clear():
 
 def test_channel_leave(clear, channel_id, channel_owner):
     resp = requests.post(config.url + 'channel/leave/v1', json={'token': channel_owner['token'], 'channel_id':channel_id})
-    assert json.loads(resp.text) == {}
+    resp = resp.json()
+    assert resp == {}
 
 def test_channel_leave_input_error(clear, channel_id, channel_owner):
     channel_id += 1
