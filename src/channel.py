@@ -148,14 +148,14 @@ def channel_messages_v2(token, channel_id, start):
 
     data = load_data()
 
-    # Check valid channel_id
-    if not is_valid_channel_id(channel_id):
-        raise InputError("Channel ID is invalid.")
-
     if not is_valid_token(token):
         raise AccessError("Token is invalid")
 
     user_id = is_valid_token(token)['user_id']
+
+    # Check valid channel_id
+    if not is_valid_channel_id(channel_id):
+        raise InputError("Channel ID is invalid.")
 
     channel_info = find_channel(channel_id, data)
     channel_messages = channel_info['messages']

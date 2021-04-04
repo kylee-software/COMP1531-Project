@@ -14,7 +14,6 @@ def token():
         'name_first': first_name,
         'name_last': last_name
     }).json()
-    print(auth_resp)
     token = auth_resp['token']
     return token
 
