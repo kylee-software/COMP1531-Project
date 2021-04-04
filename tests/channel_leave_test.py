@@ -37,10 +37,6 @@ def test_invalid_token(clear, channel_id):
         channel_leave_v1('invalid.token.input', channel_id)
     clear_v1()
 
-def test_invalid_auth_user_id(clear, channel_id, channel_owner):
-    #can this happen if the token is being checked
-    pass
-
 def test_user_not_member(clear, channel_id, user1):
     with pytest.raises(AccessError):
         channel_leave_v1(user1['token'], channel_id)
