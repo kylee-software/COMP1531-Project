@@ -160,7 +160,7 @@ def channel_messages_v2(token, channel_id, start):
     channel_info = find_channel(channel_id, data)
     channel_messages = channel_info['messages']
 
-    if not is_user_in_channel(user_id):
+    if not is_user_in_channel(channel_id, user_id, data):
         raise AccessError(f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
