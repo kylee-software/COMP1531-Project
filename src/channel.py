@@ -1,5 +1,5 @@
-from error import AccessError, InputError
-from helper import is_valid_token, load_data, save_data, is_valid_channel_id
+from src.error import AccessError, InputError
+from src.helper import is_valid_token, load_data, save_data, is_valid_channel_id
 
 def channel_invite_v1(token, channel_id, u_id):
     '''
