@@ -6,6 +6,7 @@ from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
 from src.other import clear_v1
+from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
 
@@ -40,12 +41,20 @@ def echo():
         'data': data
     })
 
+@APP.route("/user/profile/v2", methods=['GET'])
+def user_profile():
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    if u_id.isdigit():
+        details = user_profile_v2(token, int(u_id))
+    else:
+        details = user_profile_v2(token, u_id)
+    return jsonify(details)
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     clear_v1()
     return jsonify({})
-
 
 @ APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
