@@ -47,3 +47,14 @@ def test_user_in_dm(clear, users, num_members):
     details = dm_details_v1(users['tokens'][1], dm['dm_id'])
     assert len(details) == 2
     assert len(details['members']) == num_members
+
+def test_valid_dict_keys(clear, users):
+    dm = dm_create_v1(users['tokens'][0], users['u_ids'])
+    details = dm_details_v1(users['tokens'][1], dm['dm_id'])
+    assert 'names' and 'members' in details 
+    assert 'user_id' in details['members'][0] 
+    assert 'email' in details['members'][0] 
+    assert 'name_first' in details['members'][0] 
+    assert 'name_last' in details['members'][0]
+    assert 'handle_str' in details['members'][0] 
+

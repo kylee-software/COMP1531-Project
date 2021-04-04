@@ -24,17 +24,17 @@ def dm_details_v1(token, dm_id):
     
     data = load_data()
 
-    dm_dict = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
-    #dm_dict = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
-    if not dm_dict:
+    dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
+    #dm = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
+    if not dm:
         raise InputError("dm_id is invalid")
 
-    if dm_dict['members'].count(token['user_id']) == 0:
+    if dm['members'].count(token['user_id']) == 0:
         raise AccessError("User is not in this DM")
 
-    return_dict = {'name' : dm_dict['name'], 'members' : []}
-    for member in dm_dict['members']:
-        user = next(user for user in data['users'] if user['user_id'] == member)
+    return_dict = {'name' : dm['name'], 'members' : []}
+    for member_id in dm['members']:
+        user = next(user for user in data['users'] if user['user_id'] == member_id)
         return_dict['members'].append({'user_id': user['user_id'],
                                      'email': user['email_address'],
                                      'name_first': user['first_name'], 

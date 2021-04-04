@@ -117,6 +117,7 @@ def dm_details():
         details = dm_details_v1(token, dm_id)
     
     return jsonify(details)
+    
 @APP.route('/message/send/v2', methods=['POST'])
 def message_send():
     data = request.get_json()
