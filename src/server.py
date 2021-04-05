@@ -13,7 +13,7 @@ from src.channels import channels_create_v2, channels_listall_v2, channels_list_
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2, auth_logout_v1
-from src.message import message_send_v2
+from src.message import message_send_v2, message_senddm_v1
 
 
 def defaultHandler(err):
@@ -95,6 +95,10 @@ def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
+@ APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    data = request.get_json()
+    return jsonify(message_senddm_v1(data['token'], data['dm_id'], data['message']))
 
 @ APP.route("/channel/leave/v1", methods=['POST'])
 def channel_leave():
