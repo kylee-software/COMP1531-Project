@@ -1,5 +1,5 @@
 from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_user, message_notification_message
-from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm
+from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm, find_message_source, find_message
 from src.error import AccessError, InputError
 from datetime import datetime
 from src.channel import channel_details_v1
@@ -68,6 +68,73 @@ def message_remove_v1(auth_user_id, message_id):
 def message_edit_v1(auth_user_id, message_id, message):
     return {
     }
+
+def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
+    """Shares a message (OGmessage) from the user referenced by the token to the channel or dm referenced by
+    channel_id or dm_id accompanied by an optional message
+    Also adds the msg_id to the 'sent_message' list for the user referenced by token and
+    add notifications to those users that were mentioned in the message
+
+    Args:
+        token (str): jwt encode dict with keys session_id and user_id
+        OG_message_id (int): message id of the message to be shared
+        dm_id (int): id of a dm
+        channel_id (int): id of a channel, may or may not be valid
+        message (str): optional additional message to be sent
+
+    Raises:
+        AccessError: raised when token is invalid
+        InputError: raised when message + message being shared is longer than 1000 characters
+        InputError: raised when channel referenced by channel_id does not exist
+        InputError: raised when dm referenced by dm_id does not exist
+        AccessError: raised when the user reference by token is not part of channel
+        referenced by channel_id or the dm referenced by dm_id
+        AccessError: raised when the user is not part of the channel or dm the OG message
+        is from
+        Input Error: raised if the channel_id or dm_id not being shared to is not -1
+        Input Error: raised if both channel_id and dm_id are -1 
+
+    Returns:
+        int: a unique number identifying the message
+    """
+    data = load_data()
+    if not is_valid_token(token):
+        raise AccessError(description='Unauthorised User')
+    
+    auth_user_id = is_valid_token(token)['user_id']
+    
+    if channel_id == -1 and dm_id == -1:
+        raise InputError(description="a channel id or dm id must be input")
+
+    if channel_id != -1 and dm_id != -1:
+        raise InputError(description='either channel id or dm id must be -1')
+    
+    # make sure OG message id is valid
+    message_source = find_message_source(OG_message_id, data)
+    if message_source == None:
+        raise InputError(description="could not find OG message")
+    
+    OG_message = find_message(OG_message_id, data)
+    
+    # now check user is in og dm or channel
+ 
+    if 'channel_id' in message_source:
+        user = next((user for user in message_source['members'] if user['user_id'] == auth_user_id), False)
+        if user == False:
+            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
+    else:
+        user = next((user for user in message_source['members'] if user == auth_user_id), False)
+        if user == False and message_source['creator'] != auth_user_id:
+            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
+    
+    if channel_id != -1:
+        new_message = message + '\n"""\n' + OG_message + '\n"""\n'
+        return message_send_v2(token, channel_id, new_message)
+        
+    if dm_id != -1:
+        new_message = message + '\n"""\n' + OG_message + '\n"""\n'
+        return message_senddm_v1(token, dm_id, new_message)
+
 
 def message_senddm_v1(token, dm_id, message):
     '''
