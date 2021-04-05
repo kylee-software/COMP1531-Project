@@ -127,10 +127,8 @@ def admin_userpermission():
 def admin_user_remove():
     token = request.get_json()['token']
     u_id = request.get_json()['u_id']
-    if not u_id.isdigit():
-        raise InputError(description="u_id not an integer.")
 
-    return jsonify(admin_user_remove_v1(token, int(u_id)))
+    return jsonify(admin_user_remove_v1(token, u_id))
 
 
 @APP.route("/message/senddm/v1", methods=['POST'])
