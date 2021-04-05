@@ -3,9 +3,9 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1, dm_messages_v1
+from src.dm import dm_create_v1, dm_details_v1, dm_messages_v1
 from src import config
-from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
+from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
@@ -93,6 +93,12 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 
+@ APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave():
+    data = request.get_json()
+    return jsonify(channel_leave_v1(data['token'], data['channel_id']))
+
+
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
     data = request.get_json()
@@ -107,6 +113,17 @@ def dm_create():
 
     return jsonify(dm_dict)
 
+@APP.route('/dm/details/v1', methods=['GET'])
+def dm_details():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    if dm_id.isdigit():
+        details = dm_details_v1(token, int(dm_id))
+    else:
+        details = dm_details_v1(token, dm_id)
+    
+    return jsonify(details)
+    
 @APP.route('/message/send/v2', methods=['POST'])
 def message_send():
     data = request.get_json()
