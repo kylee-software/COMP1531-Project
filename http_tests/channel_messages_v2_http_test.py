@@ -88,7 +88,6 @@ def test_user_not_in_channel(clear, channel_id):
         'channel_id': channel_id,
         'start': 0
     })
-    print(resp)
     status_code = resp.status_code
     assert status_code == 403
 
@@ -115,8 +114,6 @@ def test_messages(clear, token, channel_id):
             'channel_id': channel_id,
             'start': 0
         }).json()
-
-    print(messages_dict)
 
     assert messages_dict['messages'][0]['message'] == '2'
 
