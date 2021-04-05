@@ -1,4 +1,5 @@
 import hashlib
+from types import prepare_class
 import jwt
 import json
 
@@ -219,7 +220,8 @@ def find_message(message_id, data):
                 return message['message']
     return ""
 
-def tag_users(message, sender_handle, dm_id, channel_id, data):
+def tag_users(message, sender_handle, dm_id, channel_id):
+    data = load_data()
     split_message = message.split()
     tagged_handles = []
     for word in split_message:
@@ -238,11 +240,10 @@ def tag_users(message, sender_handle, dm_id, channel_id, data):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id,
-                                                     'notification_message': notification_message})
+                    user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message})
 
     if channel_id != -1:
-        if is_valid_channel_id(channel_id, data) == True:
+        if is_valid_channel_id(channel_id) == True:
             channel = find_channel(channel_id, data)
             members = []
             for member in channel['members']:
@@ -251,7 +252,7 @@ def tag_users(message, sender_handle, dm_id, channel_id, data):
             for user in users_tagged:
                 if user['user_id'] in members:
                     notification_message = f"{sender_handle} tagged you in {channel['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1,
-                                                     'notification_message': notification_message})
+                    user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1, 'notification_message': notification_message})
         
     return None
+
