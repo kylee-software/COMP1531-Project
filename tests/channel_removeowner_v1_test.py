@@ -43,7 +43,7 @@ def test_user_not_owner(clear, owner, channel_id):
     with pytest.raises(InputError):
         channel_removeowner_v1(owner['token'], channel_id, 5)
 
-def test_remove_owner(clear, owner, channel_id):
+def test_remove_only_owner(clear, owner, channel_id):
     with pytest.raises(InputError):
         channel_removeowner_v1(owner['token'], channel_id, owner['auth_user_id'])
 

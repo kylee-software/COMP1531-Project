@@ -75,14 +75,14 @@ def test_user_not_owner(clear, owner, channel_id):
 
     assert status_code == 400
 
-def test_remove_owner(clear, owner, channel_id):
+def test_remove_only_owner(clear, owner, channel_id):
     status_code = requests.post(config.url + 'channel/removeowner/v1', json={
         'token': owner['token'],
         'channel_id': channel_id,
         'u_id': owner['auth_user_id']
     }).status_code
 
-    assert status_code == 403
+    assert status_code == 400
 
 def test_token_not_owner(clear, channel_id, owner):
     not_owner = requests.post(config.url + 'auth/register/v2', json={
