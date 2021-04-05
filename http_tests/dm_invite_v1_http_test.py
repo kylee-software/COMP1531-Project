@@ -31,7 +31,7 @@ def clear():
 def dm_id(user):
     dm = requests.post(config.url + 'dm/create/v1', json={
         'token': user['token'],
-        'u_ids': user['auth_user_id']})
+        'u_ids': [user['auth_user_id']]})
     return dm.json()['dm_id']
 
 def test_invalid_token(clear, user, user2, dm_id):
@@ -53,4 +53,4 @@ def test_invalid_auth_user_not_in_dm(clear, user, user2, dm_id):
 def test_everything_valid(clear, user, user2, dm_id):
     requests.post(config.url + '/dm/invite/v1', json={'token': user['token'], 'dm_id': dm_id, 'u_id': user2['auth_user_id']})
     details = requests.get(config.url + '/dm/details/v1', params={'token': user['token'], 'dm_id': dm_id})
-    assert details.json()['members'] == 2
+    assert len(details.json()['members']) == 2
