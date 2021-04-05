@@ -91,39 +91,41 @@ def admin_user_remove_v1(token, u_id):
                     user['permission_id'] = 2
                 break
 
-    # search through the channels the user with u_id is in
-    for channel in data['channels']:
-        if is_user_in_channel(channel['channel_id'], u_id, data):
-            # remove the user from the channel the user is in
-            for member in channel['members']:
-                if member['user_id'] == u_id:
-                    if member['permission_id'] == 1:
-                        channel_removeowner_v1(token, channel['channel_id'], u_id)
-                    channel['members'].remove(member)
-                    break
-
-            # replace contents of the messages the user sent with "Removed user"
-            for message in channel['messages']:
-                if message['message_author'] == u_id:
-                    message['message'] = "Removed user"
-
-    # search through the dms the user with u_id is in
-    for dm in data['dms']:
-        if is_user_in_dm(dm['dm_id'], u_id, data):
-            # delete the dm if the "removed user" is the creator
-            if dm['creator'] == u_id:
-                data['dms'].remove(dm)
-            else:
-                # remove the user from the dm the user is in
-                for member in dm['members']:
-                    if member == u_id:
-                        dm['members'].remove(u_id)
+    if len(data['channels']) != 0:
+        # search through the channels the user with u_id is in
+        for channel in data['channels']:
+            if is_user_in_channel(channel['channel_id'], u_id, data):
+                # remove the user from the channel the user is in
+                for member in channel['members']:
+                    if member['user_id'] == u_id:
+                        if member['permission_id'] == 1:
+                            channel_removeowner_v1(token, channel['channel_id'], u_id)
+                        channel['members'].remove(member)
                         break
 
                 # replace contents of the messages the user sent with "Removed user"
-                for message in dm['messages']:
+                for message in channel['messages']:
                     if message['message_author'] == u_id:
                         message['message'] = "Removed user"
+
+    if len(data['dms']) != 0:
+        # search through the dms the user with u_id is in
+        for dm in data['dms']:
+            if is_user_in_dm(dm['dm_id'], u_id, data):
+                # delete the dm if the "removed user" is the creator
+                if dm['creator'] == u_id:
+                    data['dms'].remove(dm)
+                else:
+                    # remove the user from the dm the user is in
+                    for member in dm['members']:
+                        if member == u_id:
+                            dm['members'].remove(u_id)
+                            break
+
+                    # replace contents of the messages the user sent with "Removed user"
+                    for message in dm['messages']:
+                        if message['message_author'] == u_id:
+                            message['message'] = "Removed user"
 
     save_data(data)
     return {}

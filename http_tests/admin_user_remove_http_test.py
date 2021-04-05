@@ -34,32 +34,44 @@ def test_invalid_input(clear, user):
     status_code = resp.status_code
     assert status_code == 400
 
-
-def test_admin_user_remove(clear):
-    email1, email2 = "testmail1@gamil.com", "testmail2@gamil.com"
-    password1, password2 = "Testpass12345", "Testpass12346"
-    first_name1, first_name2 = "firstone", "firsttwo"
-    last_name1, last_name2 = "lastone", "lasttwo"
+@pytest.fixture
+def global_owner1():
+    email = "testmail1@gamil.com"
+    password = "Testpass12345"
+    first_name = "firstone"
+    last_name = "lastone"
 
     global_owner1 = requests.post(config.url + 'auth/register/v2', json={
-        'email': email1,
-        'password': password1,
-        'name_first': first_name1,
-        'name_last': last_name1
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
     }).json()
+    return global_owner1
+
+@pytest.fixture
+def global_owner2(global_owner1):
+    email = "testmail2@gamil.com"
+    password = "Testpass123456"
+    first_name = "firsttwo"
+    last_name = "lasttwo"
 
     global_owner2 = requests.post(config.url + 'auth/register/v2', json={
-        'email': email2,
-        'password': password2,
-        'name_first': first_name2,
-        'name_last': last_name2
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
     }).json()
 
     # Make global_owner2 to an owner of Dreams
     requests.post(config.url + "admin/userpermission/change/v1",
-                  json={'token': global_owner1['token'], 'u_id': global_owner2['auth_user_id'],
+                  json={'token': global_owner1['token'],
+                        'u_id': global_owner2['auth_user_id'],
                         'permission_id': 1})
 
+    return global_owner2
+
+def test_admin_user_remove(clear, global_owner1, global_owner2):
     channel_id = requests.post(config.url + 'channels/create/v2', json={
         'token': global_owner1['token'],
         'name': "channelName1",
