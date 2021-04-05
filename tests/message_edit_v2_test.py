@@ -73,12 +73,12 @@ def test_message_incorrect_length_channel(admin, channel_message):
 
 def test_message_sent_by_unauthorised_user_and_not_channel_owner(admin, member, channel_message):
     with pytest.raises(AccessError):
-        message_edit_v2(member['token'], channel_message,
+        message_edit_v2(member['token'], channel_message['message_id'],
                         'this is an updated message in the dm.')
 
 
 def test_success_channel_message(admin, channel, channel_message):
-    message_edit_v2(admin['token'], channel_message,
+    message_edit_v2(admin['token'], channel_message['message_id'],
                     'this edit is valid in this channel.')
     channel_messages = channel_messages_v2(
         admin['token'], channel['channel_id'], 0)
