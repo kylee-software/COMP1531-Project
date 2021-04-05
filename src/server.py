@@ -141,15 +141,6 @@ def channel_leave():
     return jsonify(channel_leave_v1(data['token'], data['channel_id']))
 
 
-@APP.route("/channel/addowner/v1", methods=['POST'])
-def channel_addowner():
-    data = request.get_json()
-    decoded_token = is_valid_token(data['token'])
-    if decoded_token is False:
-        raise AccessError("Invalid Token.")
-    return jsonify(channel_addowner_v1(decoded_token['user_id'], data['channel_id'], data['u_id']))
-
-
 @APP.route("/user/profile/setname/v2", methods=['PUT'])
 def user_profile_setname():
     data = request.get_json()
