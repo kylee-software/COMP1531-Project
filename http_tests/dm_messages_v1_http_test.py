@@ -56,6 +56,23 @@ def unauthorised_user():
     }).json()['token']
     return token
 
+def test_invalid_input(token, channel_id):
+    resp1 = requests.get(config.url + 'dm/messages/v1', params={
+        'token': token,
+        'channel_id': "abc",
+        'start': 0
+    })
+    resp2 = requests.get(config.url + 'dm/messages/v1', params={
+        'token': token,
+        'channel_id': channel_id,
+        'start': "ab"
+    })
+
+    status_code1 = resp1.status_code
+    status_code2 = resp2.status_code
+    assert status_code1 == 400
+    assert status_code2 == 400
+
 def test_invalid_token(dm_id):
     status_code = requests.get(config.url + 'dm/messages/v1', params={
         'token': "invalid_token",
@@ -93,11 +110,18 @@ def test_invalid_start(token, dm_id):
     assert status_code == 400
 
 def test_last_message(token, dm_id):
-    resp = requests.post(config.url + 'message/senddm/v1', json={
+    requests.post(config.url + 'message/senddm/v1', json={
         'token': token,
         'dm_id': dm_id,
         'message': "Hi, everyone!"
     })
+
+    resp = requests.get(config.url + 'dm/messages/v1', params={
+        'token': token,
+        'dm_id': dm_id,
+        'start': 0
+    })
+
     end = resp.json()['end']
     assert end == -1
 
