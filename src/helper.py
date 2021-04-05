@@ -6,6 +6,32 @@ import json
 SECRET = 'WED09B-ECHO'
 
 
+def load_data():
+    '''
+    loads the data from a json file called data.json
+
+    Return Type:
+        data that was stored in data.json if its in the 
+        correct format ({'users':[], 'channels':[]})
+
+        or returns empty data ({'users':[], 'channels':[]}) 
+        if the data in the json file was the incorrect format
+    '''
+    try:
+        with open('src/data.json', 'r') as FILE:
+            data = json.load(FILE)
+            if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
+                return data
+            else:
+                return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+    except:
+        with open('src/data.json', 'w') as FILE:
+            data_setup = {'users': [], 'channels': [],
+                          'dms': [], 'msg_counter': 0}
+            json.dump(data_setup, FILE)
+            return data_setup
+
+
 def return_valid_tagged_handles(message, channel_id):
     data = load_data()
     split_message = message.split()
@@ -20,10 +46,12 @@ def return_valid_tagged_handles(message, channel_id):
             real_handles.append(handle)
 
     real_handles_in_channel = []
-    channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
+    channel = next(
+        (channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
     for handle in real_handles:
         for member in channel['members']:
-            m_handle = next(user['account_handle'] for user in data['users'] if user['user_id'] == member['user_id'])
+            m_handle = next(user['account_handle']
+                            for user in data['users'] if user['user_id'] == member['user_id'])
             if m_handle == handle:
                 real_handles_in_channel.append(handle)
 
@@ -146,39 +174,13 @@ def save_data(data):
             json.dump(data, FILE)
     else:
         raise Exception(
-            "attempting to save incorrrect data format, must be {'users':[], 'channels':[], 'dms':[], 'msg_counter':0'}")
-
-
-def load_data():
-    '''
-    loads the data from a json file called data.json
-
-    Return Type:
-        data that was stored in data.json if its in the 
-        correct format ({'users':[], 'channels':[]})
-
-        or returns empty data ({'users':[], 'channels':[]}) 
-        if the data in the json file was the incorrect format
-    '''
-    try:
-        with open('src/data.json', 'r') as FILE:
-            data = json.load(FILE)
-            if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
-                return data
-            else:
-                return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
-    except:
-        with open('src/data.json', 'w') as FILE:
-            data_setup = {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
-            json.dump(data_setup, FILE)
-            return data_setup
+        )
 
 
 def find_user(user_id, data):
     for user in data['users']:
         if user['user_id'] == user_id:
             return user
-
 
 
 def find_channel(channel_id, data):
@@ -200,26 +202,36 @@ def is_user_in_channel(channel_id, user_id, data):
             return True
     return False
 
+
 def invite_notification_message(token, id, name, is_channel):
     data = load_data()
-    
+
     if is_channel:
         token_user = find_user(token['user_id'], data)
-        return {"channel_id": id, "dm_id": -1, "notification_message": f"{token_user['account_handle']} added you to {name}" }
-    else: 
+        return {"channel_id": id, "dm_id": -1, "notification_message": f"{token_user['account_handle']} added you to {name}"}
+    else:
         token_user = find_user(token['user_id'], data)
-        return {"channel_id": -1, "dm_id": id, "notification_message": f"{token_user['account_handle']} added you to {name}" }
+        return {"channel_id": -1, "dm_id": id, "notification_message": f"{token_user['account_handle']} added you to {name}"}
+
 
 def message_notification_message(token, id, name, is_channel, message):
     data = load_data()
     if is_channel:
         token_user = find_user(token['user_id'], data)
         notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
-        return {'channel_id' : id, 'dm_id': -1, 'notification_message': notification_message}
+        return {'channel_id': id, 'dm_id': -1, 'notification_message': notification_message}
     else:
         token_user = find_user(token['user_id'], data)
         notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
-        return {'channel_id' : -1, 'dm_id': id, 'notification_message': notification_message}
+        return {'channel_id': -1, 'dm_id': id, 'notification_message': notification_message}
+
+
+def find_user_channel_owner_status(channel_id, user_id, data):
+    channel = find_channel(channel_id, data)
+    for member in channel['members']:
+        if member['user_id'] == user_id:
+            return member['permission_id']
+
 
 def is_user_in_dm(dm_id, user_id, data):
     dm = find_dm(dm_id, data)
@@ -277,6 +289,6 @@ def tag_users(message, sender_handle, dm_id, channel_id):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    return user['user_id'], {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message}
-        
+                    return user['user_id'], {'channel_id': -1, 'dm_id': dm_id, 'notification_message': notification_message}
+
     return False
