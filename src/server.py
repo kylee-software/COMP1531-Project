@@ -2,15 +2,14 @@ import sys
 from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from src.error import InputError, AccessError
+from src.error import InputError
 from src import config
-from src.helper import is_valid_token, load_data
 from src.error import InputError
 from src.dm import dm_create_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1
 from src.other import clear_v1
-from src.user import user_profile_v2
+from src.user import user_profile_v2, users_all_v1
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
 from src.message import message_send_v2
@@ -50,10 +49,8 @@ def echo():
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
     token = request.args.get('token')
-    if not is_valid_token(token):
-        raise AccessError('Invalid User')
-    data = load_data
-    return data['users']
+    list = users_all_v1(token)
+    return jsonify(list)
 
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():

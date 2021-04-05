@@ -1,5 +1,4 @@
 import pytest
-from src.auth import auth_register_v1
 from src.other import clear_v1
 import requests
 from src import config
@@ -7,33 +6,26 @@ from src.error import AccessError
 
 @pytest.fixture
 def create_users():
-    clear_v1()
-    email = "test1email@gmail.com"
-    password = "TestTest1"
-    firstname = "firstname1"
-    lastname = "lastname1"
-    auth_register_v1(email, password, firstname, lastname)
-    email = "test2email@gmail.com"
-    password = "TestTest2"
-    firstname = "firstname2"
-    lastname = "lastname2"
-    auth_register_v1(email, password, firstname, lastname)
-    email = "test3email@gmail.com"
-    password = "TestTest3"
-    firstname = "firstname3"
-    lastname = "lastname3"
-    auth_register_v1(email, password, firstname, lastname)
-    email = "test4email@gmail.com"
-    password = "TestTest4"
-    firstname = "firstname4"
-    lastname = "lastname4"
-    return auth_register_v1(email, password, firstname, lastname)
+    for i in range(5):
+        email = f"test{i}email@gmail.com"
+        password = f"TestTest{i}"
+        firstname = f"firstname{i}"
+        lastname = f"lastname{i}"
+        token = requests.post(config.url + '/auth/register/v2', json={'email': email,
+                                                            'password': password,
+                                                            'name_first': firstname,
+                                                            'name_last': lastname,
+                                                            })
+    return token.json()['token']
 
-def returns_4_users(create_user):
-    assert len(requests.get(config.url +'/users/all/v1', params={'token' : create_user})) == 4
+@pytest.fixture
+def clear():
+    requests.delete(config.url + '/clear/v1')
 
-def invalid_token():
-    clear_v1()
-    with pytest.raises(AccessError):
-        requests.get(config.url + '/users/all/v1', params={'token' : {'test' : 'token'}})
+def returns_4_users(clear, create_users):
+    list = requests.get(config.url +'/users/all/v1', params={'token' : create_users})
+    assert len(list.json()['users']) == 4
 
+def invalid_token(clear, create_users):
+    response = requests.get(config.url + '/users/all/v1', params={'token' : {'test' : 'token'}})
+    assert response.status_code == 403

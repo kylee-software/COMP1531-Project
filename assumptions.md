@@ -34,3 +34,6 @@
 
 ## message_send
 - You are allowed to tag yourself in a message
+
+## user/profile/v1
+- Will not list removed users

@@ -11,7 +11,7 @@ def token():
     password = "TestTest"
     firstname = "firstname"
     lastname = "lastname"
-    return auth_register_v2(email,password,firstname, lastname)
+    return auth_register_v2(email,password,firstname, lastname)['token']
 
 @pytest.fixture
 def users():
