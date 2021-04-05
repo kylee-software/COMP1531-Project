@@ -88,4 +88,4 @@ def test_admin_user_remove(clear, global_owner1, global_owner2):
         'u_id': global_owner2['auth_user_id'],
     })
 
-    assert resp.json() == {}
+    assert json.loads(resp.text) == {}
