@@ -1,6 +1,6 @@
 import pytest
 from src.auth import auth_register_v2
-from src.dm import dm_create_v1, dm_invite
+from src.dm import dm_create_v1, dm_invite, dm_details_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
 import jwt
@@ -61,4 +61,4 @@ def test_user_not_in_dm(clear, token, user_id_list):
 def test_everything_valid(clear, token, user_id_list):
     dm = dm_create_v1(token['token'], user_id_list[1:] + [token['auth_user_id']])
     dm_invite(token['token'], dm['dm_id'], user_id_list[0])
-    assert len(dm_details_v2(token, dm['dm_id'])['members']) == 6
+    assert len(dm_details_v1(token['token'], dm['dm_id'])['members']) == 6
