@@ -1,6 +1,7 @@
-from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data
+from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, message_notification_message
 from src.error import AccessError, InputError
 from datetime import datetime
+from src.channel import channel_details_v1
 
 
 def message_send_v2(token, channel_id, message):
@@ -25,6 +26,7 @@ def message_send_v2(token, channel_id, message):
         int: a unique number identifying the message
     """
     data = load_data()
+    channel_name = channel_details_v1(token, channel_id)['name']
     if not is_valid_token(token):
         raise AccessError('Unauthorised User')
     token = is_valid_token(token)
@@ -48,12 +50,11 @@ def message_send_v2(token, channel_id, message):
         auth_messages.insert(0, data['msg_counter'] + 1)
 
         tagged_handles = return_valid_tagged_handles(message, channel_id)
-        user_handle = next(user['account_handle'] for user in data['users'] if user['user_id'] == token['user_id'])
         for user in channel['members']:
             user = next((member for member in data['users'] if member['user_id'] == user['user_id']), False)
             if user and tagged_handles.count(user['account_handle']) != 0:
-                notification_message = f"{user_handle} tagged you in {channel['name']}: {message[:20]}"
-                user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1, 'notification_message': notification_message})
+                user['notifications'].insert(0, message_notification_message(token, channel_id, channel_name, True, message))
+                
 
         data['msg_counter'] += 1
         save_data(data)

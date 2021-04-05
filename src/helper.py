@@ -175,3 +175,24 @@ def is_user_in_channel(channel_id, user_id, data):
         if member['user_id'] == user_id:
             return True
     return False
+
+def invite_notification_message(token, id, name, is_channel):
+    data = load_data()
+    
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": id, "dm_id": -1, "notification_message": f"{token_user['account_handle']} added you to {name}" }
+    else: 
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": -1, "dm_id": id, "notification_message": f"{token_user['account_handle']} added you to {name}" }
+
+def message_notification_message(token, id, name, is_channel, message):
+    data = load_data()
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id' : id, 'dm_id': -1, 'notification_message': notification_message}
+    else:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id' : id, 'dm_id': -1, 'notification_message': notification_message}
