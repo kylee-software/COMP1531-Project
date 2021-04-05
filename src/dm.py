@@ -1,5 +1,5 @@
-from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user, find_dm, is_valid_dm_id, is_user_in_dm
+from src.error import InputError, AccessError
+from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user, invite_notification_message, find_dm, is_valid_dm_id, is_user_in_dm
 
 def dm_invite_v1(token, dm_id, user_id):
     """Adds the user referenced by user_id to the dm referenced by dm_id
@@ -37,9 +37,9 @@ def dm_invite_v1(token, dm_id, user_id):
     if dm['members'].count(token['user_id']) == 0:
         raise AccessError("Authorised user is not a part of this dm")
 
-    token_user = find_user(token['user_id'], data)
+    
     user = next(user for user in data['users'] if user['user_id'] == user_id)
-    user['notifications'].insert(0, {"channel_id": -1, "dm_id": dm_id, "notification_message": f"{token_user['account_handle']} added you to {dm['name']}" })
+    user['notifications'].insert(0, invite_notification_message(token, dm_id, dm['name'], False))
 
     dm['members'].append(user_id)
     save_data(data)
