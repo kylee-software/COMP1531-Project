@@ -1,4 +1,3 @@
-import sys
 from json import dumps
 from types import prepare_class
 
@@ -7,6 +6,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src import config
+from src.admin import admin_changepermission_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
@@ -17,9 +17,10 @@ from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
                     dm_remove_v1)
 from src.error import InputError
 from src.helper import is_valid_token
-from src.message import message_send_v2, message_senddm_v1
-from src.other import clear_v1
-from src.user import user_profile_v2
+from src.message import message_send_v2, message_senddm_v1, message_share_v1
+from src.other import clear_v1, notifications_get_v1
+from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
+                      user_profile_v2)
 
 
 def defaultHandler(err):
@@ -52,6 +53,13 @@ def echo():
     return dumps({
         'data': data
     })
+
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications():
+    token = request.args.get('token')
+    notifications = notifications_get_v1(token)
+    return jsonify(notifications)
 
 
 @APP.route("/channel/details/v2", methods=['GET'])
@@ -106,6 +114,12 @@ def login_v2():
 def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
+
+
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission():
+    data = request.get_json()
+    return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
 
 
 @APP.route("/message/senddm/v1", methods=['POST'])
@@ -182,6 +196,12 @@ def message_send():
     return jsonify(msg_id)
 
 
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def user_sethandle():
+    data = request.get_json()
+    return jsonify(user_profile_sethandle_v1(data['token'], data['handle_str']))
+
+
 @APP.route('/auth/logout/v1', methods=['POST'])
 def auth_logout():
     data = request.get_json()
@@ -193,6 +213,19 @@ def auth_logout():
 def dm_remove():
     data = request.get_json()
     return jsonify(dm_remove_v1(data['token'], data['dm_id']))
+
+
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share():
+    data = request.get_json()
+    return jsonify(message_share_v1(data['token'], data['og_message_id'], data['message'], data['channel_id'], data['dm_id']))
+
+
+@APP.route("/user/profile/setemail/v2", methods=['PUT'])
+def user_profile_setemail():
+    data = request.get_json()
+    user_profile_setemail_v2(data['token'], data['email'])
+    return dumps({})
 
 
 @APP.route("/dm/messages/v1", methods=['GET'])

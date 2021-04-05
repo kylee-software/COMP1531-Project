@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.helper import (find_channel, find_user,
-                        find_user_channel_owner_status, is_user_in_channel,
+                        find_user_channel_owner_status,
+                        invite_notification_message, is_user_in_channel,
                         is_valid_channel_id, is_valid_token, is_valid_user_id,
                         load_data, save_data)
 
@@ -53,6 +54,7 @@ def channel_invite_v1(token, channel_id, u_id):
     global_owner = 2
     for user in data['users']:
         if user['user_id'] == u_id:
+            invited_user = user
             global_owner = user['permission_id']
 
     # add if user isnt already in the channel
@@ -63,6 +65,10 @@ def channel_invite_v1(token, channel_id, u_id):
                     return {}
             channel['members'].append(
                 {'user_id': u_id, 'permission_id': global_owner})
+            # notification message
+            channel_name = channel_details_v1(token, channel_id)['name']
+            invited_user['notifications'].insert(0, invite_notification_message(
+                token_data, channel_id, channel_name, True))
 
     save_data(data)
     return {

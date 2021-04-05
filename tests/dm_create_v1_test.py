@@ -36,7 +36,7 @@ def test_invalid_token(user1):
         dm_create_v1("Invalid token", [user1])
     clear_v1()
 
-def test_invalid_u_id(token, user1):
+def test_invalid_u_ids(token, user1):
     with pytest.raises(InputError):
         dm_create_v1(token, [user1, 123])
     clear_v1()
