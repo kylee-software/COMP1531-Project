@@ -155,12 +155,18 @@ def load_data():
         or returns empty data ({'users':[], 'channels':[]}) 
         if the data in the json file was the incorrect format
     '''
-    with open('src/data.json', 'r') as FILE:
-        data = json.load(FILE)
-        if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
-            return data
-        else:
-            return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+    try:
+        with open('src/data.json', 'r') as FILE:
+            data = json.load(FILE)
+            if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
+                return data
+            else:
+                return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+    except:
+        with open('src/data.json', 'w') as FILE:
+            data_setup = {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+            json.dump(data_setup, FILE)
+            return data_setup
 
 
 def find_user(user_id, data):
