@@ -99,7 +99,7 @@ def message_remove_v1(token, message_id):
                 in_channel = True
                 if message['message_author'] == user_id:
                     is_authorised = True
-                if user_id in channel['owners']:
+                if user_id in channel['owner']:
                     is_authorised = True
 
     if in_channel and not is_authorised:

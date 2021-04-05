@@ -37,20 +37,20 @@ def dm_id(auth_user, member):
     return dm_id
 
 def test_remove_channel_message(auth_user, channel_id):
-    message_send_v2(auth_user, channel_id, "Hi!")
+    message_id = message_send_v2(auth_user, channel_id, "Hi!")
     channel_messages_count_before = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
     assert channel_messages_count_before == 1
 
     channel_messages_count_after = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
-    message_remove_v1(auth_user, channel_id)
+    message_remove_v1(auth_user, message_id)
     assert channel_messages_count_after == 0
 
 def test_remove_dm_message(auth_user, dm_id):
-    message_senddm_v1(auth_user, dm_id, "Hi!")
+    message_id = message_senddm_v1(auth_user, dm_id, "Hi!")['message_id']
     dm_messages_count_before = len(dm_messages_v1(auth_user, dm_id, 0)['messages'])
     assert dm_messages_count_before == 1
 
-    message_remove_v1(auth_user, dm_id)
+    message_remove_v1(auth_user, message_id)
     dm_messages_count_after = len(dm_messages_v1(auth_user, dm_id, 0)['messages'])
     assert dm_messages_count_after == 0
 
@@ -59,7 +59,7 @@ def test_invalid_token(auth_user, channel_id):
     with pytest.raises(AccessError):
         message_remove_v1("invalid_token", channel_message_id)
 
-def test_unauthorised_auth_user(member, channel_id, dm_id):
+def test_unauthorised_auth_user(auth_user, member, channel_id, dm_id):
     # Test when a auth_user is not the sender nor an owner of the channel owner nor an owner of Dreams
     channel_message_id = message_send_v2(auth_user, channel_id, "Hi!")
     dm_message_id = message_senddm_v1(auth_user, dm_id, "Hi!")['message_id']
