@@ -41,25 +41,23 @@ def test_remove_messages(auth_user, channel_message_info, dm_message_info):
     clear_v1()
     channel_id = channel_message_info[0]
     channel_message_id = channel_message_info[1]
+
+    channel_messages_count_before = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
+    assert channel_messages_count_before == 1
+
+    message_remove_v1(auth_user, channel_message_id)
+    channel_messages_count_after = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
+    assert channel_messages_count_after == 0
+    clear_v1()
+
     dm_id = dm_message_info[0]
     dm_message_id = dm_message_info[1]
 
-    channel_messages_count_before = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
     dm_messages_count_before = len(dm_messages_v1(auth_user, dm_id, 0)['messages'])
-
-    # Make sure that the messages are added
-    assert channel_messages_count_before == 1
     assert dm_messages_count_before == 1
 
-    # Remove messages
-    message_remove_v1(auth_user, channel_message_id)
     message_remove_v1(auth_user, dm_message_id)
-
-    channel_messages_count_after = len(channel_messages_v2(auth_user, channel_id, 0)['messages'])
     dm_messages_count_after = len(dm_messages_v1(auth_user, dm_id, 0)['messages'])
-
-    # Ensured that the messages are removed i.e. the message_remove function works
-    assert channel_messages_count_after == 0
     assert dm_messages_count_after == 0
 
 def test_invalid_token(dm_message_info):
@@ -78,4 +76,7 @@ def test_invalid_message_id(auth_user, channel_message_info, dm_message_info):
     clear_v1()
     with pytest.raises(InputError):
         message_remove_v1(auth_user, channel_message_info[1] + 1)
+
+    clear_v1()
+    with pytest.raises(InputError):
         message_remove_v1(auth_user, dm_message_info[1] + 1)
