@@ -24,7 +24,7 @@ def channel_invite_v1(token, channel_id, u_id):
     if is_valid_token(token) == False:
         raise AccessError(description=f"Auth_user_id: {token} is invalid")
     
-    if is_valid_token(u_id) == False:
+    if is_valid_user_id(u_id) == False:
         raise InputError(description=f"invalid u_id: {u_id}")
         
     #check auth_user is in channel
