@@ -13,7 +13,7 @@ from src.channels import channels_create_v2, channels_listall_v2, channels_list_
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2, auth_logout_v1
-from src.message import message_send_v2, message_senddm_v1
+from src.message import message_send_v2, message_senddm_v1, message_share_v1
 
 
 def defaultHandler(err):
@@ -165,6 +165,11 @@ def auth_logout():
 def dm_remove():
     data = request.get_json()
     return jsonify(dm_remove_v1(data['token'], data['dm_id']))
+
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share():
+    data = request.get_json()
+    return jsonify(message_share_v1(data['token'], data['og_message_id'], data['message'], data['channel_id'], data['dm_id']))
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
