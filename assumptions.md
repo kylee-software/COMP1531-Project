@@ -40,6 +40,6 @@
 - You are allowed to tag yourself in a message
 
 ## message share
-- If the optional message that goes with the shared messaged is over 1000 characters its too long and an input error is raised
+- If the optional message plus the shared messaged together is over 1000 characters its too long and an input error is raised
 - If the person sharing the message is not in the channel or dm the original message is from they are not authorised to share it and an access error is raised
 - If either channel_id or dm_id is not -1 an input error will be raised

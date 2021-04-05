@@ -70,6 +70,33 @@ def message_edit_v1(auth_user_id, message_id, message):
     }
 
 def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
+    """Shares a message (OGmessage) from the user referenced by the token to the channel or dm referenced by
+    channel_id or dm_id accompanied by an optional message
+    Also adds the msg_id to the 'sent_message' list for the user referenced by token and
+    add notifications to those users that were mentioned in the message
+
+    Args:
+        token (str): jwt encode dict with keys session_id and user_id
+        OG_message_id (int): message id of the message to be shared
+        dm_id (int): id of a dm
+        channel_id (int): id of a channel, may or may not be valid
+        message (str): optional additional message to be sent
+
+    Raises:
+        AccessError: raised when token is invalid
+        InputError: raised when message + message being shared is longer than 1000 characters
+        InputError: raised when channel referenced by channel_id does not exist
+        InputError: raised when dm referenced by dm_id does not exist
+        AccessError: raised when the user reference by token is not part of channel
+        referenced by channel_id or the dm referenced by dm_id
+        AccessError: raised when the user is not part of the channel or dm the OG message
+        is from
+        Input Error: raised if the channel_id or dm_id not being shared to is not -1
+        Input Error: raised if both channel_id and dm_id are -1 
+
+    Returns:
+        int: a unique number identifying the message
+    """
     data = load_data()
     if not is_valid_token(token):
         raise AccessError(description='Unauthorised User')
@@ -77,9 +104,6 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     auth_user_id = is_valid_token(token)['user_id']
     auth_user_handle = find_user(auth_user_id, data)['account_handle']
 
-    if len(message) > 1000:
-        raise InputError(description='Message is longer than 1000 characters')
-    
     if channel_id != -1 and dm_id != -1:
         if channel_id == -1 and dm_id == -1:
             raise InputError(description="a channel id or dm id must be input")
@@ -106,45 +130,10 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
                 raise AccessError(description=f'User not in the original dm/channel message is being shared from')
     
     if channel_id != -1:
-        # make sure channel id is valid
-        if is_valid_channel_id(channel_id) == False:
-            raise InputError(description='channel is invalid')
-        channel = find_channel(channel_id, data)
-
-        # now check user is in channel message is being shared to 
-        if is_user_in_channel(auth_user_id, channel_id, data) == False:
-            raise AccessError(description='user is not in the channel they are sharing message to')
-        
-        # if all checks pass now we share the message
-        new_message = {'message_id' : message_counter, 'message_author' : auth_user_id,
-                            'message' : message + '\n"""\n' + OG_message + '\n"""\n' , "time_created" :str(datetime.now())}
-        channel['messages'].insert(0, new_message)
-
-        # notify tagged users
-        tag_users(message, auth_user_handle, -1, channel_id, data)
-        
-        data['msg_counter'] += 1
-        save_data(data)
-        return message_counter
+        new_message = message + '\n"""\n' + OG_message + '\n"""\n'
+        return message_send_v2(token, channel_id, new_message)
         
     if dm_id != -1:
-        # make sure dm id is valid
-        if is_valid_dm_id(dm_id, data) == False:
-            raise InputError(description='dm is invalid')
-        dm = find_dm(dm_id, data)
+        new_message = message + '\n"""\n' + OG_message + '\n"""\n'
+        return message_senddm_v1(token, dm_id, new_message)
 
-        # now check user is in dm message is being shared to 
-        if is_user_in_dm(auth_user_id, dm_id, data) == False:
-            raise AccessError(description='user is not in the dm they are sharing message to')
-        
-        # if all checks pass now we share the message
-        new_message = {'message_id' : message_counter, 'message_author' : auth_user_id,
-                            'message' : message + '\n"""\n' + OG_message + '\n"""\n' , "time_created" :str(datetime.now())}
-        dm['messages'].insert(0, new_message)
-
-        # notify tagged users
-        tag_users(message, auth_user_handle, dm_id, -1, data)
-
-        data['msg_counter'] += 1
-        save_data(data)
-        return data['msg_counter']
