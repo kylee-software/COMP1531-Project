@@ -25,7 +25,7 @@ def member():
     return user_info
 
 @pytest.fixture
-def channel_id_1(owner, member):
+def channel_id(owner, member):
     channel_id = channels_create_v2(owner['token'], "channelName1", True)['channel_id']
     channel_join_v1(member['token'], channel_id) # owner is now an owner of this new channel
     return channel_id

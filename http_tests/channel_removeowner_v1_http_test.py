@@ -35,7 +35,7 @@ def member():
     return user_info
 
 @pytest.fixture
-def channel_id_1(owner, member):
+def channel_id(owner, member):
     channel_id = requests.post(config.url + 'channels/create/v2', json={
         'token': owner['token'],
         'name': "channelName1",
