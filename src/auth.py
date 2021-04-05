@@ -1,6 +1,6 @@
 import re
 
-from src.error import InputError
+from src.error import AccessError, InputError
 from src.helper import save_data, load_data, create_token, hash_password, is_valid_token
 import uuid
 import jwt
@@ -181,13 +181,14 @@ def auth_logout_v1(token):
         boolean: True if successfully logged out, False if otherwise
     """
     if not is_valid_token(token):
-        return False
+        raise AccessError('Token is invalid')
     else: 
         data = load_data()
-        decoded_token = is_valid_token(token)
+        token = is_valid_token(token)
         for user in data['users']:
-            if user['session_list'].count(decoded_token['session_id']) != 0:
-                user['session_list'].remove(decoded_token['session_id'])
+            if user['session_list'].count(token['session_id']) != 0:
+                user['session_list'].remove(token['session_id'])
                 save_data(data)
                 return {'is_success': True}
+
     return {'is_success': False}

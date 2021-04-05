@@ -20,7 +20,8 @@ def clear():
 def test_invalid_token():
     clear_v1()
     invalid_token = jwt.encode({'some' : 'value'}, "TestingSecret", algorithm='HS256')
-    assert auth_logout_v1(invalid_token) == False
+    with pytest.raises(AccessError):
+        auth_logout_v1(invalid_token)
 
 def test_correct_return(clear, token):    
     assert auth_logout_v1(token) == {'is_success': True}

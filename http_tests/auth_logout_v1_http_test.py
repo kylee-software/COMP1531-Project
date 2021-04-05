@@ -11,7 +11,7 @@ def token():
     response = requests.post(config.url + '/auth/register/v2', json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
     return response.json()['token']
 
-pytest.fixture
+@pytest.fixture
 def clear():
     requests.delete(config.url + '/clear/v1')
 
@@ -20,5 +20,5 @@ def test_invalid_token(clear):
     assert response.status_code == 403
 
 def test_valid_response(clear, token):
-    response = requests.post(config.url + '/auth/logout/v1', json={'token'})
+    response = requests.post(config.url + '/auth/logout/v1', json={'token': token})
     assert response.json()['is_success'] == True
