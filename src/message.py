@@ -111,10 +111,13 @@ def message_senddm_v1(token, dm_id, message):
     dm['messages'].insert(0, new_message)
     
     # notify tagged users
-    tag_users(message, auth_user['account_handle'], dm_id, -1)
-    
+    user_message = tag_users(message, auth_user['account_handle'], dm_id, -1)
+    if user_message:
+        user, message = user_message
+        user['notifications'].insert(0, message)
+        print(user)
     auth_user['sent_messages'].append(message_id)
     data['msg_counter'] += 1
-
     save_data(data)
+   
     return {'message_id':message_id}
