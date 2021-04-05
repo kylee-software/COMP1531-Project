@@ -11,7 +11,7 @@ from src.admin import admin_changepermission_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
-                         channel_messages_v2)
+                         channel_messages_v2, channel_removeowner_v1)
 from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
 from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
@@ -275,6 +275,12 @@ def channel_messages():
 
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
+
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner():
+    data= request.get_json()
+    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    return jsonify({})
 
 
 if __name__ == "__main__":
