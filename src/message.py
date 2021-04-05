@@ -1,5 +1,6 @@
 from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data
-from src.helper import is_valid_channel_id, is_valid_user_id, find_user, find_channel
+from src.helper import find_message, is_valid_channel_id, is_user_in_channel
+from src.helper import is_valid_dm_id, find_dm, tag_users, find_message_source, find_user_in_dm
 from src.error import AccessError, InputError
 from datetime import datetime
 
@@ -76,23 +77,25 @@ def message_senddm_v1(token, dm_id, message):
         raise AccessError(description=f"Token invalid")
     
     auth_user_id = token_data['user_id']
-    if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
+    if is_valid_dm_id(dm_id, data) == False:
+        raise InputError(description='dm is invalid')
+    dm = find_dm(dm_id, data)
 
-    dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
-    if dm == False:
-        raise InputError(description=f"invalid dm id")
-    
-    member = next((member for member in dm['members'] if member == auth_user_id), False)
-    if found_user == False:
-        raise AccessError(description=f"user not in dm")
+    if is_user_in_dm(auth_user_id, dm_id, data) == False:
+        raise AccessError(description='user is not in the dm they are sharing message to')
     
     message_id = data['message_counter'] + 1
-    dm['messages'].insert(0, {'message':message, 'message_id':message_id})
+    new_message = {'message_id' : message_counter, 'message_author' : auth_user_id,
+                            'message' : message + '\n"""\n' + OG_message + '\n"""\n' , "time_created" :str(datetime.now())}
+    dm['messages'].insert(0, new_message)
+    
+    # notify tagged users
+    tag_users(message, auth_user_handle, dm_id, -1, data)
+
     user = find_user(member)
     user['sent_messages'].append(message_id)
     
