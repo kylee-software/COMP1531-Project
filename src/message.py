@@ -81,8 +81,6 @@ def message_remove_v1(token, message_id):
     '''
 
     data = load_data()
-    channels = data['channels']
-    dms = data['dms']
     in_channel = False
     in_dm = False
     is_authorised = False
@@ -93,7 +91,7 @@ def message_remove_v1(token, message_id):
     user_id = is_valid_token(token)['user_id']
     is_authorised = True if find_user(user_id, data)['permission_id'] == 1 else False
 
-    for channel in channels:
+    for channel in data['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 in_channel = True
@@ -105,13 +103,13 @@ def message_remove_v1(token, message_id):
     if in_channel and not is_authorised:
         raise AccessError("Not the sender nor an owner of the channel the message was sent in nor an owner of Dreams.")
     if in_channel and is_authorised:
-        for channel in channels:
+        for channel in data['channels']:
             for message in channel['messages']:
                 if message['message_id'] == message_id:
                     channel['messages'].remove(message)
                     return {}
 
-    for dm in dms:
+    for dm in data['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 in_dm = True
@@ -121,7 +119,7 @@ def message_remove_v1(token, message_id):
     if in_dm and not is_authorised:
         raise AccessError("Not the sender nor an owner of Dreams")
     if in_dm and is_authorised:
-        for dm in dms:
+        for dm in data['dms']:
             for message in dm['messages']:
                 if message['message_id'] == message_id:
                     dm['messages'].remove(message)
