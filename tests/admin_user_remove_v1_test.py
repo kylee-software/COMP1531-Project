@@ -58,7 +58,7 @@ def test_invalid_token(clear, member):
     with pytest.raises(AccessError):
         admin_user_remove_v1("invalid_token", member['auth_user_id'])
 
-def test_not_dream_owner(clear, member):
+def test_not_dream_owner(clear, global_owner, member):
     with pytest.raises(AccessError):
         admin_user_remove_v1(member['token'], member['auth_user_id'])
 
@@ -71,12 +71,12 @@ def test_only_owner(clear, global_owner, owner2):
     with pytest.raises(InputError):
         admin_user_remove_v1(global_owner['token'], global_owner['auth_user_id'])
 
-def test_user_in_channel(clear, global_owner, member, channel_id):
+def test_user_in_channel(clear, global_owner, owner2, member, channel_id):
     admin_user_remove_v1(global_owner['token'], member['auth_user_id'])
     messages = channel_messages_v2(global_owner['token'], channel_id, 0)['messages']
     assert messages[0]['message'] == "Removed user"
 
-def test_user_in_dm(clear, global_owner, member, dm_id):
+def test_user_in_dm(clear, global_owner, owner2, member, dm_id):
     admin_user_remove_v1(global_owner['token'], member['auth_user_id'])
     messages = dm_messages_v1(global_owner['token'], dm_id, 0)['messages']
     assert messages[0]['message'] == "Removed user"
@@ -85,7 +85,7 @@ def test_owner_is_only_channel_owner(clear, global_owner, owner2, channel_id):
     with pytest.raises(InputError):
         admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
 
-def test_owner_is_creator(clear, global_owner, owner2, dm_id):
+def test_owner_is_creator(clear, global_owner, owner2, channel_id, dm_id):
     admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
     with pytest.raises(InputError):
         dm_details_v1(owner2['token'], dm_id)  # raises InputError when dm does not exists
