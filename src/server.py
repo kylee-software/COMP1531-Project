@@ -1,9 +1,9 @@
-import sys
 from json import dumps
-from types import prepare_class
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests
+from src.error import InputError
+from src import config
+from src.other import clear_v1, notifications_get_v1
 from src.error import InputError
 from src.admin import admin_changepermission_v1
 from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1, dm_invite_v1, dm_messages_v1
@@ -46,6 +46,12 @@ def echo():
         'data': data
     })
 
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications():
+    token = request.args.get('token')
+    notifications = notifications_get_v1(token)
+    return jsonify(notifications)
+    
 
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():

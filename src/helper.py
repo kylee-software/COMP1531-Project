@@ -200,6 +200,26 @@ def is_user_in_channel(channel_id, user_id, data):
             return True
     return False
 
+def invite_notification_message(token, id, name, is_channel):
+    data = load_data()
+    
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": id, "dm_id": -1, "notification_message": f"{token_user['account_handle']} added you to {name}" }
+    else: 
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": -1, "dm_id": id, "notification_message": f"{token_user['account_handle']} added you to {name}" }
+
+def message_notification_message(token, id, name, is_channel, message):
+    data = load_data()
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id' : id, 'dm_id': -1, 'notification_message': notification_message}
+    else:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id' : -1, 'dm_id': id, 'notification_message': notification_message}
 
 def is_user_in_dm(dm_id, user_id, data):
     dm = find_dm(dm_id, data)
@@ -257,20 +277,6 @@ def tag_users(message, sender_handle, dm_id, channel_id):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id': -1, 'dm_id': dm_id,
-                                                     'notification_message': notification_message})
-
-    if channel_id != -1:
-        if is_valid_channel_id(channel_id) == True:
-            channel = find_channel(channel_id, data)
-            members = []
-            for member in channel['members']:
-                members.append(member['user_id'])
-
-            for user in users_tagged:
-                if user['user_id'] in members:
-                    notification_message = f"{sender_handle} tagged you in {channel['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id': channel_id, 'dm_id': -1,
-                                                     'notification_message': notification_message})
-
-    return None
+                    return user['user_id'], {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message}
+        
+    return False
