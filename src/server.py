@@ -9,11 +9,7 @@ from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1, dm_invite_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
-<<<<<<< HEAD
-from src.channels import channels_create_v2, channels_list_v2
-=======
-from src.channels import channels_create_v2, channels_listall_v2
->>>>>>> master
+from src.channels import channels_create_v2, channels_listall_v2, channels_list_v2
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
