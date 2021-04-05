@@ -33,41 +33,96 @@ def message_send_v2(token, channel_id, message):
     token = is_valid_token(token)
     if len(message) > 1000:
         raise InputError('Message is longer than 1000 characters')
-    
-    
-    channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
+
+    channel = next(
+        (channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
     if not channel:
         raise InputError('Channel does not exist')
 
-    msg_user = next((user for user in channel['members'] if user['user_id'] == token['user_id']), False)
+    msg_user = next(
+        (user for user in channel['members'] if user['user_id'] == token['user_id']), False)
     if not msg_user:
         raise AccessError('You have not joined this channel')
     else:
-        new_message = {'message_id' : data['msg_counter'] + 1, 'message_author' : token['user_id'],
-                            'message' : message, "time_created" :str(datetime.now())}
+        new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
+                       'message': message, "time_created": str(datetime.now())}
         channel['messages'].insert(0, new_message)
 
-        auth_messages = next(user['sent_messages'] for user in data['users'] if user['user_id'] == token['user_id'])     
+        auth_messages = next(user['sent_messages']
+                             for user in data['users'] if user['user_id'] == token['user_id'])
         auth_messages.insert(0, data['msg_counter'] + 1)
 
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         for user in channel['members']:
-            user = next((member for member in data['users'] if member['user_id'] == user['user_id']), False)
+            user = next(
+                (member for member in data['users'] if member['user_id'] == user['user_id']), False)
             if user and tagged_handles.count(user['account_handle']) != 0:
-                user['notifications'].insert(0, message_notification_message(token, channel_id, channel_name, True, message))
-                
+                user['notifications'].insert(0, message_notification_message(
+                    token, channel_id, channel_name, True, message))
 
         data['msg_counter'] += 1
         save_data(data)
-        return {'message_id':data['msg_counter']}
+        return {'message_id': data['msg_counter']}
+
 
 def message_remove_v1(auth_user_id, message_id):
     return {
     }
 
-def message_edit_v1(auth_user_id, message_id, message):
-    return {
-    }
+
+def message_edit_v2(token, message_id, message):
+
+    if len(message) > 1000:
+        raise InputError(description='Message over 1000 characters.')
+
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description='Invalid Token.')
+
+    data = load_data()
+
+    token_user = find_user(decoded_token['user_id'], data)
+    is_dreams_owner = token_user['permission_id'] == 1
+
+    source = None
+    found_message = None
+    for dm in data['dms']:
+        for dm_message in dm['messages']:
+            if dm_message['message_id'] == message_id:
+                if dm['creator'] == decoded_token['user_id'] or dm_message['message_author'] == decoded_token['user_id'] or is_dreams_owner:
+                    found_message = dm_message
+                    source = dm
+                    break
+                else:
+                    raise AccessError(
+                        description='Not authorised to edit message.')
+        if found_message is not None:
+            break
+
+    if found_message is None:
+        for channel in data['channels']:
+            for channel_message in channel['messages']:
+                if channel_message['message_id'] == message_id:
+                    if decoded_token['user_id'] in channel['owner'] or channel_message['message_author'] == decoded_token['user_id'] or is_dreams_owner:
+                        found_message = channel_message
+                        source = channel
+                        break
+                    else:
+                        raise AccessError(
+                            description='Not authorised to edit message.')
+            if found_message is not None:
+                break
+
+    if found_message is not None:
+        if len(message) == 0:
+            source['messages'].remove(found_message)
+        else:
+            found_message['message'] = message
+    else:
+        raise InputError(description='No message found.')
+
+    save_data(data)
+
 
 def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     """Shares a message (OGmessage) from the user referenced by the token to the channel or dm referenced by
@@ -100,37 +155,41 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     data = load_data()
     if not is_valid_token(token):
         raise AccessError(description='Unauthorised User')
-    
+
     auth_user_id = is_valid_token(token)['user_id']
-    
+
     if channel_id == -1 and dm_id == -1:
         raise InputError(description="a channel id or dm id must be input")
 
     if channel_id != -1 and dm_id != -1:
         raise InputError(description='either channel id or dm id must be -1')
-    
+
     # make sure OG message id is valid
     message_source = find_message_source(OG_message_id, data)
     if message_source == None:
         raise InputError(description="could not find OG message")
-    
+
     OG_message = find_message(OG_message_id, data)
-    
+
     # now check user is in og dm or channel
- 
+
     if 'channel_id' in message_source:
-        user = next((user for user in message_source['members'] if user['user_id'] == auth_user_id), False)
+        user = next(
+            (user for user in message_source['members'] if user['user_id'] == auth_user_id), False)
         if user == False:
-            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
+            raise AccessError(
+                description=f'User not in the original dm/channel message is being shared from')
     else:
-        user = next((user for user in message_source['members'] if user == auth_user_id), False)
+        user = next(
+            (user for user in message_source['members'] if user == auth_user_id), False)
         if user == False and message_source['creator'] != auth_user_id:
-            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
-    
+            raise AccessError(
+                description=f'User not in the original dm/channel message is being shared from')
+
     if channel_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
         return message_send_v2(token, channel_id, new_message)
-        
+
     if dm_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
         return message_senddm_v1(token, dm_id, new_message)
@@ -158,10 +217,10 @@ def message_senddm_v1(token, dm_id, message):
 
     if token_data == False:
         raise AccessError(description=f"Token invalid")
-    
+
     auth_user_id = token_data['user_id']
     auth_user = find_user(auth_user_id, data)
-    
+
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
@@ -170,22 +229,23 @@ def message_senddm_v1(token, dm_id, message):
     dm = find_dm(dm_id, data)
 
     if is_user_in_dm(dm_id, auth_user_id,  data) == False:
-        raise AccessError(description='user is not in the dm they are sharing message to')
-    
+        raise AccessError(
+            description='user is not in the dm they are sharing message to')
+
     message_id = data['msg_counter'] + 1
-    new_message = {'message_id' : message_id, 'message_author' : auth_user_id,
-                            'message' : message, "time_created" :str(datetime.now())}
+    new_message = {'message_id': message_id, 'message_author': auth_user_id,
+                   'message': message, "time_created": str(datetime.now())}
     dm['messages'].insert(0, new_message)
-    
+
     # notify tagged users
     user_message = tag_users(message, auth_user['account_handle'], dm_id, -1)
     if user_message:
         user, message = user_message
         user = next(u for u in data['users'] if u['user_id'] == user)
         user['notifications'].insert(0, message)
-        
+
     auth_user['sent_messages'].append(message_id)
     data['msg_counter'] += 1
     save_data(data)
-   
-    return {'message_id':message_id}
+
+    return {'message_id': message_id}
