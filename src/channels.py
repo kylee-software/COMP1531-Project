@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError  
-from src.helper import is_valid_token, load_data, save_data
+from src.helper import is_valid_token, load_data, save_data, is_valid_user_id
 
 def channels_list_v1(auth_user_id):
     """Returns a list of channels that the given auth_user_id is a part of
