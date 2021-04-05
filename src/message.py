@@ -102,15 +102,12 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
         raise AccessError(description='Unauthorised User')
     
     auth_user_id = is_valid_token(token)['user_id']
-    auth_user_handle = find_user(auth_user_id, data)['account_handle']
     
     if channel_id == -1 and dm_id == -1:
         raise InputError(description="a channel id or dm id must be input")
 
     if channel_id != -1 and dm_id != -1:
         raise InputError(description='either channel id or dm id must be -1')
-    
-    message_id = data['msg_counter'] + 1
     
     # make sure OG message id is valid
     message_source = find_message_source(OG_message_id, data)
