@@ -84,3 +84,18 @@ def test_remove_owner(clear, owner, channel_id):
 
     assert status_code == 403
 
+def test_token_not_owner(clear, channel_id, owner):
+    not_owner = requests.post(config.url + 'auth/register/v2', json={
+        'email': "testemail@gmail.com",
+        'password': "password111",
+        'name_first': "firstthree",
+        'name_last': "lastthree"
+    }).json()['token']
+
+    status_code = requests.post(config.url + 'channel/removeowner/v1', json={
+        'token': not_owner,
+        'channel_id': channel_id,
+        'u_id': owner['auth_user_id']
+    }).status_code
+
+    assert status_code == 403

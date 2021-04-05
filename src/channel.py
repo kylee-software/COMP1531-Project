@@ -428,14 +428,14 @@ def channel_removeowner_v1(token, channel_id, u_id):
     user_permission_id = find_user(user_id, data)['permission_id']
     owners = find_channel(channel_id, data)['owner']
 
+    if user_id not in owners and user_permission_id != 1 :
+        raise AccessError(description=f"Not an owner of channel {channel_id} nor an owner of Dreams")
+
     if u_id not in owners:
-        raise AccessError(description=f"Not an owner of channel {channel_id}")
+        raise InputError(description=f"Not an owner of channel {channel_id}")
 
     if u_id in owners and len(owners) == 1:
         raise InputError(description=f"User with u_id {u_id} is the only owner of channel {channel_id}")
-
-    if user_id not in owners and user_permission_id != 1 :
-        raise AccessError(description=f"Not an owner of channel {channel_id} nor an owner of Dreams")
 
     if user_id in owners or user_permission_id == 1 :
         for channel in data['channels']:

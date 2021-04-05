@@ -47,4 +47,9 @@ def test_remove_owner(clear, owner, channel_id):
     with pytest.raises(InputError):
         channel_removeowner_v1(owner['token'], channel_id, owner['auth_user_id'])
 
+def test_token_not_owner(clear, channel_id, owner):
+    not_owner = auth_register_v2("testemail@gmail.com", "password111", "firstthree", "lastthree")['token']
+    with pytest.raises(AccessError):
+        channel_removeowner_v1(not_owner, channel_id, owner['auth_user_id'])
+
 
