@@ -205,7 +205,7 @@ def message_notification_message(token, id, name, is_channel, message):
     else:
         token_user = find_user(token['user_id'], data)
         notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
-        return {'channel_id' : id, 'dm_id': -1, 'notification_message': notification_message}
+        return {'channel_id' : -1, 'dm_id': id, 'notification_message': notification_message}
 
 def is_user_in_dm(dm_id, user_id, data):
     dm = find_dm(dm_id, data)
