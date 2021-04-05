@@ -53,7 +53,8 @@ def test_invalid_token(clear, user1, user2):
 
 def test_send_message(clear, user1, user2):
     dm = dm_create_v1(user1['token'], [user2['auth_user_id']])
-    message_senddm_v1(user1['token'], dm['dm_id'], "Message")
+    assert isinstance(message_senddm_v1(user1['token'], dm['dm_id'], "Message")['message_id'], int)
+    # To more thoroughly test the data is saved correctly the following will be used once dm messages has been implemented
     #assert dm_messages_v1(user1['token'], dm['dm_id'], 0) == {['Message'], 0, -1}
     pass
     clear_v1()
@@ -67,9 +68,10 @@ def test_dm_id_invalid(clear, user1, user2):
 
 def test_multiple_messages(clear, user1, user2):
     dm = dm_create_v1(user1['token'], [user2['auth_user_id']])
-    message_senddm_v1(user1['token'], dm['dm_id'], "Message")
-    message_senddm_v1(user1['token'], dm['dm_id'], "Message2")
-    message_senddm_v1(user1['token'], dm['dm_id'], "Message3")
+    assert isinstance(message_senddm_v1(user1['token'], dm['dm_id'], "Message")['message_id'], int)
+    assert isinstance(message_senddm_v1(user1['token'], dm['dm_id'], "Message2")['message_id'], int)
+    assert isinstance(message_senddm_v1(user1['token'], dm['dm_id'], "Message3")['message_id'], int)
+    # To more thoroughly test the data is saved correctly the following will be used once dm messages has been implemented
     #assert dm_messages_v1(user1['token'], dm['dm_id'], 0) == {['Message', 'Message2', 'Message3'], 0, -1}
     pass
 
