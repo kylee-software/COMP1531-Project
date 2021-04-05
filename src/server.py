@@ -131,11 +131,13 @@ def message_send():
     return jsonify(msg_id)
 
 
-@APP.route("dm/messages/v1", methods=['GET'])
-def dm_messages_v1():
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id')
     start = request.args.get('start')
+    if (not dm_id.isdigit()) or (not start.isdigit()):
+        raise InputError(description="dm id or start is not an integer")
 
     messages_dict = dm_messages_v1(token, int(dm_id), int(start))
     return jsonify(messages_dict)

@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user
+from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user, find_dm, is_valid_dm_id, is_user_in_dm
 
 
 def dm_details_v1(token, dm_id):
@@ -119,35 +119,29 @@ def dm_messages_v1(token, dm_id, start):
     data = load_data()
 
     if not is_valid_token(token):
-        raise AccessError("Token is invalid")
+        raise AccessError(description="Token is invalid")
 
     user_id = is_valid_token(token)['user_id']
-    dms = data['dms']
-    is_member = False
-    is_valid_dm_id = False
-    dm_messages = []
 
-    for dm in data['dms']:
-        if dm['dm_id'] == dm_id:
-            is_valid_dm_id = True
-            for member in dm['members']:
-                if member == user_id:
-                    is_member = True
-            dm_messages = dm['messages']
+    if not is_valid_dm_id(dm_id):
+        raise InputError(description="DM ID is invalid.")
 
-    if not is_valid_dm_id:
-        raise InputError("Invalid DM id!")
+    dm_info = find_dm(dm_id, data)
+    dm_messages = dm_info['messages']
 
-    if not is_member:
-        raise AccessError("User not part of the dm!")
+    if not is_user_in_dm(dm_id, user_id, data):
+        raise AccessError(description=f"User is not a member of the dm with dm id {dm_id}")
 
     # Check valid start number
     if start >= len(dm_messages):
-        raise InputError("Start is greater than the total number of messages in the dm.")
+        raise InputError(description="Start is greater than the total number of messages in the dm.")
 
     # calculate the ending return value
-    end = start + 50 if (start + 50 < len(dms) - 1) else -1
-    messages_dict = {'messages': []}
+    end = start + 50 if (start + 50 < len(data['dms']) - 1) else -1
+    messages_dict = {'messages': [],
+                     'start': start,
+                     'end': end
+                     }
 
     if end == -1:
         for i in range(start, len(dm_messages)):
@@ -156,7 +150,5 @@ def dm_messages_v1(token, dm_id, start):
         for i in range(start, end):
             messages_dict['messages'].append(dm_messages[i])
 
-    messages_dict['start'] = start
-    messages_dict['end'] = end
-
+    save_data(data)
     return messages_dict

@@ -65,6 +65,23 @@ def is_valid_channel_id(channel_id):
             return True
     return False
 
+def is_valid_dm_id(dm_id):
+    '''
+    checks the given dm_id is valid
+
+    Arguments:
+        dm_id (int)      - dm_id that needs checking
+
+    Return Value:
+        Returns True is dm id is valid, False if it is not
+    '''
+
+    data = load_data()
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            return True
+    return False
+
 
 def hash_password(password):
     '''
@@ -172,6 +189,20 @@ def find_channel(channel_id, data):
 def is_user_in_channel(channel_id, user_id, data):
     channel = find_channel(channel_id, data)
     for member in channel['members']:
+        if member['user_id'] == user_id:
+            return True
+    return False
+
+
+def find_dm(dm_id, data):
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            return dm
+
+
+def is_user_in_dm(dm_id, user_id, data):
+    dm = find_channel(dm_id, data)
+    for member in dm['members']:
         if member['user_id'] == user_id:
             return True
     return False

@@ -1,9 +1,11 @@
-from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, save_data, find_channel, find_user, is_user_in_channel
+from src.helper import is_valid_user_id, is_valid_channel_id, hash_password, create_token, is_valid_token, load_data, \
+    save_data, find_channel, find_user, is_user_in_channel, is_valid_dm_id, find_dm, is_user_in_dm
 from src.auth import auth_register_v2, auth_login_v2
 from src.other import clear_v1
 from src.error import AccessError, InputError
 import pytest
 from src.channels import channels_create_v2
+from src.dm import dm_create_v1
 import json
 
 
@@ -35,6 +37,21 @@ def test_valid_channel_id():
     assert is_valid_channel_id(channel_id) == True
     clear_v1()
 
+def test_invalid_dm_id():
+    clear_v1()
+    assert is_valid_dm_id(1) == False
+    clear_v1()
+
+
+def test_valid_dm_id():
+    clear_v1()
+    token = auth_register_v2(
+        "test@gmail.com", "password", "first", "last")['token']
+    u_id = auth_register_v2(
+        "test1@gmail.com", "password", "firstone", "lastone")['auth_user_id']
+    dm_id = dm_create_v1(token, [u_id])['dm_id']
+    assert is_valid_dm_id(dm_id) == True
+    clear_v1()
 
 def test_hash_changes_password():
     auth_register_v2("test@gmail.com",
@@ -101,3 +118,19 @@ def test_is_user_in_channel():
                                       {'channel_id': 2, 'members': [{'user_id': 1}]}]}
     assert is_user_in_channel(2, 1, data) == True
     assert is_user_in_channel(1, 1, data) == False
+
+
+def test_find_dm():
+    data = {'users': [], 'dms': [
+        {'dm_id': 1, 'members': []}, {'dm_id': 2, 'members': []}]}
+    dm = find_dm(1, data)
+    assert dm == {'dm_id': 1, 'members': []}
+    dm['members'].append('test')
+    assert data['dms'][0] == {'dm_id': 1, 'members': ['test']}
+
+
+def test_is_user_in_dm():
+    data = {'users': [], 'dms': [{'dm_id': 1, 'members': []},
+                                      {'dm_id': 2, 'members': [{'user_id': 1}]}]}
+    assert is_user_in_dm(2, 1, data) == True
+    assert is_user_in_dm(1, 1, data) == False

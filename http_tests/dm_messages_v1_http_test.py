@@ -35,7 +35,7 @@ def dm_id(token):
         'name_last': "lasttwo"
     }).json()['auth_user_id']
 
-    dm_id = requests.post(config.url + 'channels/create/v2', json={
+    dm_id = requests.post(config.url + 'dm/create/v1', json={
         'token': token,
         'u_ids': [member1, member2]
     }).json()['dm_id']
@@ -57,7 +57,7 @@ def unauthorised_user():
     return token
 
 def test_invalid_token(dm_id):
-    status_code = requests.get(config.url + 'dm/messages/v1', json={
+    status_code = requests.get(config.url + 'dm/messages/v1', params={
         'token': "invalid_token",
         'dm_id': dm_id,
         'start': 0
@@ -66,7 +66,7 @@ def test_invalid_token(dm_id):
     assert status_code == 403
 
 def test_invalid_dm_id(token, dm_id):
-    status_code = requests.get(config.url + 'dm/messages/v1', json={
+    status_code = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id + 1,
         'start': 0
@@ -75,7 +75,7 @@ def test_invalid_dm_id(token, dm_id):
     assert status_code == 400
 
 def test_unauthorised_user(unauthorised_user, dm_id):
-    status_code = requests.get(config.url + 'dm/messages/v1', json={
+    status_code = requests.get(config.url + 'dm/messages/v1', params={
         'token': unauthorised_user,
         'dm_id': dm_id,
         'start': 0
@@ -84,7 +84,7 @@ def test_unauthorised_user(unauthorised_user, dm_id):
     assert status_code == 403
 
 def test_invalid_start(token, dm_id):
-    status_code = requests.get(config.url + 'dm/messages/v1', json={
+    status_code = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id,
         'start': 51
@@ -112,7 +112,7 @@ def test_more_messages(token, dm_id):
         count -= 1
 
     # Test first 50 newest messages
-    resp_1 = requests.get(config.url + 'dm/messages/v1', json={
+    resp_1 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id,
         'start': 0
@@ -121,7 +121,7 @@ def test_more_messages(token, dm_id):
     assert message_1 == '49'
 
     # Test the first message in the returned message dictionary
-    resp_2 = requests.get(config.url + 'dm/messages/v1', json={
+    resp_2 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id,
         'start': 10
@@ -130,7 +130,7 @@ def test_more_messages(token, dm_id):
     assert message_2 == '10'
 
     # Test the second message in the returned message dictionary
-    resp_3 = requests.get(config.url + 'dm/messages/v1', json={
+    resp_3 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id,
         'start': 30
@@ -139,7 +139,7 @@ def test_more_messages(token, dm_id):
     assert message_3 == '31'
 
     # Test the earliest message that was sent to the channel
-    resp_4 = requests.get(config.url + 'dm/messages/v1', json={
+    resp_4 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
         'dm_id': dm_id,
         'start': 60

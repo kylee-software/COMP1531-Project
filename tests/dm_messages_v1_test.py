@@ -72,5 +72,3 @@ def test_more_messages(token, dm_id):
     message_4 = dm_messages_v1(token, dm_id, 60)['messages'][0]['message']
     assert message_4 == '60'
 
-    clear_v1()
-
