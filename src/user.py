@@ -34,9 +34,9 @@ def user_profile_v2(token, u_id):
             }
 
 
-def user_profile_setname_v2(auth_user_id, name_first, name_last):
-    if is_valid_user_id(auth_user_id) is False:
-        raise AccessError("Authorised user id invalid.")
+def user_profile_setname_v2(token, name_first, name_last):
+    if is_valid_token(token) is False:
+        raise AccessError(description="Authorised user id invalid.")
 
     first_name_length = len(name_first)
     last_name_length = len(name_last)
@@ -45,14 +45,14 @@ def user_profile_setname_v2(auth_user_id, name_first, name_last):
 
     if first_name_length <= character_min or first_name_length >= character_max:
         raise InputError(
-            "The length of the first name given has exceeded the limit of 50 characters.")
+            description="The length of the first name given has exceeded the limit of 50 characters.")
     elif last_name_length <= character_min or last_name_length >= character_max:
         raise InputError(
-            "The length of the first or last name given has exceeded the limit of 50 characters.")
+            description="The length of the first or last name given has exceeded the limit of 50 characters.")
     else:
         data = load_data()
 
-        user_modified = find_user(auth_user_id, data)
+        user_modified = find_user(token, data)
 
         user_modified['first_name'] = name_first
         user_modified['last_name'] = name_last
