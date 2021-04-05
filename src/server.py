@@ -1,3 +1,4 @@
+import sys
 from json import dumps
 from types import prepare_class
 
@@ -15,12 +16,12 @@ from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
 from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
                     dm_remove_v1)
-from src.error import InputError
+from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import message_send_v2, message_senddm_v1, message_share_v1
 from src.other import clear_v1, notifications_get_v1
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_v2)
+                      user_profile_setname_v2, user_profile_v2)
 
 
 def defaultHandler(err):
@@ -138,6 +139,14 @@ def channel_addowner():
 def channel_leave():
     data = request.get_json()
     return jsonify(channel_leave_v1(data['token'], data['channel_id']))
+
+
+@APP.route("/user/profile/setname/v2", methods=['PUT'])
+def user_profile_setname():
+    data = request.get_json()
+    user_profile_setname_v2(
+        data['token'], data['name_first'], data['name_last'])
+    return jsonify({})
 
 
 @APP.route("/channels/create/v2", methods=['POST'])

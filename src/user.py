@@ -1,6 +1,8 @@
-from src.helper import is_valid_token, load_data, is_valid_user_id, find_user, save_data
 import re
+
 from src.error import AccessError, InputError
+from src.helper import (find_user, is_valid_token, is_valid_user_id, load_data,
+                        save_data)
 
 
 def user_profile_v2(token, u_id):
@@ -26,17 +28,44 @@ def user_profile_v2(token, u_id):
     token = is_valid_token(token)
     user = next(user for user in data['users'] if user['user_id'] == u_id)
 
-    return {'user' : {  'u_id' : u_id,
-                        'email' : user['email_address'],
-                        'name_first' : user['first_name'],
-                        'name_last' : user['last_name'],
-                        'handle_str' : user['account_handle'],                            
+    return {'user': {'u_id': u_id,
+                     'email': user['email_address'],
+                     'name_first': user['first_name'],
+                     'name_last': user['last_name'],
+                     'handle_str': user['account_handle'],
                      }
             }
 
-def user_profile_setname_v1(auth_user_id, name_first, name_last):
+
+def user_profile_setname_v2(token, name_first, name_last):
+    token_data = is_valid_token(token)
+    if token_data is False:
+        raise AccessError(description="Authorised user id invalid.")
+
+    first_name_length = len(name_first)
+    last_name_length = len(name_last)
+    character_max = 50
+    character_min = 1
+
+    if first_name_length <= character_min or first_name_length >= character_max:
+        raise InputError(
+            description="The length of the first name given has exceeded the limit of 50 characters.")
+    elif last_name_length <= character_min or last_name_length >= character_max:
+        raise InputError(
+            description="The length of the first or last name given has exceeded the limit of 50 characters.")
+    else:
+        data = load_data()
+
+        user_modified = find_user(token_data['user_id'], data)
+
+        user_modified['first_name'] = name_first
+        user_modified['last_name'] = name_last
+
+        save_data(data)
+
     return {
     }
+
 
 def user_profile_setemail_v2(token, email):
     '''
@@ -66,7 +95,8 @@ def user_profile_setemail_v2(token, email):
 
     for user in data['users']:
         if user['email_address'] == email:
-            raise InputError(description="Email address is already being used by another user.")
+            raise InputError(
+                description="Email address is already being used by another user.")
 
     # Set email address to the new given email
     for user in data['users']:
@@ -75,24 +105,27 @@ def user_profile_setemail_v2(token, email):
 
     save_data(data)
 
+
 def user_profile_sethandle_v1(token, handle_str):
     data = load_data()
     token_data = is_valid_token(token)
 
     if token_data == False:
         raise AccessError(description=f"Token invalid")
-    
+
     auth_user_id = token_data['user_id']
-    if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+    if is_valid_user_id(auth_user_id) == False:
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(handle_str) <= 3 or len(handle_str) >= 20:
-        raise InputError(description=f"handle string is incorrect length, must be between 3 and 20 characters")
+        raise InputError(
+            description=f"handle string is incorrect length, must be between 3 and 20 characters")
 
     for user in data['users']:
         if user['account_handle'] == handle_str:
             raise InputError(description=f"handle string is already taken")
-            
+
     user = find_user(auth_user_id, data)
     user['account_handle'] = handle_str
 
