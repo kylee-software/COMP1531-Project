@@ -7,7 +7,7 @@ from src.helper import (find_channel, find_user,
 
 def channel_invite_v1(token, channel_id, u_id):
     '''
-    Function to invite and add a user of u_id to a channel of channel_id. 
+    Function to invite and add a user of u_id to a channel of channel_id.
 
     Arguments:
         auth_user_id (int)      - user_id of the person already in the channel
@@ -153,19 +153,77 @@ def channel_details_v1(token, channel_id):
     }
 
 
-def channel_messages_v1(auth_user_id, channel_id, start):
-    return {
-        'messages': [
-            {
-                'message_id': 1,
-                'u_id': 1,
-                'message': 'Hello world',
-                'time_created': 1582426789,
-            }
-        ],
-        'start': 0,
-        'end': 50,
-    }
+def channel_messages_v2(token, channel_id, start):
+    '''
+        Function to return up to 50 messages between "start" and "start + 50"
+
+        Arguments:
+            token (string)      - an authorisation hash of the user
+            channel_id (int)    - channel_id of the channel the user is trying to access to
+            start (int)         - show messages starting from start; start = 0 means the most recent message
+
+        Exceptions:
+            AccessError - Occurs when the token is invalid
+                        - authorised user is not a member of the channel
+
+            InputError  - Occurs when channel_id is invalid and "start" is greater than\
+            the total number of messages in the channel
+
+        Return Value:
+            Returns {messages, start, end} where messages is a dictionary
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Token is invalid")
+
+    user_id = is_valid_token(token)['user_id']
+
+    if not is_valid_channel_id(channel_id):
+        raise InputError(description="Channel ID is invalid.")
+
+    channel_info = find_channel(channel_id, data)
+    channel_messages = channel_info['messages']
+
+    if not is_user_in_channel(channel_id, user_id, data):
+        raise AccessError(
+            description=f"User is not a member of the channel with channel id {channel_id}")
+
+    # Check valid start number
+    if start >= len(channel_messages):
+        raise InputError(
+            description="Start is greater than the total number of messages in the channel.")
+
+    # calculate the ending return value
+    end = start + 50 if (start + 50 < len(data['channels']) - 1) else -1
+    messages_dict = {'messages': [],
+                     'start': start,
+                     'end': end
+                     }
+
+    if end == -1:
+        for i in range(start, len(channel_messages)):
+            messages_dict['messages'].append(channel_messages[i])
+    else:
+        for i in range(start, end):
+            messages_dict['messages'].append(channel_messages[i])
+
+    save_data(data)
+    return messages_dict
+    # example
+    # {
+    #     'messages': [
+    #         {
+    #             'message_id': 1,
+    #             'u_id': 1,
+    #             'message': 'Hello world',
+    #             'time_created': 1582426789,
+    #         }
+    #     ],
+    #     'start': 0,
+    #     'end': 50,
+    # }
 
 
 def channel_leave_v1(token, channel_id):

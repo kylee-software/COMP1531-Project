@@ -1,16 +1,20 @@
 import sys
 from json import dumps
 from types import prepare_class
+
 import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+
 from src import config
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
-                         channel_invite_v1, channel_join_v1, channel_leave_v1)
+                         channel_invite_v1, channel_join_v1, channel_leave_v1,
+                         channel_messages_v2)
 from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
-from src.dm import dm_create_v1, dm_details_v1, dm_invite_v1, dm_remove_v1
+from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
+                    dm_remove_v1)
 from src.error import InputError
 from src.helper import is_valid_token
 from src.message import message_send_v2, message_senddm_v1
@@ -35,6 +39,7 @@ CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
+
 
 # Example
 
@@ -91,19 +96,19 @@ def clear():
     return jsonify({})
 
 
-@ APP.route("/auth/login/v2", methods=['POST'])
+@APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
     data = request.get_json()
     return jsonify(auth_login_v2(data['email'], data['password']))
 
 
-@ APP.route("/auth/register/v2", methods=['POST'])
+@APP.route("/auth/register/v2", methods=['POST'])
 def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 
-@ APP.route("/message/senddm/v1", methods=['POST'])
+@APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
     data = request.get_json()
     return jsonify(message_senddm_v1(data['token'], data['dm_id'], data['message']))
@@ -188,6 +193,30 @@ def auth_logout():
 def dm_remove():
     data = request.get_json()
     return jsonify(dm_remove_v1(data['token'], data['dm_id']))
+
+
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    start = request.args.get('start')
+    if (not dm_id.isdigit()) or (not start.isdigit()):
+        raise InputError(description="dm id or start is not an integer")
+
+    messages_dict = dm_messages_v1(token, int(dm_id), int(start))
+    return jsonify(messages_dict)
+
+
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    start = request.args.get('start')
+    if (not channel_id.isdigit()) or (not start.isdigit()):
+        raise InputError(description="channel id or start is not a number")
+
+    data = channel_messages_v2(token, int(channel_id), int(start))
+    return jsonify(data)
 
 
 if __name__ == "__main__":
