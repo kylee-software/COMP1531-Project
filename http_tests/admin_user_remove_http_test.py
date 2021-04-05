@@ -78,7 +78,7 @@ def test_admin_user_remove(clear, global_owner1, global_owner2):
         'is_public': True
     }).json()['channel_id']
 
-    message_id = requests.post(config.url + '/message/send/v2',
+    requests.post(config.url + '/message/send/v2',
                                json={'token': global_owner1['token'],
                                      'channel_id': channel_id,
                                      'message': 'Hi'})
@@ -88,7 +88,7 @@ def test_admin_user_remove(clear, global_owner1, global_owner2):
                         'channel_id': channel_id,
                         'u_id': global_owner2['auth_user_id']})
 
-    resp = requests.delete(config.url + 'admin/user/remove/v1', json={
+    requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': global_owner2['token'],
         'u_id': global_owner1['auth_user_id'],
     })
