@@ -390,6 +390,61 @@ def channel_addowner_v1(token, channel_id, u_id):
     }
 
 
-def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+def channel_removeowner_v1(token, channel_id, u_id):
+    '''
+    channel_removeowner removes user with user id u_id an owner of this channel
+
+    Arguments:
+        token (string)      - an authorisation hash of the user who is removing the ownership of the user with u_id
+        channel_id (int)    - channel id of the channel the user's ownership is being removed from
+        u_id (int)          - user id of the user who is having their ownership taking away
+
+    Exceptions:
+        InputError  - Channel id is not a valid channel
+                    - User with u_id is not an owner of the channel
+                    - User with u_id is the only owner
+        AccessError - The authorised user is not an owner of this channel
+                    - User is an authorised user but not an owner of the **Dreams**
+                    - User is not an authorised user of **Dreams**
+
+    Return Value:
+            Returns {}
+
+    Assumption:
+            - User id of the user who is having their ownership taking away remains a member of the channel
+            - Channel owner can remove their ownership themself
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Token is invalid.")
+
+    user_id = is_valid_token(token)['user_id']
+
+    if not is_valid_channel_id(channel_id):
+        raise InputError(description="Channel id is invalid")
+
+    user_permission_id = find_user(user_id, data)['permission_id']
+    owners = find_channel(channel_id, data)['owner']
+
+    if u_id not in owners:
+        raise AccessError(description=f"Not an owner of channel {channel_id}")
+
+    if u_id in owners and len(owners) == 1:
+        raise InputError(description=f"User with u_id {u_id} is the only owner of channel {channel_id}")
+
+    if user_id not in owners and user_permission_id != 1 :
+        raise AccessError(description=f"Not an owner of channel {channel_id} nor an owner of Dreams")
+
+    if user_id in owners or user_permission_id == 1 :
+        for channel in data['channels']:
+            for member in channel['members']:
+                if member['user_id'] == u_id:
+                    member['permission_id'] = 2
+                    channel['owner'].remove(u_id)
+                    break
+
+    save_data(data)
     return {
     }
