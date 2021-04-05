@@ -4,6 +4,7 @@ from src.error import AccessError
 from src.auth import auth_register_v2
 from src.other import clear_v1
 from src.user import users_all_v1
+from src.admin import admin_user_remove_v1
 
 @pytest.fixture
 def token():
@@ -12,6 +13,14 @@ def token():
     firstname = "firstname"
     lastname = "lastname"
     return auth_register_v2(email,password,firstname, lastname)['token']
+
+@pytest.fixture
+def token1():
+    email = "testemai333l@gmail.com"
+    password = "TestTest3333"
+    firstname = "firstname333"
+    lastname = "lastname33"
+    return auth_register_v2(email,password,firstname, lastname)['auth_user_id']
 
 @pytest.fixture
 def users():
@@ -38,7 +47,7 @@ def test_return_6_users(clear, token, users):
 
 def test_5_users_1_removed(clear, token, users):
     admin_user_remove_v1(token, users)
-    assert len(users_all_v1(token)) == 5
+    assert len(users_all_v1(token)['users']) == 5
 
 def test_proper_dict_values(clear, token, users):
     u_list = users_all_v1(token)
