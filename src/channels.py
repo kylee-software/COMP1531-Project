@@ -1,8 +1,8 @@
 from src.error import AccessError, InputError
-from src.helper import load_data, save_data, is_valid_token
+from src.helper import load_data, save_data, is_valid_token, is_valid_user_id
 
 def channels_list_v2(token):
-    """Returns a list of channels that the given auth_user_id is a part of
+    """Returns a list of channels that the authorised user is a part of
 
     Args:
         token (string): a valid token, decodes into dict with fiels user_id and session_id
