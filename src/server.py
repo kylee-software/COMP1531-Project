@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1, dm_details_v1, dm_messages_v1
+from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1, dm_invite_v1, dm_messages_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
@@ -123,6 +123,12 @@ def dm_details():
         details = dm_details_v1(token, dm_id)
     
     return jsonify(details)
+
+@APP.route('/dm/invite/v1', methods=['POST'])
+def dm_invite():
+    data = request.get_json()
+    dm_invite_v1(data['token'], data['dm_id'], data['u_id'])
+    return jsonify({})
     
 @APP.route('/message/send/v2', methods=['POST'])
 def message_send():
@@ -130,6 +136,10 @@ def message_send():
     msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
     return jsonify(msg_id)
 
+@APP.route('/dm/remove/v1', methods=['DELETE'])
+def dm_remove():
+    data = request.get_json()
+    return jsonify(dm_remove_v1(data['token'], data['dm_id']))
 
 @APP.route("/dm/messages/v1", methods=['GET'])
 def dm_messages():

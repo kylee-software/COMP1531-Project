@@ -36,5 +36,7 @@
 - channel_details_v1
 - auth_login_v1
 
+## Dm/Invite
+- You can't invite someone to a dm if they are already a member of that dm (raises InputError)
 ## message_send
 - You are allowed to tag yourself in a message
