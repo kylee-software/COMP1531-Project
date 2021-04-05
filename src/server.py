@@ -123,7 +123,7 @@ def admin_userpermission():
     data = request.get_json()
     return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
 
-@APP.route('admin/user/remove/v1', methods=['DELETE'])
+@APP.route('/admin/user/remove/v1', methods=['DELETE'])
 def admin_user_remove():
     token = request.get_json()['token']
     u_id = request.get_json()['u_id']
