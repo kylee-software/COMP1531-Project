@@ -11,11 +11,11 @@ from src.admin import admin_changepermission_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
-                         channel_messages_v2)
+                         channel_messages_v2, channel_removeowner_v1)
 from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
-from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
-                    dm_remove_v1)
+from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
+                    dm_list_v1, dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import message_send_v2, message_senddm_v1, message_share_v1
@@ -164,6 +164,22 @@ def dm_create():
     return jsonify(dm_dict)
 
 
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    data = request.get_json()
+    dm_list_generated = dm_list_v1(data['token'])
+
+    return jsonify(dm_list_generated)
+
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave():
+    data = request.get_json()
+    dm_leave_v1(data['token'], data['dm_id'])
+
+    return jsonify({})
+
+
 @APP.route('/channels/list/v2', methods=['GET'])
 def list_channels():
     token = request.args.get('token')
@@ -259,6 +275,12 @@ def channel_messages():
 
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
+
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner():
+    data= request.get_json()
+    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    return jsonify({})
 
 
 if __name__ == "__main__":
