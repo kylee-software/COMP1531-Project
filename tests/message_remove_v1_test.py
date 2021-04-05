@@ -2,9 +2,9 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2
 from src.dm import dm_create_v1, dm_messages_v1
-from src.admin import auth_userpermission_change_v1
+from src.admin import admin_changepermission_v1
 from src.channels import channels_create_v2
-from src.channel import channel_join_v2, channel_messages_v2
+from src.channel import channel_join_v1, channel_messages_v2
 from src.message import message_senddm_v1, message_send_v2, message_remove_v1
 from src.error import InputError, AccessError
 
@@ -24,13 +24,13 @@ def auth_user():
     auth_user_info = auth_register_v2(email, password, "firstname", "lastname")
     token = auth_user_info['token']
     u_id = auth_user_info['auth_user_id']
-    auth_userpermission_change_v1(token, u_id, 1) # Make the auth_user an owner of Dreams
+    admin_changepermission_v1(token, u_id, 1) # Make the auth_user an owner of Dreams
     return token
 
 @pytest.fixture
 def channel_message_info(auth_user, member):
     channel_id = channels_create_v2(auth_user, "channelName", True)['channel_id']
-    channel_join_v2(member['token'], channel_id)
+    channel_join_v1(member['token'], channel_id)
     message_id = message_send_v2(auth_user, channel_id, "Hi!")
     return [channel_id, message_id]
 
