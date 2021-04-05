@@ -1,5 +1,48 @@
-from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, is_valid_channel_id, save_data, is_valid_token, find_user
+from src.error import InputError, AccessError
+from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user
+
+def dm_invite_v1(token, dm_id, user_id):
+    """Adds the user referenced by user_id to the dm referenced by dm_id
+
+    Args:
+        token (str): jwt encoded dict with keys session_id and user_id
+        dm_id (int): id of a dm
+        user_id (int): id of user to be added to dm
+
+    Raises:
+        AccessError: raied if token is invalid
+        InputError: raised if user referenced by user_id is already in the dm
+        InputError: raised if dm_id is invalid
+        InputError: raised if user referenced by user_id doesn't exist
+        AccessError: raised if authorised user is not a member of the dm referenced by dm_id
+
+    Returns:
+        (dict): empyt dictionary
+    """
+    if not is_valid_token(token):
+        raise AccessError("Invalid Token")
+    token = is_valid_token(token)
+    data = load_data()
+
+    dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
+    if not dm:
+        raise InputError("Invalid dm_id")
+
+    if not is_valid_user_id(user_id):
+        raise InputError("User you are trying to add doesn't exist")
+
+    if dm['members'].count(user_id) != 0:
+        raise InputError("The user you are trying to add is already a part of that dm")
+    
+    if dm['members'].count(token['user_id']) == 0:
+        raise AccessError("Authorised user is not a part of this dm")
+
+    token_user = find_user(token['user_id'], data)
+    user = next(user for user in data['users'] if user['user_id'] == user_id)
+    user['notifications'].insert(0, {"channel_id": -1, "dm_id": dm_id, "notification_message": f"{token_user['account_handle']} added you to {dm['name']}" })
+
+    dm['members'].append(user_id)
+    save_data(data)
 
 def dm_remove_v1(token, dm_id):
     '''
