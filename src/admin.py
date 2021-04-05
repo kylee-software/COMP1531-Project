@@ -1,6 +1,6 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_channel_id, load_data, save_data, is_valid_token, find_user, is_valid_user_id, \
-    channel_removeowner_v1, is_user_in_channel
+from src.helper import is_valid_channel_id, load_data, save_data, is_valid_token, find_user, is_valid_user_id, is_user_in_channel
+from src.channel import channel_removeowner_v1
 
 OWNER_PERMISSION = 1
 MEMBER_PERMISSION = 2
