@@ -14,8 +14,8 @@ from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_messages_v2)
 from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
-from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
-                    dm_remove_v1)
+from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_list_v1,
+                    dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import message_send_v2, message_senddm_v1, message_share_v1
@@ -162,6 +162,14 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    data = request.get_json()
+    dm_list_generated = dm_list_v1(data['token'])
+
+    return jsonify(dm_list_generated)
 
 
 @APP.route('/channels/list/v2', methods=['GET'])
