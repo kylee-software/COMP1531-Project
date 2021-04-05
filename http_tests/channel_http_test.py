@@ -33,6 +33,8 @@ def channel_owner():
 def clear():
     clear_v1()
 
+##### Channel Details Tests #####
+
 def test_channel_details(clear, channel_id, channel_owner):
     '''
     A simple test to check channel details
@@ -58,7 +60,17 @@ def test_channel_details(clear, channel_id, channel_owner):
                                         }, ],
                                         
                         }
-    
+
+def test_channel_details_access_error(clear, channel_id, channel_owner):
+    resp = requests.get(config.url + 'channel/details/v2', params={'token': 'bad.token.input', 'channel_id':channel_id})
+    assert resp.status_code == 403
+
+def test_channel_details_input_error(clear, channel_id, channel_owner):
+    resp = requests.get(config.url + 'channel/details/v2', params={'token': channel_owner['token'], 'channel_id':channel_id + 1})
+    assert resp.status_code == 400
+
+
+##### Channel Join Tests #####
 
 def test_channel_join(clear, channel_id, user1):
     '''
@@ -67,10 +79,31 @@ def test_channel_join(clear, channel_id, user1):
     resp = requests.post(config.url + 'channel/join/v2', json={'token': user1['token'], 'channel_id':channel_id})
     assert json.loads(resp.text) == {}
 
+def test_channel_join_access_error(clear, channel_id, user1):
+    resp = requests.post(config.url + 'channel/join/v2', json={'token': 'bad.token.input', 'channel_id':channel_id})
+    assert resp.status_code == 403
+
+def test_channel_join_input_error(clear, channel_id, user1):
+    resp = requests.post(config.url + 'channel/join/v2', json={'token': user1['token'], 'channel_id':channel_id + 1})
+    assert resp.status_code == 400
+
+
+
+##### Channel Invite Tests #####
+
 def test_channel_invite(clear, channel_id, channel_owner, user1):
     '''
     A simple test to check channel invite
     '''
     resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
     assert json.loads(resp.text) == {}
+    clear_v1()
+
+def test_channel_invite_access_error(clear, channel_id, channel_owner, user1):
+    resp = requests.post(config.url + 'channel/invite/v2', json={'token': 'bad.input.token', 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
+    assert resp.status_code == 403
+
+def test_channel_invite_input_error(clear, channel_id, channel_owner, user1):
+    resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id + 1, 'u_id':user1['auth_user_id']})
+    assert resp.status_code == 400
     clear_v1()

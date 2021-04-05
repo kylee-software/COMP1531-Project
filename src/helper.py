@@ -1,4 +1,5 @@
 import hashlib
+from types import prepare_class
 import jwt
 import json
 
@@ -190,6 +191,8 @@ def is_user_in_dm(dm_id, user_id, data):
     for member in dm['members']:
         if member == user_id:
             return True
+    if dm['creator'] == user_id:
+        return True
     return False
 
 def find_message_source(message_id, data):
@@ -216,7 +219,8 @@ def find_message(message_id, data):
                 return message['message']
     return ""
 
-def tag_users(message, sender_handle, dm_id, channel_id, data):
+def tag_users(message, sender_handle, dm_id, channel_id):
+    data = load_data()
     split_message = message.split()
     tagged_handles = []
     for word in split_message:
@@ -238,7 +242,7 @@ def tag_users(message, sender_handle, dm_id, channel_id, data):
                     user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message})
 
     if channel_id != -1:
-        if is_valid_channel_id(channel_id, data) == True:
+        if is_valid_channel_id(channel_id) == True:
             channel = find_channel(channel_id, data)
             members = []
             for member in channel['members']:
