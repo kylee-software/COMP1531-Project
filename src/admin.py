@@ -116,7 +116,7 @@ def admin_user_remove_v1(token, u_id):
             else:
                 # remove the user from the dm the user is in
                 for member in dm['members']:
-                    if member['user_id'] == u_id:
+                    if member == u_id:
                         dm['members'].remove(u_id)
                         break
 

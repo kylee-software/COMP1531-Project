@@ -4,7 +4,7 @@ from src.auth import auth_register_v2
 from src.dm import dm_create_v1, dm_messages_v1, dm_details_v1
 from src.admin import admin_changepermission_v1,admin_user_remove_v1
 from src.channels import channels_create_v2
-from src.channel import channel_join_v1, channel_messages_v2, channel_removeowner_v1
+from src.channel import channel_join_v1, channel_messages_v2, channel_removeowner_v1, channel_addowner_v1
 from src.message import message_senddm_v1, message_send_v2, message_remove_v1
 from src.error import InputError, AccessError
 
@@ -86,7 +86,7 @@ def test_owner_is_only_channel_owner(clear, global_owner, owner2, channel_id):
         admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
 
 def test_owner_is_creator(clear, global_owner, owner2, channel_id, dm_id):
-    channel_join_v1(owner2['token'], channel_id)
+    channel_addowner_v1(global_owner['token'], channel_id, owner2['auth_user_id'])
     admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
     with pytest.raises(InputError):
         dm_details_v1(owner2['token'], dm_id)  # raises InputError when dm does not exists
