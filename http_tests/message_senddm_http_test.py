@@ -6,8 +6,6 @@ from src.other import clear_v1
 from src.auth import auth_register_v2, auth_login_v2
 from src.error import InputError, AccessError
 from src.dm import dm_create_v1
-from src.message import message_senddm_v1
-
 
 @pytest.fixture
 def user1():
