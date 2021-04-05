@@ -6,6 +6,7 @@ from src.channels import channels_create_v2
 from src.channel import channel_join_v1, channel_messages_v2
 from src.message import message_senddm_v1, message_send_v2, message_remove_v1
 from src.error import InputError, AccessError
+from src.helper import load_data
 
 @pytest.fixture
 def auth_user():
@@ -51,6 +52,7 @@ def test_remove_dm_message(auth_user, dm_id):
     assert dm_messages_count_before == 1
 
     message_remove_v1(auth_user, message_id)
+    print(load_data())
     dm_messages_count_after = len(dm_messages_v1(auth_user, dm_id, 0)['messages'])
     assert dm_messages_count_after == 0
 
