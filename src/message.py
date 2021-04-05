@@ -70,6 +70,22 @@ def message_edit_v1(auth_user_id, message_id, message):
     }
 
 def message_senddm_v1(token, dm_id, message):
+    '''
+    Function to send a message to a dm, notifying a user if they are tagged in the message
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        dm_id (int)          - dm id of the dm the user is sending a message to
+        message (string)     - message user is sending to the dm
+
+    Exceptions:
+        AccessError  - Occurs when the token invalid or when the user is not in the dm
+        InputError   - Occurs when dm_id is not a valid dm or when the message is over 1000 characters
+
+    Return Value:
+        {} on successful leaving of the channel
+
+    '''
     data = load_data()
     token_data = is_valid_token(token)
 
