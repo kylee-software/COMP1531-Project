@@ -219,7 +219,8 @@ def find_message(message_id, data):
                 return message['message']
     return ""
 
-def tag_users(message, sender_handle, dm_id, channel_id, data):
+def tag_users(message, sender_handle, dm_id, channel_id):
+    data = load_data()
     split_message = message.split()
     tagged_handles = []
     for word in split_message:
