@@ -19,13 +19,8 @@
 - returns a dictionary with key 'channels' and value [] if no channels have been created
 - only testing user created channels for simplicity not joined channels as channel_join is assumed to be working
 
-## channels_create_v1
-- auth_register_v1() works and returns correct auth_user_id
-- auth_login_v1() works and that the user is login in order to create a channel
-- only need to raise exception when the length of the channel name is greater than 20 characters
-- only test for correct channel_id
-
-
+## channels_create_v2
+- channel name can not be empty
 
 ## auth_register_v1
 - Numbers and special characters except for '@' are allowed in names. Whitespace is not allowed in names.
@@ -33,6 +28,13 @@
 - The first and last name can be in uppercase and/or lowercase.
 - Password may contain numbers, special characters and whitespace. 
 
+## channel/leave/v1:
+- if the user trying to leave is the only owner, no other users will be made an owner in their place
+- if the user trying to leave is the only member of the channel, the channel will not be deleted even if it is private (and therefore unjoinable)
+
 ## Functions without assumptions
 - channel_details_v1
 - auth_login_v1
+
+## message_send
+- You are allowed to tag yourself in a message

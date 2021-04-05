@@ -4,6 +4,29 @@ import json
 
 SECRET = 'WED09B-ECHO'
 
+def return_valid_tagged_handles(message, channel_id):
+    data = load_data()
+    split_message = message.split()
+    handles = []
+    for word in split_message:
+        if word.startswith('@'):
+            handles.append(word.strip('@'))
+
+    real_handles = []
+    for handle in handles:
+        if next((user for user in data['users'] if user['account_handle'] == handle), False):
+            real_handles.append(handle)
+
+    real_handles_in_channel = []
+    channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
+    for handle in real_handles:
+        for member in channel['members']:
+            m_handle = next(user['account_handle'] for user in data['users'] if user['user_id'] == member['user_id'])
+            if m_handle == handle:
+                real_handles_in_channel.append(handle)
+
+    return real_handles_in_channel
+
 def is_valid_user_id(auth_user_id):
     '''
     checks the given auth_user_id is valid
@@ -55,6 +78,7 @@ def hash_password(password):
     '''
     return hashlib.sha256(password.encode()).hexdigest()
 
+
 def create_token(user_id, session_id):
     '''
     creates a token with a given user id and session id
@@ -66,7 +90,8 @@ def create_token(user_id, session_id):
     Return Value:
         Returns jwt token
     '''
-    return jwt.encode({'user_id':user_id,'session_id': session_id}, SECRET, algorithm='HS256')
+    return jwt.encode({'user_id': user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
+
 
 def is_valid_token(token):
     '''
@@ -78,13 +103,20 @@ def is_valid_token(token):
     Return Value:
         Returns False if the token is invalid, returns the payload if the token is valid
     '''
+    data = load_data()
     try:
         payload = jwt.decode(token, SECRET, algorithms=['HS256'])
     except:
         jwt.exceptions.InvalidSignatureError()
         return False
     else:
-        return payload
+        user = next(
+            (user for user in data['users'] if user['user_id'] == payload['user_id']), False)
+        if user:
+            if user['session_list'].count(payload['session_id']) != 0:
+                return payload
+        return False
+
 
 def save_data(data):
     '''
@@ -92,17 +124,18 @@ def save_data(data):
 
     Arguments:
         data       - data to save
-    
+
     Exceptions:
         If data to be saved is not of the format 
             {'users':[], 'channels':[]} an exception is raised
     '''
 
-    if 'users' in data and 'channels' in data:
+    if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
         with open('src/data.json', 'w') as FILE:
             json.dump(data, FILE)
     else:
-        raise Exception("attempting to save incorrrect data format, must be {'users':[], 'channels':[]}")
+        raise Exception(
+            "attempting to save incorrrect data format, must be {'users':[], 'channels':[], 'dms':[], 'msg_counter':0'}")
 
 
 def load_data():
@@ -116,12 +149,12 @@ def load_data():
         or returns empty data ({'users':[], 'channels':[]}) 
         if the data in the json file was the incorrect format
     '''
-    with open('src/data.json','r') as FILE:
+    with open('src/data.json', 'r') as FILE:
         data = json.load(FILE)
-        if 'users' in data and 'channels' in data:
+        if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
             return data
         else:
-            return {'users':[], 'channels':[],}
+            return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
 
 
 def find_user(user_id, data):
@@ -129,10 +162,12 @@ def find_user(user_id, data):
         if user['user_id'] == user_id:
             return user
 
+
 def find_channel(channel_id, data):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             return channel
+
 
 def is_user_in_channel(channel_id, user_id, data):
     channel = find_channel(channel_id, data)

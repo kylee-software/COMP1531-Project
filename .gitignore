@@ -126,4 +126,4 @@ dmypy.json
 # Other
 *.py~
 
-data.json
+/*.json
