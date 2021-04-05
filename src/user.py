@@ -35,7 +35,8 @@ def user_profile_v2(token, u_id):
 
 
 def user_profile_setname_v2(token, name_first, name_last):
-    if is_valid_token(token) is False:
+    token_data = is_valid_token(token)
+    if token_data is False:
         raise AccessError(description="Authorised user id invalid.")
 
     first_name_length = len(name_first)
@@ -52,7 +53,7 @@ def user_profile_setname_v2(token, name_first, name_last):
     else:
         data = load_data()
 
-        user_modified = find_user(token, data)
+        user_modified = find_user(token_data['user_id'], data)
 
         user_modified['first_name'] = name_first
         user_modified['last_name'] = name_last

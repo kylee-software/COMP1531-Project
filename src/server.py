@@ -129,11 +129,8 @@ def channel_addowner():
 @APP.route("/user/profile/setname/v2", methods=['PUT'])
 def user_profile_setname():
     data = request.get_json()
-    decoded_token = is_valid_token(data['token'])
-    if decoded_token is False:
-        raise AccessError("Invalid Token.")
     user_profile_setname_v2(
-        decoded_token['user_id'], data['name_first'], data['name_last'])
+        data['token'], data['name_first'], data['name_last'])
     return jsonify({})
 
 
