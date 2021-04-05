@@ -98,7 +98,7 @@ def message_senddm_v1(token, dm_id, message):
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
-    if is_valid_dm_id(dm_id, data) == False:
+    if is_valid_dm_id(dm_id) == False:
         raise InputError(description='dm is invalid')
     dm = find_dm(dm_id, data)
 

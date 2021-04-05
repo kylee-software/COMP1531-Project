@@ -5,6 +5,7 @@ import json
 
 SECRET = 'WED09B-ECHO'
 
+
 def return_valid_tagged_handles(message, channel_id):
     data = load_data()
     split_message = message.split()
@@ -27,6 +28,7 @@ def return_valid_tagged_handles(message, channel_id):
                 real_handles_in_channel.append(handle)
 
     return real_handles_in_channel
+
 
 def is_valid_user_id(auth_user_id):
     '''
@@ -66,11 +68,14 @@ def is_valid_channel_id(channel_id):
             return True
     return False
 
-def is_valid_dm_id(dm_id, data):
+
+def is_valid_dm_id(dm_id):
+    data = load_data()
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
             return True
     return False
+
 
 def hash_password(password):
     '''
@@ -169,15 +174,18 @@ def find_user(user_id, data):
             return user
 
 
+
 def find_channel(channel_id, data):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             return channel
 
+
 def find_dm(dm_id, data):
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
             return dm
+
 
 def is_user_in_channel(channel_id, user_id, data):
     channel = find_channel(channel_id, data)
@@ -216,29 +224,32 @@ def is_user_in_dm(dm_id, user_id, data):
         return True
     return False
 
+
 def find_message_source(message_id, data):
     for channel in data['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 return channel
-    
+
     for dm in data['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 return dm
     return None
 
+
 def find_message(message_id, data):
     for channel in data['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 return message['message']
-    
+
     for dm in data['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 return message['message']
     return ""
+
 
 def tag_users(message, sender_handle, dm_id, channel_id):
     data = load_data()
@@ -247,15 +258,15 @@ def tag_users(message, sender_handle, dm_id, channel_id):
     for word in split_message:
         if word.startswith('@'):
             tagged_handles.append(word.strip('@'))
-    
+
     users_tagged = []
-    for handle in tagged_handles:    
+    for handle in tagged_handles:
         for user in data['users']:
             if handle == user['account_handle']:
                 users_tagged.append(user)
 
     if dm_id != -1:
-        if is_valid_dm_id(dm_id, data) == True:
+        if is_valid_dm_id(dm_id) == True:
             dm = find_dm(dm_id, data)
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
@@ -263,4 +274,3 @@ def tag_users(message, sender_handle, dm_id, channel_id):
                     return user['user_id'], {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message}
         
     return False
-
