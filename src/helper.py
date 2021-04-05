@@ -6,6 +6,32 @@ import json
 SECRET = 'WED09B-ECHO'
 
 
+def load_data():
+    '''
+    loads the data from a json file called data.json
+
+    Return Type:
+        data that was stored in data.json if its in the 
+        correct format ({'users':[], 'channels':[]})
+
+        or returns empty data ({'users':[], 'channels':[]}) 
+        if the data in the json file was the incorrect format
+    '''
+    try:
+        with open('src/data.json', 'r') as FILE:
+            data = json.load(FILE)
+            if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
+                return data
+            else:
+                return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+    except:
+        with open('src/data.json', 'w') as FILE:
+            data_setup = {'users': [], 'channels': [],
+                          'dms': [], 'msg_counter': 0}
+            json.dump(data_setup, FILE)
+            return data_setup
+
+
 def return_valid_tagged_handles(message, channel_id):
     data = load_data()
     split_message = message.split()
@@ -148,26 +174,7 @@ def save_data(data):
             json.dump(data, FILE)
     else:
         raise Exception(
-            "attempting to save incorrrect data format, must be {'users':[], 'channels':[], 'dms':[], 'msg_counter':0'}")
-
-
-def load_data():
-    '''
-    loads the data from a json file called data.json
-
-    Return Type:
-        data that was stored in data.json if its in the 
-        correct format ({'users':[], 'channels':[]})
-
-        or returns empty data ({'users':[], 'channels':[]}) 
-        if the data in the json file was the incorrect format
-    '''
-    with open('src/data.json', 'r') as FILE:
-        data = json.load(FILE)
-        if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
-            return data
-        else:
-            return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+        )
 
 
 def find_user(user_id, data):
@@ -194,6 +201,29 @@ def is_user_in_channel(channel_id, user_id, data):
         if member['user_id'] == user_id:
             return True
     return False
+
+
+def invite_notification_message(token, id, name, is_channel):
+    data = load_data()
+
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": id, "dm_id": -1, "notification_message": f"{token_user['account_handle']} added you to {name}"}
+    else:
+        token_user = find_user(token['user_id'], data)
+        return {"channel_id": -1, "dm_id": id, "notification_message": f"{token_user['account_handle']} added you to {name}"}
+
+
+def message_notification_message(token, id, name, is_channel, message):
+    data = load_data()
+    if is_channel:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id': id, 'dm_id': -1, 'notification_message': notification_message}
+    else:
+        token_user = find_user(token['user_id'], data)
+        notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
+        return {'channel_id': -1, 'dm_id': id, 'notification_message': notification_message}
 
 
 def find_user_channel_owner_status(channel_id, user_id, data):
@@ -259,20 +289,6 @@ def tag_users(message, sender_handle, dm_id, channel_id):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id': -1, 'dm_id': dm_id,
-                                                     'notification_message': notification_message})
+                    return user['user_id'], {'channel_id': -1, 'dm_id': dm_id, 'notification_message': notification_message}
 
-    if channel_id != -1:
-        if is_valid_channel_id(channel_id) == True:
-            channel = find_channel(channel_id, data)
-            members = []
-            for member in channel['members']:
-                members.append(member['user_id'])
-
-            for user in users_tagged:
-                if user['user_id'] in members:
-                    notification_message = f"{sender_handle} tagged you in {channel['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id': channel_id, 'dm_id': -1,
-                                                     'notification_message': notification_message})
-
-    return None
+    return False
