@@ -5,20 +5,21 @@ from src.auth import auth_register_v2
 from src.dm import dm_list_v1, dm_create_v1
 from src.helper import create_token
 
+@pytest.fixture(autouse=True)
+def clear():
+    clear_v1
+    yield
+    clear_v1 
 
 def test_token_user_nonexistent():
-    clear_v1()
 
     invalid_token = create_token(100000, 1000)
 
     with pytest.raises(AccessError):
         dm_list_v1(invalid_token)
 
-    clear_v1()
-
 
 def test_success_case():
-    clear_v1()
 
     admin = auth_register_v2('test1@unsw.au', 'password1', 'first1', 'last1')
     member_1 = auth_register_v2(
@@ -37,5 +38,3 @@ def test_success_case():
 
     assert len(member_1_dm_list) == 1
     assert len(member_2_dm_list) == 1
-
-    clear_v1()
