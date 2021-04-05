@@ -2,7 +2,6 @@ import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2
 from src.dm import dm_create_v1, dm_messages_v1
-from src.admin import admin_changepermission_v1
 from src.channels import channels_create_v2
 from src.channel import channel_join_v1, channel_messages_v2
 from src.message import message_senddm_v1, message_send_v2, message_remove_v1
@@ -23,8 +22,6 @@ def auth_user():
     password = "Testpass12345"
     auth_user_info = auth_register_v2(email, password, "firstname", "lastname")
     token = auth_user_info['token']
-    u_id = auth_user_info['auth_user_id']
-    admin_changepermission_v1(token, u_id, 1) # Make the auth_user an owner of Dreams
     return token
 
 @pytest.fixture
@@ -80,5 +77,5 @@ def test_unauthorised_auth_user(member, channel_message_info, dm_message_info):
 def test_invalid_message_id(auth_user, channel_message_info, dm_message_info):
     clear_v1()
     with pytest.raises(InputError):
-        message_remove_v1(auth_user, channel_message_info[1])
-        message_remove_v1(auth_user, dm_message_info[1])
+        message_remove_v1(auth_user, channel_message_info[1] + 1)
+        message_remove_v1(auth_user, dm_message_info[1] + 1)
