@@ -50,7 +50,7 @@ def user_profile_sethandle_v1(token, handle_str):
     
     auth_user_id = token_data['user_id']
     if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(descripton=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(handle_str) <= 3 or len(handle_str) >= 20:
         raise InputError(description=f"handle string is incorrect length, must be between 3 and 20 characters")
