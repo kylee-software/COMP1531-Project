@@ -164,9 +164,10 @@ Return Value:
 
     user_list.append(new_user)
     save_data(data)
-<<<<<<< HEAD
-    return {'auth_user_id': new_user['user_id']}
 
+    login_token = create_token(new_user['user_id'], login_session_id)
+
+    return {'token': login_token, 'auth_user_id': new_user['user_id']}
 
 
 def auth_logout(token):
@@ -185,15 +186,8 @@ def auth_logout(token):
         data = load_data()
         decoded_token = is_valid_token(token)
         for user in data['users']:
-            for session in user['sessions']:
-                if decoded_token['session_id'] == session:
-                    del session
-                    save_data(data)
-                    return True
+            if user['session_list'].count(decoded_token['session_id']) != 0:
+                user['session_list'].remove(decoded_token['session_id'])
+                save_data(data)
+                return True
     return False
-=======
-
-    login_token = create_token(new_user['user_id'], login_session_id)
-
-    return {'token': login_token, 'auth_user_id': new_user['user_id']}
->>>>>>> master
