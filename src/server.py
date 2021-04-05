@@ -13,7 +13,7 @@ from src.other import clear_v1
 from src.channels import channels_create_v2, channels_listall_v2, channels_list_v2
 from src.user import user_profile_v2, user_profile_setemail_v2
 from src.auth import auth_login_v2, auth_register_v2, auth_logout_v1
-from src.message import message_send_v2, message_senddm_v1
+from src.message import message_send_v2, message_senddm_v1, message_remove_v1
 
 def defaultHandler(err):
     response = err.get_response()
@@ -216,6 +216,10 @@ def channel_messages():
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
 
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    data = request.get_json()
+    return jsonify(message_remove_v1(data['token'], data['message_id']))
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
