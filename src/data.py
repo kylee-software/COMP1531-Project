@@ -1,5 +1,5 @@
 
-data = {'users': [], 'channels': [], 'dms': []}
+#data = {'users': [], 'channels': [], 'dms': []}
 
 # users =     [ {'first_name' : string,
 #                'last_name' : string,
