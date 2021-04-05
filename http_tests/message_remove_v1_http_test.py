@@ -69,7 +69,7 @@ def test_remove_dm_message(clear, auth_user, dm_id):
     message_id = requests.post(config.url + '/message/senddm/v1',
                                json={'token': auth_user,
                                      'dm_id': dm_id,
-                                     'message': 'Hi'})['message_id']
+                                     'message': 'Hi'}).json()['message_id']
 
     response = requests.delete(config.url + 'message/remove/v1',
                                json={'token': auth_user,
