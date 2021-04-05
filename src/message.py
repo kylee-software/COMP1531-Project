@@ -119,19 +119,19 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     OG_message = find_message(OG_message_id, data)
     
     # now check user is in og dm or channel
-    for member in message_source['members']:
-        if 'user_id' in member:
-            user = next((user for user in member if member['user_id'] == member_id), False)
-            if user == False:
-                raise AccessError(description=f'User not in the original dm/channel message is being shared from')
-        else:
-            user = next((user for user in member if member == member_id), False)
-            if user == False:
-                raise AccessError(description=f'User not in the original dm/channel message is being shared from')
+ 
+    if 'channel_id' in message_source:
+        user = next((user for user in message_source['members'] if user['user_id'] == auth_user_id), False)
+        if user == False:
+            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
+    else:
+        user = next((user for user in message_source['members'] if user == auth_user_id), False)
+        if user == False and message_source['creator'] != auth_user_id:
+            raise AccessError(description=f'User not in the original dm/channel message is being shared from')
     
     if channel_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
-        return message_send_v2(token, channel_id, new_message)
+        return {'message_id': message_send_v2(token, channel_id, new_message)}
         
     if dm_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
