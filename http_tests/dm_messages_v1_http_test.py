@@ -56,15 +56,15 @@ def unauthorised_user():
     }).json()['token']
     return token
 
-def test_invalid_input(token, channel_id):
+def test_invalid_input(token, dm_id):
     resp1 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
-        'channel_id': "abc",
+        'dm_id': "abc",
         'start': 0
     })
     resp2 = requests.get(config.url + 'dm/messages/v1', params={
         'token': token,
-        'channel_id': channel_id,
+        'dm_id': dm_id,
         'start': "ab"
     })
 
