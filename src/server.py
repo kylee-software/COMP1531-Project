@@ -105,8 +105,7 @@ def register_v2():
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner():
     data = request.get_json()
-    decoded_token = is_valid_token(data['token'])
-    return jsonify(channel_addowner_v1(decoded_token['user_id'], data['channel_id'], data['u_id']))
+    return jsonify(channel_addowner_v1(data['token'], data['channel_id'], data['u_id']))
 
 
 @ APP.route("/channel/leave/v1", methods=['POST'])
