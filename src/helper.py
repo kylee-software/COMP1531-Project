@@ -242,7 +242,7 @@ def tag_users(message, sender_handle, dm_id, channel_id):
                     user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message})
 
     if channel_id != -1:
-        if is_valid_channel_id(channel_id, data) == True:
+        if is_valid_channel_id(channel_id) == True:
             channel = find_channel(channel_id, data)
             members = []
             for member in channel['members']:
