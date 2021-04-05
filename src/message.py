@@ -59,7 +59,7 @@ def message_send_v2(token, channel_id, message):
 
         data['msg_counter'] += 1
         save_data(data)
-        return data['msg_counter']
+        return {'message_id':data['msg_counter']}
 
 def message_remove_v1(auth_user_id, message_id):
     return {
@@ -165,7 +165,7 @@ def message_senddm_v1(token, dm_id, message):
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
-    if is_valid_dm_id(dm_id, data) == False:
+    if is_valid_dm_id(dm_id) == False:
         raise InputError(description='dm is invalid')
     dm = find_dm(dm_id, data)
 
