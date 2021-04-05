@@ -260,19 +260,7 @@ def tag_users(message, sender_handle, dm_id, channel_id):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    return user, {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message}
-
-    if channel_id != -1:
-        if is_valid_channel_id(channel_id) == True:
-            channel = find_channel(channel_id, data)
-            members = []
-            for member in channel['members']:
-                members.append(member['user_id'])
-
-            for user in users_tagged:
-                if user['user_id'] in members:
-                    notification_message = f"{sender_handle} tagged you in {channel['name']}: {message[:20]}"
-                    return user, {'channel_id' : channel_id, 'dm_id': -1, 'notification_message': notification_message}
+                    return user['user_id'], {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message}
         
     return False
 

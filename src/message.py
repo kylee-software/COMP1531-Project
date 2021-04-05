@@ -114,8 +114,9 @@ def message_senddm_v1(token, dm_id, message):
     user_message = tag_users(message, auth_user['account_handle'], dm_id, -1)
     if user_message:
         user, message = user_message
+        user = next(u for u in data['users'] if u['user_id'] == user)
         user['notifications'].insert(0, message)
-        print(user)
+        
     auth_user['sent_messages'].append(message_id)
     data['msg_counter'] += 1
     save_data(data)
