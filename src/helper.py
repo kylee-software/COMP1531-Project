@@ -1,4 +1,5 @@
 import hashlib
+from types import prepare_class
 import jwt
 import json
 
