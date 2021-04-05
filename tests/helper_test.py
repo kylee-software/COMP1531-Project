@@ -131,6 +131,6 @@ def test_find_dm():
 
 def test_is_user_in_dm():
     data = {'users': [], 'dms': [{'dm_id': 1, 'creator': 3, 'members': []},
-                                      {'dm_id': 2, 'creator': 2, 'members': [{'user_id': 1}]}]}
+                                      {'dm_id': 2, 'creator': 2, 'members': [1]}]}
     assert is_user_in_dm(2, 1, data) == True
     assert is_user_in_dm(1, 1, data) == False
