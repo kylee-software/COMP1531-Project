@@ -4,7 +4,7 @@ from src.channel import channel_addowner_v1
 from src.channels import channels_create_v2
 from src.other import clear_v1
 from src.error import InputError, AccessError
-from src.helper import is_user_in_channel, load_data, find_user_channel_owner_status, save_data
+from src.helper import is_user_in_channel, load_data, find_user_channel_owner_status, save_data, create_token
 
 
 @pytest.fixture()
@@ -23,7 +23,6 @@ def create_member():
     member = auth_register_v2('test1@unsw.au', 'password2', 'first2', 'last2')
     return member
 
-
 def test_invalid_channel(clear, create_admin, create_member):
     admin = create_admin
     member = create_member
@@ -33,7 +32,7 @@ def test_invalid_channel(clear, create_admin, create_member):
     clear_v1()
 
 
-def test_user_nonexistent(clear, create_admin):
+def test_member_nonexistent(clear, create_admin):
     admin = create_admin
     channel_id = channels_create_v2(admin['token'], 'channel_1', True)
     with pytest.raises(InputError):
@@ -71,7 +70,7 @@ def test_successful_addowner(clear, create_admin, create_member):
     member = create_member
     channel_id = channels_create_v2(admin['token'], 'channel_1', True)
     channel_addowner_v1(
-        admin['auth_user_id'], channel_id['channel_id'], member['auth_user_id'])
+        admin['token'], channel_id['channel_id'], member['auth_user_id'])
 
     data = load_data()
 
