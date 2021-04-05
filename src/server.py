@@ -104,6 +104,9 @@ def channel_messages():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
     start = request.args.get('start')
+    if (not channel_id.isdigit()) or (not start.isdigit()):
+        raise InputError(description="channel id or start is not a number")
+
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
 

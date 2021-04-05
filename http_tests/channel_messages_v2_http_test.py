@@ -38,6 +38,23 @@ def channel_id(token):
     channel_id = resp['channel_id']
     return channel_id
 
+def test_invalid_input(token, channel_id):
+    resp1 = requests.get(config.url + '/channel/messages/v2', params={
+        'token': token,
+        'channel_id': "abc",
+        'start': 0
+    })
+    resp2 = requests.get(config.url + '/channel/messages/v2', params={
+        'token': token,
+        'channel_id': channel_id,
+        'start': "ab"
+    })
+
+    status_code1 = resp1.status_code
+    status_code2 = resp2.status_code
+    assert status_code1 == 400
+    assert status_code2 == 400
+
 def test_invalid_token(clear, channel_id):
     resp = requests.get(config.url + '/channel/messages/v2', params={
         'token': "invalid_token",
