@@ -25,9 +25,9 @@ def user():
     return token
 
 
-def test_invalid_input(clear, token):
+def test_invalid_input(clear, user):
     resp = requests.delete(config.url + 'admin/user/remove/v1', json={
-        'token': token,
+        'token': user,
         'u_id': "ab",
     })
 
