@@ -12,7 +12,7 @@ from src.other import clear_v1
 from src.channels import channels_create_v2, channels_listall_v2, channels_list_v2
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
-from src.auth import auth_login_v2, auth_register_v2
+from src.auth import auth_login_v2, auth_register_v2, auth_logout_v1
 from src.message import message_send_v2
 
 
@@ -150,6 +150,12 @@ def message_send():
     data = request.get_json()
     msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
     return jsonify(msg_id)
+
+@APP.route('/auth/logout/v1', methods=['POST'])
+def auth_logout():
+    data = request.get_json()
+    is_success = auth_logout_v1(data['token'])
+    return jsonify(is_success)
 
 @APP.route('/dm/remove/v1', methods=['DELETE'])
 def dm_remove():
