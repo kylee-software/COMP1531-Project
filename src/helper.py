@@ -238,7 +238,8 @@ def tag_users(message, sender_handle, dm_id, channel_id, data):
             for user in users_tagged:
                 if user['user_id'] in dm['members']:
                     notification_message = f"{sender_handle} tagged you in {dm['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id, 'notification_message': notification_message})
+                    user['notifications'].insert(0, {'channel_id' : -1, 'dm_id': dm_id,
+                                                     'notification_message': notification_message})
 
     if channel_id != -1:
         if is_valid_channel_id(channel_id, data) == True:
@@ -250,6 +251,7 @@ def tag_users(message, sender_handle, dm_id, channel_id, data):
             for user in users_tagged:
                 if user['user_id'] in members:
                     notification_message = f"{sender_handle} tagged you in {channel['name']}: {message[:20]}"
-                    user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1, 'notification_message': notification_message})
+                    user['notifications'].insert(0, {'channel_id' : channel_id, 'dm_id': -1,
+                                                     'notification_message': notification_message})
         
     return None
