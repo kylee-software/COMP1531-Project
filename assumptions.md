@@ -1,5 +1,12 @@
 # Assumptions For Iteration One
 
+## admin_user_remove
+
+- A global owner can remove themself
+- Other user can not add the "removed user" to a channel or dm later
+- if the user with u_id is the only owner of a channel, then we can not remove the user
+- remove dms that the "remover user" are in if the user is the creator
+
 ## channel_join_v1
 
 - if user tries to join a channel they are already in, nothing is done to the data store and the function simply returns successful (as they are in the channel)
@@ -47,6 +54,8 @@
 
 - channel_details_v1
 - auth_login_v1
+- channel_messages_v2
+- channels_create
 
 ## Dm/Invite
 
@@ -69,3 +78,9 @@
 ## search_v2
 
 - Matched queries means a message that contains a query string i.e The query is a substring of the message. (Exact match inclusive)
+
+## channel_removeowner
+
+- User id of the user who is having their ownership taking away remains a member of the channel
+- Channel owner can remove their ownership themself
+

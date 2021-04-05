@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src import config
-from src.admin import admin_changepermission_v1
+from src.admin import admin_changepermission_v1, admin_user_remove_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
@@ -122,6 +122,13 @@ def register_v2():
 def admin_userpermission():
     data = request.get_json()
     return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
+
+@APP.route('/admin/user/remove/v1', methods=['DELETE'])
+def admin_user_remove():
+    token = request.get_json()['token']
+    u_id = request.get_json()['u_id']
+
+    return jsonify(admin_user_remove_v1(token, u_id))
 
 
 @APP.route("/message/senddm/v1", methods=['POST'])
