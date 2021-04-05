@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.helper import (find_dm, find_user, invite_notification_message,
                         is_user_in_dm, is_valid_dm_id, is_valid_token,
-                        is_valid_user_id, load_data, save_data) 
+                        is_valid_user_id, load_data, save_data)
 
 
 def dm_list_v1(token):
@@ -19,7 +19,6 @@ def dm_list_v1(token):
                 break
 
     return {'dms': dm_list}
-
 
 
 def dm_invite_v1(token, dm_id, user_id):
@@ -59,9 +58,9 @@ def dm_invite_v1(token, dm_id, user_id):
     if dm['members'].count(token['user_id']) == 0:
         raise AccessError("Authorised user is not a part of this dm")
 
-    
     user = next(user for user in data['users'] if user['user_id'] == user_id)
-    user['notifications'].insert(0, invite_notification_message(token, dm_id, dm['name'], False))
+    user['notifications'].insert(
+        0, invite_notification_message(token, dm_id, dm['name'], False))
 
     dm['members'].append(user_id)
     save_data(data)
@@ -152,6 +151,7 @@ def dm_details_v1(token, dm_id):
                                        })
     return return_dict
 
+
 def dm_create_v1(token, u_ids):
     '''
     Function to create a channel that is either a public or private with a given name
@@ -205,6 +205,39 @@ def dm_create_v1(token, u_ids):
     save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
+
+
+def dm_leave_v1(token, dm_id):
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
+
+    data = load_data()
+
+    dm_id_found = False
+    user_in_dm = False
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm_id_found = True
+            for member in dm['members']:
+                if member == decoded_token['user_id']:
+                    user_in_dm = True
+            break
+
+    if dm_id_found is False:
+        raise InputError('Valid DM not found.')
+
+    if user_in_dm is False:
+        raise AccessError('User is not a member of this DM.')
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm['members'].remove(decoded_token['user_id'])
+
+    save_data(data)
+
+    return {}
 
 
 def dm_messages_v1(token, dm_id, start):
