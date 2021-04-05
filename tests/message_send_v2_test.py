@@ -43,9 +43,13 @@ def test_user_not_in_channel(clear, token, channel_id):
         message_send_v2(second_token['token'], channel_id, 'testMessage')
 
 def test_message_ids_are_unique(clear, token, channel_id):
-    first_id = message_send_v2(token, channel_id, 'testMessaage')
-    second_id = message_send_v2(token, channel_id, 'secondTestMessage')
+    first_id = message_send_v2(token, channel_id, 'testMessaage')['message_id']
+    second_id = message_send_v2(token, channel_id, 'secondTestMessage')['message_id']
     assert first_id != second_id
+
+def test_message_with_notification(clear, token, channel_id):
+    msg_id = message_send_v2(token, channel_id, 'test message @firstNamelastName')['message_id']
+    assert isinstance(msg_id, int)
 
 def test_invalid_channel_id(clear, token):
     with pytest.raises(InputError):

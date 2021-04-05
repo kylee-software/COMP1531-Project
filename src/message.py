@@ -59,7 +59,7 @@ def message_send_v2(token, channel_id, message):
 
         data['msg_counter'] += 1
         save_data(data)
-        return data['msg_counter']
+        return {'message_id':data['msg_counter']}
 
 def message_remove_v1(auth_user_id, message_id):
     return {
