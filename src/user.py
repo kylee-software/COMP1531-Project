@@ -41,7 +41,7 @@ def users_all_v1(token):
     data = load_data()
     return_list = []
     for user in data['users']:
-        if f"{user['first_name']} {user['last_name']}" != 'Removed user':
+        if not user['is_removed']:
             return_list.append({'u_id': user['user_id'],
                                 'email': user['email_address'],
                                 'name_first': user['first_name'],
