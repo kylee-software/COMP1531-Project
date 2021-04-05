@@ -62,16 +62,16 @@ def admin_user_remove_v1(token, u_id):
     data = load_data()
 
     if not is_valid_token(token):
-        raise AccessError("Invalid token.")
+        raise AccessError(description="Invalid token.")
 
     owner_id = is_valid_token(token)['user_id']
 
     user_info = find_user(owner_id, data)
     if user_info['permission_id'] != 1:
-        raise AccessError("Not an owner of Dreams.")
+        raise AccessError(description="Not an owner of Dreams.")
 
     if not is_valid_user_id(u_id):
-        raise InputError(f"user id: {u_id} does not refer to a valid user.")
+        raise InputError(description=f"user id: {u_id} does not refer to a valid user.")
 
     owner_count = 0
     for user in data['users']:
@@ -79,7 +79,7 @@ def admin_user_remove_v1(token, u_id):
             owner_count += 1
 
     if owner_count == 1:
-        raise InputError("User is the only owner of Dreams and can not be removed.")
+        raise InputError(description="User is the only owner of Dreams and can not be removed.")
     else:
         # Update information in 'users':{}
         for user in data['users']:
