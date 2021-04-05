@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.helper import (find_channel, find_user,
-                        find_user_channel_owner_status, is_user_in_channel,
+                        find_user_channel_owner_status,
+                        invite_notification_message, is_user_in_channel,
                         is_valid_channel_id, is_valid_token, is_valid_user_id,
                         load_data, save_data)
 
@@ -53,6 +54,7 @@ def channel_invite_v1(token, channel_id, u_id):
     global_owner = 2
     for user in data['users']:
         if user['user_id'] == u_id:
+            invited_user = user
             global_owner = user['permission_id']
 
     # add if user isnt already in the channel
@@ -63,6 +65,10 @@ def channel_invite_v1(token, channel_id, u_id):
                     return {}
             channel['members'].append(
                 {'user_id': u_id, 'permission_id': global_owner})
+            # notification message
+            channel_name = channel_details_v1(token, channel_id)['name']
+            invited_user['notifications'].insert(0, invite_notification_message(
+                token_data, channel_id, channel_name, True))
 
     save_data(data)
     return {
@@ -336,27 +342,31 @@ def channel_join_v1(token, channel_id):
     }
 
 
-def channel_addowner_v1(auth_user_id, channel_id, u_id):
+def channel_addowner_v1(token, channel_id, u_id):
     data = load_data()
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)
     if channel_id_valid is False:
-        raise InputError("Channel doesn't exist.")
+        raise InputError(description="Channel doesn't exist.")
 
     # Check if user exists
     user_exist = find_user(u_id, data)
     if user_exist is None:
-        raise InputError("User doesn't exist.")
+        raise InputError(description="User doesn't exist.")
 
     # Check if member is already an owner
     channel = find_channel(channel_id, data)
     for member in channel['members']:
         if member['user_id'] == u_id:
             if member['permission_id'] == 1:
-                raise InputError("User is already an owner.")
+                raise InputError(description="User is already an owner.")
 
     # Check if auth_user_id is an owner
-    first_user_owner = find_user(auth_user_id, data)
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description='Invalid Token')
+
+    first_user_owner = find_user(decoded_token['user_id'], data)
     first_user_owner_status = first_user_owner['permission_id']
     owner_channel_status = find_user_channel_owner_status(
         channel_id, first_user_owner['permission_id'], data)
@@ -366,13 +376,16 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
             for member in channel['members']:
                 if member['user_id'] == u_id:
                     member['permission_id'] = True
+                    if not u_id in channel['owner']:
+                        channel['owner'].append(u_id)
         else:
             new_owner = {'user_id': u_id, 'permission_id': True}
             channel['members'].append(new_owner)
+            channel['owner'].append(u_id)
 
         save_data(data)
     else:
-        raise AccessError("Not an owner of this channel.")
+        raise AccessError(description="Not an owner of this channel.")
     return {
     }
 

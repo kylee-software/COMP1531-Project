@@ -1,5 +1,5 @@
-from src.error import AccessError, InputError
-from src.helper import is_valid_user_id, load_data, save_data, is_valid_token, find_user, find_dm, is_valid_dm_id, is_user_in_dm
+from src.error import InputError, AccessError
+from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user, invite_notification_message, find_dm, is_valid_dm_id, is_user_in_dm
 
 def dm_invite_v1(token, dm_id, user_id):
     """Adds the user referenced by user_id to the dm referenced by dm_id
@@ -37,9 +37,9 @@ def dm_invite_v1(token, dm_id, user_id):
     if dm['members'].count(token['user_id']) == 0:
         raise AccessError("Authorised user is not a part of this dm")
 
-    token_user = find_user(token['user_id'], data)
+    
     user = next(user for user in data['users'] if user['user_id'] == user_id)
-    user['notifications'].insert(0, {"channel_id": -1, "dm_id": dm_id, "notification_message": f"{token_user['account_handle']} added you to {dm['name']}" })
+    user['notifications'].insert(0, invite_notification_message(token, dm_id, dm['name'], False))
 
     dm['members'].append(user_id)
     save_data(data)
@@ -127,7 +127,6 @@ def dm_details_v1(token, dm_id):
                                      })
     return return_dict
 
-
 def dm_create_v1(token, u_ids):
     '''
     Function to create a channel that is either a public or private with a given name
@@ -146,6 +145,7 @@ def dm_create_v1(token, u_ids):
     Assumption:
         - a new dm is created everytime a creator creates one even there is already
          a dm with the same creator and dm members
+        - a user who is removed from Dreams can not be added to a dm
     '''
 
     data = load_data()
@@ -158,11 +158,11 @@ def dm_create_v1(token, u_ids):
     user_id = is_valid_token(token)['user_id']
     handles = []
 
-    for id in u_ids:
-        if not is_valid_user_id(id):
-            raise InputError(f"u_id: {id} is not a valid user.")
+    for u_id in u_ids:
+        if not is_valid_user_id(u_id):
+            raise InputError(f"u_id: {u_id} is not a valid user.")
 
-        user_handle = find_user(id, data)['account_handle']
+        user_handle = find_user(u_id, data)['account_handle']
         handles.append(user_handle)
 
     handles.append(find_user(user_id, data)['account_handle'])
