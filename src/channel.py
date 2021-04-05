@@ -278,7 +278,7 @@ def channel_join_v1(token, channel_id):
     }
 
 
-def channel_addowner_v1(auth_user_id, channel_id, u_id):
+def channel_addowner_v1(token, channel_id, u_id):
     data = load_data()
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)
@@ -298,7 +298,11 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
                 raise InputError("User is already an owner.")
 
     # Check if auth_user_id is an owner
-    first_user_owner = find_user(auth_user_id, data)
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description='Invalid Token')
+
+    first_user_owner = find_user(decoded_token['user_id'], data)
     first_user_owner_status = first_user_owner['permission_id']
     owner_channel_status = find_user_channel_owner_status(
         channel_id, first_user_owner['permission_id'], data)
