@@ -51,9 +51,3 @@ def test_return_no_more_than_20_notifications(clear, token, channel_id):
         requests.post(config.url + '/message/send/v2', json={'token': token, 'channel_id': channel_id, 'message': f"Test {i} message @firstNamelastName"})
     notifications = requests.get(config.url + '/notifications/get/v1', params={'token': token}).json()
     assert len(notifications['notifications']) == 20
-
-def test_channel_invite_notification(clear, token):
-    pass
-
-def test_dm_invite_notification(clear, token):
-    pass
