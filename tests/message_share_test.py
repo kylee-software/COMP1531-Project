@@ -107,7 +107,7 @@ def test_user_not_in_OGdm(clear, creator, user1, share_channel, dm, user2):
     OGmessage = message_senddm_v1(creator['token'], dm['dm_id'], "TestMessage")['message_id']
     channel_invite_v1(creator['token'], share_channel, user2['auth_user_id'])
     with pytest.raises(AccessError):
-        message_share_v1(user2['token'], OGmessage['message_id'], "additional mesage", share_channel, -1)
+        message_share_v1(user2['token'], OGmessage, "additional mesage", share_channel, -1)
 
 def test_user_not_in_sharechannel(clear, creator, user1, OGchannel, share_channel, user2):
     OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']

@@ -190,12 +190,10 @@ def dm_remove():
     data = request.get_json()
     return jsonify(dm_remove_v1(data['token'], data['dm_id']))
 
-<<<<<<< HEAD
 @APP.route("/message/share/v1", methods=['POST'])
 def message_share():
     data = request.get_json()
     return jsonify(message_share_v1(data['token'], data['og_message_id'], data['message'], data['channel_id'], data['dm_id']))
-=======
 
 @APP.route("/user/profile/setemail/v2", methods=['PUT'])
 def user_profile_setemail():
@@ -226,7 +224,6 @@ def channel_messages():
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
 
->>>>>>> master
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
