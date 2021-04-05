@@ -376,9 +376,12 @@ def channel_addowner_v1(token, channel_id, u_id):
             for member in channel['members']:
                 if member['user_id'] == u_id:
                     member['permission_id'] = True
+                    if not u_id in channel['owner']:
+                        channel['owner'].append(u_id)
         else:
             new_owner = {'user_id': u_id, 'permission_id': True}
             channel['members'].append(new_owner)
+            channel['owner'].append(u_id)
 
         save_data(data)
     else:
