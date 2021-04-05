@@ -73,8 +73,9 @@ def admin_user_remove_v1(token, u_id):
     for user in data['users']:
         if user['permission_id'] == 1:
             owner_count += 1
+            owner_user = user
 
-    if owner_count == 1:
+    if owner_count == 1 and owner_user['user_id'] == u_id:
         raise InputError(description="User is the only owner of Dreams and can not be removed.")
     else:
         # Update information in 'users':{}

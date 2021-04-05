@@ -65,6 +65,8 @@
 
 - You are allowed to tag yourself in a message
 
+## user/profile/v1
+- Will not list removed users
 ## message share
 
 - If the optional message plus the shared messaged together is over 1000 characters its too long and an input error is raised

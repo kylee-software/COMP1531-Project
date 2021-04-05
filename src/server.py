@@ -22,7 +22,7 @@ from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
                          message_senddm_v1, message_share_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_setname_v2, user_profile_v2)
+                      user_profile_setname_v2, user_profile_v2, users_all_v1)
 
 
 def defaultHandler(err):
@@ -56,6 +56,12 @@ def echo():
         'data': data
     })
 
+
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+    token = request.args.get('token')
+    list = users_all_v1(token)
+    return jsonify(list)
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications():
