@@ -71,4 +71,4 @@ def test_change_to_not_owner(clear, user1, user2, user3):
     with pytest.raises(AccessError):
         admin_changepermission_v1(user1['token'], user3['auth_user_id'], OWNER_PERMISSION)  
 
-    clear_v1()    
+

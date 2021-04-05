@@ -88,7 +88,7 @@ def login_v2():
     return jsonify(auth_login_v2(data['email'], data['password']))
 
 
-@ APP.route("/auth/register/v2", methods=['POST'])
+@APP.route("/auth/register/v2", methods=['POST'])
 def register_v2():
     data = request.get_json()
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))

@@ -33,16 +33,16 @@ def test_admin_permissions_change(clear, user1, user2):
     '''
     A simple test to check admin permissions
     '''
-    resp = requests.post(config.url + "admin/userpermission/change/v1", params={'token': user1['token'], 'u_id':user2['auth_user_id'], 'permission_id':OWNER_PERMISSION})
+    resp = requests.post(config.url + "admin/userpermission/change/v1", json={'token': user1['token'], 'u_id':user2['auth_user_id'], 'permission_id':1})
     assert resp.json() == {}
     
 def test_admin_permissions_access_error(clear, user2):
-    resp = requests.post(config.url + "admin/userpermission/change/v1", params={'token': 'invalid.token.input', 'u_id':user2['auth_user_id'], 'permission_id':OWNER_PERMISSION})
+    resp = requests.post(config.url + "admin/userpermission/change/v1", json={'token': 'invalid.token.input', 'u_id':user2['auth_user_id'], 'permission_id':OWNER_PERMISSION})
     assert resp.status_code == 403
 
 def test_admin_permissions_input_error(clear, user1):
     invalid_id = user1['auth_user_id'] + 1
-    resp = requests.post(config.url + "admin/userpermission/change/v1", params={'token': user1['token'], 'u_id': invalid_id, 'permission_id':OWNER_PERMISSION})
+    resp = requests.post(config.url + "admin/userpermission/change/v1", json={'token': user1['token'], 'u_id': invalid_id, 'permission_id':OWNER_PERMISSION})
     assert resp.status_code == 400
 
 
