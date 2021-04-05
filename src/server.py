@@ -1,5 +1,6 @@
 import sys
 from json import dumps
+from types import prepare_class
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -8,7 +9,7 @@ from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1, dm_invite_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
-from src.channels import channels_create_v2, channels_listall_v2
+from src.channels import channels_create_v2, channels_listall_v2, channels_list_v2
 from src.user import user_profile_v2
 from src.channels import channels_create_v2
 from src.auth import auth_login_v2, auth_register_v2
@@ -115,6 +116,12 @@ def dm_create():
 
     return jsonify(dm_dict)
 
+@APP.route('/channels/list/v2', methods=['GET'])
+def list_channels():
+    token = request.args.get('token')
+    list = channels_list_v2(token)
+    return jsonify(list)
+    
 @APP.route('/channels/listall/v2', methods=['GET'])
 def listall_channels():
     token = request.args.get('token')
