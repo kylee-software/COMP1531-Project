@@ -1,6 +1,9 @@
 from src.error import AccessError, InputError
-from src.helper import invite_notification_message, is_valid_user_id
-from src.helper import is_valid_channel_id, load_data, save_data, is_valid_token, find_channel, is_user_in_channel
+from src.helper import (find_channel, find_user,
+                        find_user_channel_owner_status,
+                        invite_notification_message, is_user_in_channel,
+                        is_valid_channel_id, is_valid_token, is_valid_user_id,
+                        load_data, save_data)
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -27,7 +30,8 @@ def channel_invite_v1(token, channel_id, u_id):
 
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_user_id(u_id) == False:
         raise InputError(description=f"invalid u_id: {u_id}")
@@ -59,11 +63,12 @@ def channel_invite_v1(token, channel_id, u_id):
             for member in channel['members']:
                 if member['user_id'] == u_id:
                     return {}
-            channel['members'].append({'user_id':u_id, 'permission_id':global_owner})
-            #notification message
+            channel['members'].append(
+                {'user_id': u_id, 'permission_id': global_owner})
+            # notification message
             channel_name = channel_details_v1(token, channel_id)['name']
-            invited_user['notifications'].insert(0, invite_notification_message(token_data, channel_id, channel_name, True))
-    
+            invited_user['notifications'].insert(0, invite_notification_message(
+                token_data, channel_id, channel_name, True))
 
     save_data(data)
     return {
@@ -94,7 +99,8 @@ def channel_details_v1(token, channel_id):
 
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_channel_id(channel_id) == False:
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
@@ -116,7 +122,8 @@ def channel_details_v1(token, channel_id):
                     found_member = True
 
             if found_member == False:
-                raise AccessError(description=f"auth_user_id is not a channel member")
+                raise AccessError(
+                    description=f"auth_user_id is not a channel member")
 
             break
 
@@ -150,6 +157,7 @@ def channel_details_v1(token, channel_id):
         'owner_members': owner_details,
         'all_members': member_details,
     }
+
 
 def channel_messages_v2(token, channel_id, start):
     '''
@@ -185,11 +193,13 @@ def channel_messages_v2(token, channel_id, start):
     channel_messages = channel_info['messages']
 
     if not is_user_in_channel(channel_id, user_id, data):
-        raise AccessError(description=f"User is not a member of the channel with channel id {channel_id}")
+        raise AccessError(
+            description=f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
     if start >= len(channel_messages):
-        raise InputError(description="Start is greater than the total number of messages in the channel.")
+        raise InputError(
+            description="Start is greater than the total number of messages in the channel.")
 
     # calculate the ending return value
     end = start + 50 if (start + 50 < len(data['channels']) - 1) else -1
@@ -246,7 +256,8 @@ def channel_leave_v1(token, channel_id):
 
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_channel_id(channel_id) == False:
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
@@ -260,7 +271,8 @@ def channel_leave_v1(token, channel_id):
                     del channel['members'][idx]
                     break
             if found_member == False:
-                raise AccessError(description=f"user is not a member of this channel")
+                raise AccessError(
+                    description=f"user is not a member of this channel")
     save_data(data)
 
     return {
@@ -292,7 +304,8 @@ def channel_join_v1(token, channel_id):
 
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_channel_id(channel_id) == False:
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
@@ -315,11 +328,13 @@ def channel_join_v1(token, channel_id):
 
             # Now if the user is a global owner or the channel is public they can be added
             if global_status == 1 or is_public == True:
-                user_dict = {'user_id': auth_user_id, 'permission_id': global_status, }
+                user_dict = {'user_id': auth_user_id,
+                             'permission_id': global_status, }
                 channel['members'].append(user_dict)
             else:
                 # If not this means the channel is private and the user doesn't have access
-                raise AccessError(description=f"channel is private and user is not global owner")
+                raise AccessError(
+                    description=f"channel is private and user is not global owner")
             break
 
     save_data(data)
@@ -327,11 +342,109 @@ def channel_join_v1(token, channel_id):
     }
 
 
-def channel_addowner_v1(auth_user_id, channel_id, u_id):
+def channel_addowner_v1(token, channel_id, u_id):
+    data = load_data()
+    # Check if channel exists or not
+    channel_id_valid = is_valid_channel_id(channel_id)
+    if channel_id_valid is False:
+        raise InputError(description="Channel doesn't exist.")
+
+    # Check if user exists
+    user_exist = find_user(u_id, data)
+    if user_exist is None:
+        raise InputError(description="User doesn't exist.")
+
+    # Check if member is already an owner
+    channel = find_channel(channel_id, data)
+    for member in channel['members']:
+        if member['user_id'] == u_id:
+            if member['permission_id'] == 1:
+                raise InputError(description="User is already an owner.")
+
+    # Check if auth_user_id is an owner
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description='Invalid Token')
+
+    first_user_owner = find_user(decoded_token['user_id'], data)
+    first_user_owner_status = first_user_owner['permission_id']
+    owner_channel_status = find_user_channel_owner_status(
+        channel_id, first_user_owner['permission_id'], data)
+
+    if first_user_owner_status == 1 or owner_channel_status == 1:
+        if is_user_in_channel(channel_id, u_id, data) is True:
+            for member in channel['members']:
+                if member['user_id'] == u_id:
+                    member['permission_id'] = True
+                    if not u_id in channel['owner']:
+                        channel['owner'].append(u_id)
+        else:
+            new_owner = {'user_id': u_id, 'permission_id': True}
+            channel['members'].append(new_owner)
+            channel['owner'].append(u_id)
+
+        save_data(data)
+    else:
+        raise AccessError(description="Not an owner of this channel.")
     return {
     }
 
 
-def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+def channel_removeowner_v1(token, channel_id, u_id):
+    '''
+    channel_removeowner removes user with user id u_id an owner of this channel
+
+    Arguments:
+        token (string)      - an authorisation hash of the user who is removing the ownership of the user with u_id
+        channel_id (int)    - channel id of the channel the user's ownership is being removed from
+        u_id (int)          - user id of the user who is having their ownership taking away
+
+    Exceptions:
+        InputError  - Channel id is not a valid channel
+                    - User with u_id is not an owner of the channel
+                    - User with u_id is the only owner
+        AccessError - The authorised user is not an owner of this channel
+                    - User is an authorised user but not an owner of the **Dreams**
+                    - User is not an authorised user of **Dreams**
+
+    Return Value:
+            Returns {}
+
+    Assumption:
+            - User id of the user who is having their ownership taking away remains a member of the channel
+            - Channel owner can remove their ownership themself
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Token is invalid.")
+
+    user_id = is_valid_token(token)['user_id']
+
+    if not is_valid_channel_id(channel_id):
+        raise InputError(description="Channel id is invalid")
+
+    user_permission_id = find_user(user_id, data)['permission_id']
+    owners = find_channel(channel_id, data)['owner']
+
+    if user_id not in owners and user_permission_id != 1 :
+        raise AccessError(description=f"Not an owner of channel {channel_id} nor an owner of Dreams")
+
+    if u_id not in owners:
+        raise InputError(description=f"Not an owner of channel {channel_id}")
+
+    if u_id in owners and len(owners) == 1:
+        raise InputError(description=f"User with u_id {u_id} is the only owner of channel {channel_id}")
+
+    if user_id in owners or user_permission_id == 1 :
+        for channel in data['channels']:
+            for member in channel['members']:
+                if member['user_id'] == u_id:
+                    member['permission_id'] = 2
+                    channel['owner'].remove(u_id)
+                    break
+
+    save_data(data)
     return {
     }

@@ -1,5 +1,25 @@
-from src.error import InputError, AccessError
-from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user, invite_notification_message, find_dm, is_valid_dm_id, is_user_in_dm
+from src.error import AccessError, InputError
+from src.helper import (find_dm, find_user, invite_notification_message,
+                        is_user_in_dm, is_valid_dm_id, is_valid_token,
+                        is_valid_user_id, load_data, save_data)
+
+
+def dm_list_v1(token):
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
+
+    data = load_data()
+    dm_list = []
+
+    for dm in data['dms']:
+        for member in dm['members']:
+            if member == decoded_token['user_id']:
+                dm_list.append(dm['dm_id'])
+                break
+
+    return {'dms': dm_list}
+
 
 def dm_invite_v1(token, dm_id, user_id):
     """Adds the user referenced by user_id to the dm referenced by dm_id
@@ -32,17 +52,19 @@ def dm_invite_v1(token, dm_id, user_id):
         raise InputError("User you are trying to add doesn't exist")
 
     if dm['members'].count(user_id) != 0:
-        raise InputError("The user you are trying to add is already a part of that dm")
-    
+        raise InputError(
+            "The user you are trying to add is already a part of that dm")
+
     if dm['members'].count(token['user_id']) == 0:
         raise AccessError("Authorised user is not a part of this dm")
 
-    
     user = next(user for user in data['users'] if user['user_id'] == user_id)
-    user['notifications'].insert(0, invite_notification_message(token, dm_id, dm['name'], False))
+    user['notifications'].insert(
+        0, invite_notification_message(token, dm_id, dm['name'], False))
 
     dm['members'].append(user_id)
     save_data(data)
+
 
 def dm_remove_v1(token, dm_id):
     '''
@@ -65,10 +87,11 @@ def dm_remove_v1(token, dm_id):
 
     if token_data == False:
         raise AccessError(description=f"Token invalid")
-    
+
     auth_user_id = token_data['user_id']
-    if is_valid_user_id (auth_user_id) == False:
-        raise AccessError(description=f"Auth_user_id: {auth_user_id} is invalid")
+    if is_valid_user_id(auth_user_id) == False:
+        raise AccessError(
+            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     found_dm = False
     for dm in data['dms']:
@@ -76,9 +99,9 @@ def dm_remove_v1(token, dm_id):
             found_dm = True
             if dm['creator'] != auth_user_id:
                 raise AccessError(description=f"user is not dm creator")
-            del dm 
+            del dm
             break
-            
+
     if found_dm == False:
         raise InputError(description=f"Dm id was invalid")
 
@@ -105,7 +128,7 @@ def dm_details_v1(token, dm_id):
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
-    
+
     data = load_data()
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
@@ -116,16 +139,18 @@ def dm_details_v1(token, dm_id):
     if dm['members'].count(token['user_id']) == 0:
         raise AccessError("User is not in this DM")
 
-    return_dict = {'name' : dm['name'], 'members' : []}
+    return_dict = {'name': dm['name'], 'members': []}
     for member_id in dm['members']:
-        user = next(user for user in data['users'] if user['user_id'] == member_id)
+        user = next(user for user in data['users']
+                    if user['user_id'] == member_id)
         return_dict['members'].append({'user_id': user['user_id'],
-                                     'email': user['email_address'],
-                                     'name_first': user['first_name'], 
-                                     'name_last': user['last_name'],
-                                     'handle_str': user['account_handle'],
-                                     })
+                                       'email': user['email_address'],
+                                       'name_first': user['first_name'],
+                                       'name_last': user['last_name'],
+                                       'handle_str': user['account_handle'],
+                                       })
     return return_dict
+
 
 def dm_create_v1(token, u_ids):
     '''
@@ -182,6 +207,39 @@ def dm_create_v1(token, u_ids):
     return {'dm_id': dm_id, 'dm_name': dm_name}
 
 
+def dm_leave_v1(token, dm_id):
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError("Invalid Token.")
+
+    data = load_data()
+
+    dm_id_found = False
+    user_in_dm = False
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm_id_found = True
+            for member in dm['members']:
+                if member == decoded_token['user_id']:
+                    user_in_dm = True
+            break
+
+    if dm_id_found is False:
+        raise InputError('Valid DM not found.')
+
+    if user_in_dm is False:
+        raise AccessError('User is not a member of this DM.')
+
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            dm['members'].remove(decoded_token['user_id'])
+
+    save_data(data)
+
+    return {}
+
+
 def dm_messages_v1(token, dm_id, start):
     '''
     Function to return up to 50 messages between "start" and "start + 50"
@@ -215,11 +273,13 @@ def dm_messages_v1(token, dm_id, start):
     dm_messages = dm_info['messages']
 
     if not is_user_in_dm(dm_id, user_id, data):
-        raise AccessError(description=f"User is not a member of the dm with dm id {dm_id}")
+        raise AccessError(
+            description=f"User is not a member of the dm with dm id {dm_id}")
 
     # Check valid start number
     if start >= len(dm_messages):
-        raise InputError(description="Start is greater than the total number of messages in the dm.")
+        raise InputError(
+            description="Start is greater than the total number of messages in the dm.")
 
     # calculate the ending return value
     end = start + 50 if (start + 50 < len(data['dms']) - 1) else -1
