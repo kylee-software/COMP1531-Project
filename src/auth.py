@@ -170,7 +170,7 @@ Return Value:
     return {'token': login_token, 'auth_user_id': new_user['user_id']}
 
 
-def auth_logout(token):
+def auth_logout_v1(token):
     """Given an active token, invalidates the token to log the user out. If a 
     valid token is given, and the user is successfully logged out, it returns true, otherwise false.
 
@@ -189,5 +189,5 @@ def auth_logout(token):
             if user['session_list'].count(decoded_token['session_id']) != 0:
                 user['session_list'].remove(decoded_token['session_id'])
                 save_data(data)
-                return True
-    return False
+                return {'is_success': True}
+    return {'is_success': False}
