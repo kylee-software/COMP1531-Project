@@ -65,6 +65,11 @@ def is_valid_channel_id(channel_id):
             return True
     return False
 
+def is_valid_dm_id(dm_id, data):
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            return True
+    return False
 
 def hash_password(password):
     '''
@@ -168,6 +173,10 @@ def find_channel(channel_id, data):
         if channel['channel_id'] == channel_id:
             return channel
 
+def find_dm(dm_id, data):
+    for dm in data['dms']:
+        if dm['dm_id'] == dm_id:
+            return dm
 
 def is_user_in_channel(channel_id, user_id, data):
     channel = find_channel(channel_id, data)
@@ -182,6 +191,8 @@ def is_user_in_dm(dm_id, user_id, data):
     for member in dm['members']:
         if member == user_id:
             return True
+    if dm['creator'] == user_id:
+        return True
     return False
 
 def find_message_source(message_id, data):

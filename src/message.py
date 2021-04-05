@@ -1,6 +1,6 @@
 from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data
-from src.helper import find_message, is_valid_channel_id, is_user_in_channel
-from src.helper import is_valid_dm_id, find_dm, tag_users, find_message_source, find_user_in_dm
+from src.helper import find_message, is_valid_channel_id, is_user_in_channel, find_user
+from src.helper import is_valid_dm_id, find_dm, tag_users, find_message_source, is_user_in_dm
 from src.error import AccessError, InputError
 from datetime import datetime
 
@@ -77,7 +77,8 @@ def message_senddm_v1(token, dm_id, message):
         raise AccessError(description=f"Token invalid")
     
     auth_user_id = token_data['user_id']
-
+    auth_user = find_user(auth_user_id, data)
+    
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
@@ -85,21 +86,19 @@ def message_senddm_v1(token, dm_id, message):
         raise InputError(description='dm is invalid')
     dm = find_dm(dm_id, data)
 
-    if is_user_in_dm(auth_user_id, dm_id, data) == False:
+    if is_user_in_dm(dm_id, auth_user_id,  data) == False:
         raise AccessError(description='user is not in the dm they are sharing message to')
     
-    message_id = data['message_counter'] + 1
-    new_message = {'message_id' : message_counter, 'message_author' : auth_user_id,
-                            'message' : message + '\n"""\n' + OG_message + '\n"""\n' , "time_created" :str(datetime.now())}
+    message_id = data['msg_counter'] + 1
+    new_message = {'message_id' : message_id, 'message_author' : auth_user_id,
+                            'message' : message, "time_created" :str(datetime.now())}
     dm['messages'].insert(0, new_message)
     
     # notify tagged users
-    tag_users(message, auth_user_handle, dm_id, -1, data)
-
-    user = find_user(member)
-    user['sent_messages'].append(message_id)
+    tag_users(message, auth_user['account_handle'], dm_id, -1, data)
     
-    data['message_counter'] += 1
+    auth_user['sent_messages'].append(message_id)
+    data['msg_counter'] += 1
 
     save_data(data)
-    return {message_id}
+    return {'message_id':message_id}

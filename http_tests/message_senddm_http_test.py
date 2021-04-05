@@ -4,9 +4,9 @@ import json
 from src import config
 from src.other import clear_v1
 from src.auth import auth_register_v2, auth_login_v2
-from src.channel import channel_join_v1, channel_details_v1
-from src.channels import channels_create_v1
 from src.error import InputError, AccessError
+from src.dm import dm_create_v1
+from src.message import message_senddm_v1
 
 
 @pytest.fixture
@@ -48,9 +48,9 @@ def test_message_senddm(clear, dm):
     A simple test to check message send dm
     '''
     user2 = auth_login_v2("test2email@gmail.com", "TestTest2")
+    #message_senddm_v1(user2['token'], dm['dm_id'], "message")
     resp = requests.post(config.url + 'message/senddm/v1', json={'token': user2['token'], 'dm_id':dm['dm_id'], 'message':'messagemessage'})
-    assert resp.status_code == 200
-    assert isinstance(json.loads(resp.text), int)
+    assert resp.json() == {}
 
 def test_message_senddm_access(clear, dm, user1):
     '''
