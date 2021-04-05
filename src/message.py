@@ -1,4 +1,5 @@
-from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, message_notification_message
+from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_user, message_notification_message
+from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm
 from src.error import AccessError, InputError
 from datetime import datetime
 from src.channel import channel_details_v1
@@ -67,3 +68,53 @@ def message_remove_v1(auth_user_id, message_id):
 def message_edit_v1(auth_user_id, message_id, message):
     return {
     }
+
+def message_senddm_v1(token, dm_id, message):
+    '''
+    Function to send a message to a dm, notifying a user if they are tagged in the message
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        dm_id (int)          - dm id of the dm the user is sending a message to
+        message (string)     - message user is sending to the dm
+
+    Exceptions:
+        AccessError  - Occurs when the token invalid or when the user is not in the dm
+        InputError   - Occurs when dm_id is not a valid dm or when the message is over 1000 characters
+
+    Return Value:
+        {} on successful leaving of the channel
+
+    '''
+    data = load_data()
+    token_data = is_valid_token(token)
+
+    if token_data == False:
+        raise AccessError(description=f"Token invalid")
+    
+    auth_user_id = token_data['user_id']
+    auth_user = find_user(auth_user_id, data)
+    
+    if len(message) > 1000:
+        raise InputError(description=f"message is too long")
+
+    if is_valid_dm_id(dm_id, data) == False:
+        raise InputError(description='dm is invalid')
+    dm = find_dm(dm_id, data)
+
+    if is_user_in_dm(dm_id, auth_user_id,  data) == False:
+        raise AccessError(description='user is not in the dm they are sharing message to')
+    
+    message_id = data['msg_counter'] + 1
+    new_message = {'message_id' : message_id, 'message_author' : auth_user_id,
+                            'message' : message, "time_created" :str(datetime.now())}
+    dm['messages'].insert(0, new_message)
+    
+    # notify tagged users
+    tag_users(message, auth_user['account_handle'], dm_id, -1)
+    
+    auth_user['sent_messages'].append(message_id)
+    data['msg_counter'] += 1
+
+    save_data(data)
+    return {'message_id':message_id}
