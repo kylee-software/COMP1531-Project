@@ -127,7 +127,6 @@ def dm_details_v1(token, dm_id):
                                      })
     return return_dict
 
-
 def dm_create_v1(token, u_ids):
     '''
     Function to create a channel that is either a public or private with a given name
@@ -146,6 +145,7 @@ def dm_create_v1(token, u_ids):
     Assumption:
         - a new dm is created everytime a creator creates one even there is already
          a dm with the same creator and dm members
+        - a user who is removed from Dreams can not be added to a dm
     '''
 
     data = load_data()
@@ -158,11 +158,11 @@ def dm_create_v1(token, u_ids):
     user_id = is_valid_token(token)['user_id']
     handles = []
 
-    for id in u_ids:
-        if not is_valid_user_id(id):
-            raise InputError(f"u_id: {id} is not a valid user.")
+    for u_id in u_ids:
+        if not is_valid_user_id(u_id):
+            raise InputError(f"u_id: {u_id} is not a valid user.")
 
-        user_handle = find_user(id, data)['account_handle']
+        user_handle = find_user(u_id, data)['account_handle']
         handles.append(user_handle)
 
     handles.append(find_user(user_id, data)['account_handle'])

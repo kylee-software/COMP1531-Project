@@ -174,6 +174,7 @@ def find_user(user_id, data):
             return user
 
 
+
 def find_channel(channel_id, data):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
