@@ -84,44 +84,47 @@ def message_remove_v1(token, message_id):
     dms = data['dms']
     in_channel = False
     in_dm = False
-    valid_sender = False
-    is_owner = False
+    is_authorised = False
 
     if not is_valid_token(token):
         raise AccessError("Not an authorised user of Dreams")
 
     user_id = is_valid_token(token)['user_id']
-    global_permission_id = find_user(user_id)['permission_id']
+    is_authorised = True if find_user(user_id)['permission_id'] == 1 else False
 
     for channel in channels:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 in_channel = True
-                if message['message_author'] == user_id:  # check if user is the sender
-                    valid_sender = True
-                if user_id in channel['owners']: # check if user is an owner of the channel
-                    is_owner = True
+                if message['message_author'] == user_id:
+                    is_authorised = True
+                if user_id in channel['owners']:
+                    is_authorised = True
 
-    if in_channel and (not valid_sender and not is_owner and global_permission_id != 1):
+    if in_channel and not is_authorised:
         raise AccessError("Not the sender nor an owner of the channel the message was sent in nor an owner of Dreams.")
-    elif in_channel:
+    if in_channel and is_authorised:
         for channel in channels:
             for message in channel['messages']:
                 if message['message_id'] == message_id:
                     channel['messages'].remove(message)
                     return {}
-    else:
+
+    for dm in dms:
+        for message in dm['messages']:
+            if message['message_id'] == message_id:
+                in_dm = True
+                if message['message_author'] == user_id:
+                    is_authorised = True
+
+    if in_dm and not is_authorised:
+        raise AccessError("Not the sender nor an owner of Dreams")
+    if in_dm and is_authorised:
         for dm in dms:
             for message in dm['messages']:
                 if message['message_id'] == message_id:
-                    in_dm = True
-                    if message['message_author'] == user_id:  # check if user is the sender
-                        valid_sender = True
-                        dm['messages'].remove(message)
-                        return{}
-
-    if in_dm and (not valid_sender and global_permission_id != 1):
-        raise AccessError("Not the sender nor an owner of Dreams")
+                    dm['messages'].remove(message)
+                    return {}
 
     if not in_channel and not in_dm:
         raise InputError("Message no longer exists.")
