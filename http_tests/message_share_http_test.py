@@ -66,7 +66,7 @@ def test_message_share_to_channel(clear, creator, user1, OGchannel, share_channe
     '''
     A simple test to test the http wrapper of sharing a message to a channel
     '''
-    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")
+    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
     resp = requests.post(config.url + 'message/share/v1', json={'token': user1['token'], 'og_message_id':OGmessage, 'message':'additional message','channel_id':share_channel, 'dm_id':-1})
     assert isinstance(resp.json()['message_id'], int)
 
@@ -74,16 +74,16 @@ def test_message_share_to_dm(clear, creator, user1, OGchannel, dm):
     '''
     A simple test to test the http wrapper of sharing a message to a dm
     '''
-    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")
+    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
     resp = requests.post(config.url + 'message/share/v1', json={'token': user1['token'], 'og_message_id':OGmessage, 'message':'additional message','channel_id':-1, 'dm_id':dm['dm_id']})
     assert isinstance(resp.json()['message_id'], int)
 
 def test_message_share_access_error(clear, creator, user1, OGchannel, share_channel):
-    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")
+    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
     resp = requests.post(config.url + 'message/share/v1', json={'token': 'bad.token.input', 'og_message_id':OGmessage, 'message':'additional message','channel_id':share_channel, 'dm_id':-1})
     assert resp.status_code == 403
 
 def test_message_share_input_error(clear, creator, user1, OGchannel, share_channel):
-    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")
+    OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
     resp = requests.post(config.url + 'message/share/v1', json={'token': user1['token'], 'og_message_id':OGmessage, 'message':'additional message','channel_id':-1, 'dm_id':-1})
     assert resp.status_code == 400

@@ -129,7 +129,7 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     
     if channel_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
-        return {'message_id': message_send_v2(token, channel_id, new_message)}
+        return message_send_v2(token, channel_id, new_message)
         
     if dm_id != -1:
         new_message = message + '\n"""\n' + OG_message + '\n"""\n'
