@@ -3,7 +3,7 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.error import InputError
-from src.dm import dm_create_v1, dm_details_v1
+from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
 from src.other import clear_v1
@@ -130,6 +130,10 @@ def message_send():
     msg_id = message_send_v2(data['token'], data['channel_id'], data['message'])
     return jsonify(msg_id)
 
+@APP.route('/dm/remove/v1', methods=['DELETE'])
+def dm_remove():
+    data = request.get_json()
+    return jsonify(dm_remove_v1(data['token'], data['dm_id']))
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
