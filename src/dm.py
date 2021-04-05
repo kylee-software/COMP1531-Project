@@ -1,7 +1,24 @@
 from src.error import InputError, AccessError
 from src.helper import is_valid_token, save_data, load_data, is_valid_user_id, find_user
 
-def dm_invite(token, dm_id, user_id):
+def dm_invite_v1(token, dm_id, user_id):
+    """Adds the user referenced by user_id to the dm referenced by dm_id
+
+    Args:
+        token (str): jwt encoded dict with keys session_id and user_id
+        dm_id (int): id of a dm
+        user_id (int): id of user to be added to dm
+
+    Raises:
+        AccessError: raied if token is invalid
+        InputError: raised if user referenced by user_id is already in the dm
+        InputError: raised if dm_id is invalid
+        InputError: raised if user referenced by user_id doesn't exist
+        AccessError: raised if authorised user is not a member of the dm referenced by dm_id
+
+    Returns:
+        (dict): empyt dictionary
+    """
     if not is_valid_token(token):
         raise AccessError("Invalid Token")
     token = is_valid_token(token)
