@@ -207,7 +207,7 @@ def dm_messages_v1(token, dm_id, start):
 
     user_id = is_valid_token(token)['user_id']
 
-    if not is_valid_dm_id(dm_id, data):
+    if not is_valid_dm_id(dm_id):
         raise InputError(description="DM ID is invalid.")
 
     dm_info = find_dm(dm_id, data)
