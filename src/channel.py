@@ -409,10 +409,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     Return Value:
             Returns {}
-
-    Assumption:
-            - User id of the user who is having their ownership taking away remains a member of the channel
-            - Channel owner can remove their ownership themself
     '''
 
     data = load_data()

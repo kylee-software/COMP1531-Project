@@ -51,10 +51,6 @@ def admin_user_remove_v1(token, u_id):
         AccessError - Occurs when authorised user is not an owner of Dreams
                     - Occurs when the given token is invalid
 
-        Assumptions: - A global owner can remove themself
-                     - Other user can not add the "removed user" to a channel or dm later
-                     - if the user with u_id is the only owner of a channel, an InputError will be raised
-                     - remove dms that the "remover user" are in if the user is the creator
     Return Value:
         Returns {}
     '''
