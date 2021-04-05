@@ -1,6 +1,24 @@
 import requests
 from src import config
-from src.helper import is_valid_token
+from src.helper import is_valid_token, create_token
+
+
+def test_invalid_token():
+
+    requests.delete(config.url + '/clear/v1')
+    admin_invalid_token = 'invalidtoken123123'
+    admin = requests.post(config.url + '/auth/register/v2',
+                          json={'email': 'test@unsw.au', 'password': 'password', 'name_first': 'test123', 'name_last': 'last123'})
+    member = requests.post(config.url + '/auth/register/v2',
+                           json={'email': 'test1@unsw.au', 'password': 'password1', 'name_first': 'test1', 'name_last': 'last1'})
+    admin_details = admin.json()
+    member_details = member.json()
+    channel = requests.post(config.url + '/channels/create/v2',
+                            json={'token': admin_details['token'], 'name': 'channel_1', 'is_public': True})
+    channel_id = channel.json()
+    addowner = requests.post(config.url + '/channel/addowner/v1',
+                             json={'token': admin_invalid_token, 'channel_id': channel_id['channel_id'], 'u_id': member_details['auth_user_id']})
+    assert addowner.status_code == 403
 
 
 def test_invalid_channel():
