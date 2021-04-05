@@ -7,19 +7,22 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src import config
+from src.admin import admin_changepermission_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
-                         channel_messages_v2)
+                         channel_messages_v2, channel_removeowner_v1)
 from src.channels import (channels_create_v2, channels_list_v2,
                           channels_listall_v2)
-from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
-                    dm_remove_v1)
-from src.error import InputError
+from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
+                    dm_list_v1, dm_messages_v1, dm_remove_v1)
+from src.error import AccessError, InputError
 from src.helper import is_valid_token
-from src.message import message_send_v2, message_senddm_v1, message_edit_v2
-from src.other import clear_v1
-from src.user import user_profile_v2
+from src.message import (message_edit_v2, message_send_v2, message_senddm_v1,
+                         message_share_v1)
+from src.other import clear_v1, notifications_get_v1
+from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
+                      user_profile_setname_v2, user_profile_v2)
 
 
 def defaultHandler(err):
@@ -52,6 +55,13 @@ def echo():
     return dumps({
         'data': data
     })
+
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications():
+    token = request.args.get('token')
+    notifications = notifications_get_v1(token)
+    return jsonify(notifications)
 
 
 @APP.route("/channel/details/v2", methods=['GET'])
@@ -108,6 +118,12 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission():
+    data = request.get_json()
+    return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
+
+
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
     data = request.get_json()
@@ -126,6 +142,14 @@ def channel_leave():
     return jsonify(channel_leave_v1(data['token'], data['channel_id']))
 
 
+@APP.route("/user/profile/setname/v2", methods=['PUT'])
+def user_profile_setname():
+    data = request.get_json()
+    user_profile_setname_v2(
+        data['token'], data['name_first'], data['name_last'])
+    return jsonify({})
+
+
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
     data = request.get_json()
@@ -139,6 +163,22 @@ def dm_create():
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
 
     return jsonify(dm_dict)
+
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    data = request.get_json()
+    dm_list_generated = dm_list_v1(data['token'])
+
+    return jsonify(dm_list_generated)
+
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave():
+    data = request.get_json()
+    dm_leave_v1(data['token'], data['dm_id'])
+
+    return jsonify({})
 
 
 @APP.route('/channels/list/v2', methods=['GET'])
@@ -182,6 +222,12 @@ def message_send():
     return jsonify(msg_id)
 
 
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def user_sethandle():
+    data = request.get_json()
+    return jsonify(user_profile_sethandle_v1(data['token'], data['handle_str']))
+
+
 @APP.route('/auth/logout/v1', methods=['POST'])
 def auth_logout():
     data = request.get_json()
@@ -193,6 +239,19 @@ def auth_logout():
 def dm_remove():
     data = request.get_json()
     return jsonify(dm_remove_v1(data['token'], data['dm_id']))
+
+
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share():
+    data = request.get_json()
+    return jsonify(message_share_v1(data['token'], data['og_message_id'], data['message'], data['channel_id'], data['dm_id']))
+
+
+@APP.route("/user/profile/setemail/v2", methods=['PUT'])
+def user_profile_setemail():
+    data = request.get_json()
+    user_profile_setemail_v2(data['token'], data['email'])
+    return dumps({})
 
 
 @APP.route("/dm/messages/v1", methods=['GET'])
@@ -217,6 +276,13 @@ def channel_messages():
 
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
+
+
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner():
+    data = request.get_json()
+    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    return jsonify({})
 
 
 @APP.route("/message/edit/v2", methods=['PUT'])
