@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 from src.error import InputError
+from src.admin import admin_changepermission_v1
 from src.dm import dm_create_v1, dm_remove_v1, dm_details_v1, dm_invite_v1, dm_messages_v1
 from src import config
 from src.channel import channel_details_v1, channel_join_v1, channel_invite_v1, channel_leave_v1, channel_messages_v2
@@ -101,6 +102,12 @@ def register_v2():
     return jsonify(auth_register_v2(data['email'], data['password'], data['name_first'], data['name_last']))
 
 
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission():
+    data = request.get_json()
+    return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
+
+    
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
     data = request.get_json()
