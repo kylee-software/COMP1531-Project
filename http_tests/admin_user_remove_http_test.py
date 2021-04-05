@@ -78,14 +78,25 @@ def test_admin_user_remove(clear, global_owner1, global_owner2):
         'is_public': True
     }).json()['channel_id']
 
+    message_id = requests.post(config.url + '/message/send/v2',
+                               json={'token': global_owner1['token'],
+                                     'channel_id': channel_id,
+                                     'message': 'Hi'})
+
     requests.post(config.url + 'channel/addowner/v1',
                   json={'token': global_owner1['token'],
                         'channel_id': channel_id,
                         'u_id': global_owner2['auth_user_id']})
 
     resp = requests.delete(config.url + 'admin/user/remove/v1', json={
-        'token': global_owner1['token'],
-        'u_id': global_owner2['auth_user_id'],
+        'token': global_owner2['token'],
+        'u_id': global_owner1['auth_user_id'],
     })
 
-    assert json.loads(resp.text) == {}
+    messages_dict = requests.get(config.url + '/channel/messages/v2', params={
+        'token': global_owner2['token'],
+        'channel_id': channel_id,
+        'start': 0
+    }).json()['messages']
+
+    assert messages_dict[0]['message'] == "Removed user"
