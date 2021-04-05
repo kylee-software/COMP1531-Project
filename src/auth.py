@@ -1,6 +1,7 @@
 import re
-from src.error import InputError
-from src.helper import save_data, load_data, create_token, hash_password
+
+from src.error import AccessError, InputError
+from src.helper import save_data, load_data, create_token, hash_password, is_valid_token
 import uuid
 import jwt
 import json
@@ -168,3 +169,27 @@ Return Value:
     login_token = create_token(new_user['user_id'], login_session_id)
 
     return {'token': login_token, 'auth_user_id': new_user['user_id']}
+
+
+def auth_logout_v1(token):
+    """Given an active token, invalidates the token to log the user out. If a 
+    valid token is given, and the user is successfully logged out, it returns true, otherwise false.
+
+    Args:
+        token (string): encoded jwt 
+
+    Returns:
+        boolean: True if successfully logged out, False if otherwise
+    """
+    if not is_valid_token(token):
+        raise AccessError('Token is invalid')
+    else: 
+        data = load_data()
+        token = is_valid_token(token)
+        for user in data['users']:
+            if user['session_list'].count(token['session_id']) != 0:
+                user['session_list'].remove(token['session_id'])
+                save_data(data)
+                return {'is_success': True}
+
+    return {'is_success': False}
