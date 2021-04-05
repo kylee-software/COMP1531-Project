@@ -27,19 +27,19 @@ def message_send_v2(token, channel_id, message):
     """
     data = load_data()
     if not is_valid_token(token):
-        raise AccessError('Unauthorised User')
+        raise AccessError(description='Unauthorised User')
     token = is_valid_token(token)
     if len(message) > 1000:
-        raise InputError('Message is longer than 1000 characters')
+        raise InputError(description='Message is longer than 1000 characters')
     
     
     channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
     if not channel:
-        raise InputError('Channel does not exist')
+        raise InputError(description='Channel does not exist')
 
     msg_user = next((user for user in channel['members'] if user['user_id'] == token['user_id']), False)
     if not msg_user:
-        raise AccessError('You have not joined this channel')
+        raise AccessError(description='You have not joined this channel')
     else:
         new_message = {'message_id' : data['msg_counter'] + 1, 'message_author' : token['user_id'],
                             'message' : message, "time_created" :str(datetime.now())}
@@ -86,7 +86,7 @@ def message_remove_v1(token, message_id):
     is_authorised = False
 
     if not is_valid_token(token):
-        raise AccessError("Not an authorised user of Dreams")
+        raise AccessError(description="Not an authorised user of Dreams")
 
     user_id = is_valid_token(token)['user_id']
     is_authorised = True if find_user(user_id, data)['permission_id'] == 1 else False
@@ -101,12 +101,13 @@ def message_remove_v1(token, message_id):
                     is_authorised = True
 
     if in_channel and not is_authorised:
-        raise AccessError("Not the sender nor an owner of the channel the message was sent in nor an owner of Dreams.")
+        raise AccessError(description="Not the sender nor an owner of the channel the message was sent in nor an owner of Dreams.")
     if in_channel and is_authorised:
         for channel in data['channels']:
             for message in channel['messages']:
                 if message['message_id'] == message_id:
                     channel['messages'].remove(message)
+                    save_data(data)
                     return {}
 
     for dm in data['dms']:
@@ -117,21 +118,17 @@ def message_remove_v1(token, message_id):
                     is_authorised = True
 
     if in_dm and not is_authorised:
-        raise AccessError("Not the sender nor an owner of Dreams")
+        raise AccessError(description="Not the sender nor an owner of Dreams")
     if in_dm and is_authorised:
         for dm in data['dms']:
             for message in dm['messages']:
                 if message['message_id'] == message_id:
                     dm['messages'].remove(message)
+                    save_data(data)
                     return {}
 
     if not in_channel and not in_dm:
-        raise InputError("Message no longer exists.")
-
-    save_data(data)
-
-    return {
-    }
+        raise InputError(description="Message no longer exists.")
 
 def message_edit_v1(auth_user_id, message_id, message):
     return {
