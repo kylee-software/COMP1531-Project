@@ -17,7 +17,7 @@ from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_messages_v1,
                     dm_remove_v1)
 from src.error import InputError
 from src.helper import is_valid_token
-from src.message import message_send_v2, message_senddm_v1
+from src.message import message_send_v2, message_senddm_v1, message_edit_v2
 from src.other import clear_v1
 from src.user import user_profile_v2
 
@@ -217,6 +217,13 @@ def channel_messages():
 
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
+
+
+@APP.route("/message/edit/v2", methods=['PUT'])
+def message_edit():
+    data = request.get_json()
+    message_edit_v2(data['token'], data['message_id'], data['message'])
+    return jsonify({})
 
 
 if __name__ == "__main__":
