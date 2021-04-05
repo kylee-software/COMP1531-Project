@@ -20,7 +20,7 @@ from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import (message_edit_v2, message_send_v2, message_senddm_v1,
                          message_share_v1)
-from src.other import clear_v1, notifications_get_v1
+from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2)
 
@@ -290,6 +290,12 @@ def message_edit():
     data = request.get_json()
     message_edit_v2(data['token'], data['message_id'], data['message'])
     return jsonify({})
+
+
+@APP.route("/search/v2", methods=['GET'])
+def search():
+    data = request.args
+    return jsonify(search_v2(data['token'], data['query_str']))
 
 
 if __name__ == "__main__":

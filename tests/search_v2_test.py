@@ -56,14 +56,14 @@ def dm_messages(admin, dm):
                       'this is a message sent to the other user.22222')
 
 
-def test_invalid_token_dm(dm_message):
+def test_invalid_token_dm(dm_messages):
     invalid_token = 'invalidtoken123123'
     with pytest.raises(AccessError):
         search_v2(
             invalid_token, 'this is an updated message in the dm.')
 
 
-def test_invalid_token_channel(channel_message):
+def test_invalid_token_channel(channel_messages):
     invalid_token = 'invalidtoken123123'
     with pytest.raises(AccessError):
         search_v2(
@@ -77,7 +77,11 @@ def test_query_string_length_incorrect(admin, channel_messages):
 
 def test_success_case(admin, channel_messages, dm_messages):
     search_result = search_v2(admin['token'], '111')
-    assert 'this is a message sent to the other user.11111' in search_result['messages']
-    assert 'this is a message sent to the other user in the channel11111.' in search_result[
-        'messages']
-    assert len(search_result['messages']) == 2
+
+    list_of_messages = []
+    for message in search_result['messages']:
+        list_of_messages.append(message['message'])
+
+    assert 'this is a message sent to the other user.11111' in list_of_messages
+    assert 'this is a message sent to the other user in the channel11111.' in list_of_messages
+    assert len(list_of_messages) == 2

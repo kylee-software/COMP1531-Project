@@ -63,7 +63,7 @@ def dm_messages(admin, dm):
                   'token': admin['token'], 'dm_id': dm['dm_id'], 'message': 'this is a message sent to the other user2222222222.'}).json()
 
 
-def test_invalid_token_dm(dm_message):
+def test_invalid_token_dm(dm_messages):
     invalid_token = 'invalidtoken123123'
     search_response = requests.get(config.url + '/search/v2', params={
         'token': invalid_token, 'query_str': 'this is an updated message in the dm.'})
@@ -79,7 +79,11 @@ def test_query_string_length_incorrect(admin, channel_messages):
 def test_success_case(admin, channel_messages, dm_messages):
     search_result = requests.get(config.url + '/search/v2', params={
         'token': admin['token'], 'query_str': '111'}).json()
-    assert 'this is a message sent to the other user in the channel11111.' in search_result[
-        'messages']
-    assert 'this is a message sent to the other user.111111' in search_result['messages']
-    assert len(search_result['messages']) == 2
+
+    list_of_messages = []
+    for message in search_result['messages']:
+        list_of_messages.append(message['message'])
+
+    assert 'this is a message sent to the other user in the channel11111.' in list_of_messages
+    assert 'this is a message sent to the other user.111111' in list_of_messages
+    assert len(list_of_messages) == 2
