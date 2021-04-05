@@ -91,7 +91,7 @@ def message_remove_v1(token, message_id):
         raise AccessError("Not an authorised user of Dreams")
 
     user_id = is_valid_token(token)['user_id']
-    is_authorised = True if find_user(user_id)['permission_id'] == 1 else False
+    is_authorised = True if find_user(user_id, data)['permission_id'] == 1 else False
 
     for channel in channels:
         for message in channel['messages']:
@@ -168,7 +168,7 @@ def message_senddm_v1(token, dm_id, message):
     if len(message) > 1000:
         raise InputError(description=f"message is too long")
 
-    if is_valid_dm_id(dm_id, data) == False:
+    if is_valid_dm_id(dm_id) == False:
         raise InputError(description='dm is invalid')
     dm = find_dm(dm_id, data)
 
