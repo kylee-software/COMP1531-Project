@@ -283,19 +283,19 @@ def channel_addowner_v1(token, channel_id, u_id):
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)
     if channel_id_valid is False:
-        raise InputError("Channel doesn't exist.")
+        raise InputError(description="Channel doesn't exist.")
 
     # Check if user exists
     user_exist = find_user(u_id, data)
     if user_exist is None:
-        raise InputError("User doesn't exist.")
+        raise InputError(description="User doesn't exist.")
 
     # Check if member is already an owner
     channel = find_channel(channel_id, data)
     for member in channel['members']:
         if member['user_id'] == u_id:
             if member['permission_id'] == 1:
-                raise InputError("User is already an owner.")
+                raise InputError(description="User is already an owner.")
 
     # Check if auth_user_id is an owner
     decoded_token = is_valid_token(token)
@@ -318,7 +318,7 @@ def channel_addowner_v1(token, channel_id, u_id):
 
         save_data(data)
     else:
-        raise AccessError("Not an owner of this channel.")
+        raise AccessError(description="Not an owner of this channel.")
     return {
     }
 
