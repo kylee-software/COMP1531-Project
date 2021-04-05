@@ -1,5 +1,6 @@
 from src.error import AccessError, InputError
-from src.helper import is_valid_channel_id, load_data, save_data, is_valid_token, find_user, is_valid_user_id, is_user_in_channel
+from src.helper import is_valid_channel_id, load_data, save_data, is_valid_token, find_user, is_valid_user_id, \
+    is_user_in_channel, is_user_in_dm
 from src.channel import channel_removeowner_v1
 
 OWNER_PERMISSION = 1
@@ -98,7 +99,7 @@ def admin_user_remove_v1(token, u_id):
                 if member['user_id'] == u_id:
                     if member['permission_id'] == 1:
                         channel_removeowner_v1(token, channel['channel_id'], u_id)
-                    channel['members'].remove(u_id)
+                    channel['members'].remove(member)
                     break
 
             # replace contents of the messages the user sent with "Removed user"
@@ -108,7 +109,7 @@ def admin_user_remove_v1(token, u_id):
 
     # search through the dms the user with u_id is in
     for dm in data['dms']:
-        if is_user_in_channel(dm['dm_id'], u_id, data):
+        if is_user_in_dm(dm['dm_id'], u_id, data):
             # delete the dm if the "removed user" is the creator
             if dm['creator'] == u_id:
                 data['dms'].remove(dm)

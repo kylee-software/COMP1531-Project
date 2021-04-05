@@ -86,6 +86,7 @@ def test_owner_is_only_channel_owner(clear, global_owner, owner2, channel_id):
         admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
 
 def test_owner_is_creator(clear, global_owner, owner2, channel_id, dm_id):
+    channel_join_v1(owner2['token'], channel_id)
     admin_user_remove_v1(owner2['token'], global_owner['auth_user_id'])
     with pytest.raises(InputError):
         dm_details_v1(owner2['token'], dm_id)  # raises InputError when dm does not exists
