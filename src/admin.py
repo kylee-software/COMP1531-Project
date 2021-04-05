@@ -125,4 +125,5 @@ def admin_user_remove_v1(token, u_id):
                     if message['user_id'] == u_id:
                         message['message'] = "Removed user"
 
+    save_data(data)
     return {}
