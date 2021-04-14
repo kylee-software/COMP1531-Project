@@ -25,6 +25,7 @@ def load_data():
             else:
                 return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
     except:
+        print('THE DATA IS BEING RESEEEEEEEET')
         with open('src/data.json', 'w') as FILE:
             data_setup = {'users': [], 'channels': [],
                           'dms': [], 'msg_counter': 0}

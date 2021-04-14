@@ -197,7 +197,7 @@ def channel_messages_v2(token, channel_id, start):
             description=f"User is not a member of the channel with channel id {channel_id}")
 
     # Check valid start number
-    if start >= len(channel_messages):
+    if start >= len(channel_messages) and len(channel_messages) != 0:
         raise InputError(
             description="Start is greater than the total number of messages in the channel.")
 
