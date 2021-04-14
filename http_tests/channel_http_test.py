@@ -16,22 +16,39 @@ def user1():
     lastname = "lastname2"
     user = requests.post(config.url + '/auth/register/v2',
                                  json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
-    return user.json()
+    return json.loads(user.text)
 
 
 @pytest.fixture
 def channel_id():
-    name = "Testchannel"
-    owner = auth_register_v2("channelcreator@gmail.com", "TestTest1", "first", "last")
-    return channels_create_v2(owner['token'], name, True)['channel_id']
+    channel_name = "Testchannel"
+    email = "channelcreator@gmail.com"
+    password = "TestTest1"
+    firstname = "first"
+    lastname = "last"
+    owner = requests.post(config.url + '/auth/register/v2',
+                                 json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
+
+    owner = json.loads(owner.text)
+    channel_id = requests.post(config.url + 'channels/create/v2', json={
+        'token': owner['token'],
+        'name': channel_name,
+        'is_public': True
+    })
+    
+    return json.loads(channel_id.text)['channel_id']
 
 @pytest.fixture
 def channel_owner():
-    return auth_login_v2("channelcreator@gmail.com", "TestTest1")
+
+    owner_details = requests.post(config.url + '/auth/login/v2',
+                            json={'email': "channelcreator@gmail.com", 'password': "TestTest1"})
+
+    return json.loads(owner_details.text)
 
 @pytest.fixture
 def clear():
-    clear_v1()
+    requests.delete(config.url + '/clear/v1')
 
 ##### Channel Details Tests #####
 
