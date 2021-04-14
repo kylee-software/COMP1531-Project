@@ -2,7 +2,7 @@ from src.helper import is_valid_token, return_valid_tagged_handles, load_data, s
     is_valid_channel_id, is_user_in_channel, find_user, is_valid_dm_id, find_dm, tag_users, find_message_source, \
     is_user_in_dm, message_notification_message
 from src.error import AccessError, InputError
-from datetime import datetime
+from datetime import datetime, timezone
 from src.channel import channel_details_v1
 
 
@@ -45,8 +45,8 @@ def message_send_v2(token, channel_id, message):
     if not msg_user:
         raise AccessError(description='You have not joined this channel')
     else:
-        new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
-                       'message': message, "time_created": str(datetime.now())}
+        new_message = {'message_id': data['msg_counter'] + 1, 'u_id': token['user_id'],
+                       'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp()}
         channel['messages'].insert(0, new_message)
 
         auth_messages = next(user['sent_messages']
@@ -102,7 +102,7 @@ def message_remove_v1(token, message_id):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 in_channel = True
-                if message['message_author'] == user_id:
+                if message['u_id'] == user_id:
                     is_authorised = True
                 if user_id in channel['owner']:
                     is_authorised = True
@@ -122,7 +122,7 @@ def message_remove_v1(token, message_id):
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 in_dm = True
-                if message['message_author'] == user_id:
+                if message['u_id'] == user_id:
                     is_authorised = True
 
     if in_dm and not is_authorised:
@@ -158,7 +158,7 @@ def message_edit_v2(token, message_id, message):
     for dm in data['dms']:
         for dm_message in dm['messages']:
             if dm_message['message_id'] == message_id:
-                if dm['creator'] == decoded_token['user_id'] or dm_message['message_author'] == decoded_token['user_id'] or is_dreams_owner:
+                if dm['creator'] == decoded_token['user_id'] or dm_message['u_id'] == decoded_token['user_id'] or is_dreams_owner:
                     found_message = dm_message
                     source = dm
                     break
@@ -172,7 +172,7 @@ def message_edit_v2(token, message_id, message):
         for channel in data['channels']:
             for channel_message in channel['messages']:
                 if channel_message['message_id'] == message_id:
-                    if decoded_token['user_id'] in channel['owner'] or channel_message['message_author'] == decoded_token['user_id'] or is_dreams_owner:
+                    if decoded_token['user_id'] in channel['owner'] or channel_message['u_id'] == decoded_token['user_id'] or is_dreams_owner:
                         found_message = channel_message
                         source = channel
                         break
@@ -302,8 +302,8 @@ def message_senddm_v1(token, dm_id, message):
             description='user is not in the dm they are sharing message to')
 
     message_id = data['msg_counter'] + 1
-    new_message = {'message_id': message_id, 'message_author': auth_user_id,
-                   'message': message, "time_created": str(datetime.now())}
+    new_message = {'message_id': message_id, 'u_id': auth_user_id,
+                   'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp()}
     dm['messages'].insert(0, new_message)
 
     # notify tagged users

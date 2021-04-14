@@ -102,7 +102,7 @@ def admin_user_remove_v1(token, u_id):
 
                 # replace contents of the messages the user sent with "Removed user"
                 for message in channel['messages']:
-                    if message['message_author'] == u_id:
+                    if message['u_id'] == u_id:
                         message['message'] = "Removed user"
 
     if len(data['dms']) != 0:
@@ -121,7 +121,7 @@ def admin_user_remove_v1(token, u_id):
 
                     # replace contents of the messages the user sent with "Removed user"
                     for message in dm['messages']:
-                        if message['message_author'] == u_id:
+                        if message['u_id'] == u_id:
                             message['message'] = "Removed user"
 
     save_data(data)
