@@ -157,4 +157,4 @@ def test_message_react(clear, owner, member, channel_message_id, dm_message_id):
         'react_id': 1}).json()
 
     assert channel_resp == {}
-    assert channel_resp == {}
+    assert dm_resp == {}

@@ -17,9 +17,8 @@ from src.channels import (channels_create_v2, channels_list_v2,
 from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
                     dm_list_v1, dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
-from src.helper import is_valid_token
 from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
-                         message_senddm_v1, message_share_v1)
+                         message_senddm_v1, message_share_v1, message_react_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2, users_all_v1)
@@ -316,6 +315,11 @@ def search():
     data = request.args
     return jsonify(search_v2(data['token'], data['query_str']))
 
+@APP.route("/message/react/v1", methods=['POST'])
+def message_react():
+    data = request.get_json()
+    message_react_v1(data['token'], data['message_id'], data["react_id"])
+    return jsonify({})
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
