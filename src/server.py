@@ -318,7 +318,7 @@ def search():
 @APP.route("/message/react/v1", methods=['POST'])
 def message_react():
     data = request.get_json()
-    message_react_v1(data['token'], data['message_id'], data["react_id"])
+    message_react_v1(data['token'], data['message_id'], data['react_id'])
     return jsonify({})
 
 if __name__ == "__main__":

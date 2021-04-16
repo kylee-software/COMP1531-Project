@@ -391,5 +391,5 @@ def message_react_v1(token, message_id, react_id):
             message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
             save_data(data)
             return {}
-    elif "dm_id" in message_source and not is_user_in_dm(message_source['channel_id'], user_id, data):
+    elif "dm_id" in message_source and not is_user_in_dm(message_source['dm_id'], user_id, data):
         raise AccessError(description="The authorised user is not a member of the dm that the message is within")

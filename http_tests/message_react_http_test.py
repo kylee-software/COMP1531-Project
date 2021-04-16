@@ -79,7 +79,7 @@ def test_invalid_token(clear, dm_message_id):
 
 def test_user_not_a_member(clear, channel_message_id, dm_message_id):
     non_member = requests.post(config.url + 'auth/register/v2', json={
-        'email': "testemail@gmail.com",
+        'email': "testmail2@gmail.com",
         'password': "testpassword",
         'name_first': "nota",
         'name_last': "member"
