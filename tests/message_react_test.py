@@ -48,7 +48,7 @@ def test_user_not_a_member(clear, channel_message_id, dm_message_id):
 
 def test_invalid_message_id(clear, owner, channel_message_id, dm_message_id):
     with pytest.raises(InputError):
-        message_react_v1(owner, channel_message_id + 1, 1)
+        message_react_v1(owner, channel_message_id + 2, 1)
         message_react_v1(owner, dm_message_id + 1, 1)
 
 def test_invalid_react_id(clear, owner, channel_message_id, dm_message_id):

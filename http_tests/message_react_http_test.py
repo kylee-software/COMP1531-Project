@@ -103,7 +103,7 @@ def test_user_not_a_member(clear, channel_message_id, dm_message_id):
 def test_invalid_message_id(clear, owner, channel_message_id, dm_message_id):
     channel_status_code = requests.post(config.url + 'message/react/v1', json={
         'token': owner,
-        'message_id': channel_message_id + 1,
+        'message_id': channel_message_id + 2,
         'react_id': 1
     }).status_code
 
