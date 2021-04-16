@@ -114,7 +114,6 @@ def test_channel_invite(clear, channel_id, channel_owner, user1):
     '''
     resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
     assert json.loads(resp.text) == {}
-    clear_v1()
 
 def test_channel_invite_access_error(clear, channel_id, channel_owner, user1):
     resp = requests.post(config.url + 'channel/invite/v2', json={'token': 'bad.input.token', 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
@@ -123,4 +122,3 @@ def test_channel_invite_access_error(clear, channel_id, channel_owner, user1):
 def test_channel_invite_input_error(clear, channel_id, channel_owner, user1):
     resp = requests.post(config.url + 'channel/invite/v2', json={'token': channel_owner['token'], 'channel_id':channel_id + 1, 'u_id':user1['auth_user_id']})
     assert resp.status_code == 400
-    clear_v1()
