@@ -346,6 +346,9 @@ def message_react_v1(token, message_id, react_id):
 
     user_id = is_valid_token(token)['user_id']
 
+    if react_id != 1:
+        raise InputError(f"react id {react_id} is invalid")
+
     message_source = find_message_source(message_id, data)
     if message_source is None:
         raise InputError(description="the message id is invalid within a channel or DM that the authorised user is "
