@@ -356,11 +356,13 @@ def message_react_v1(token, message_id, react_id):
                 raise InputError(description="react id is invalid")
             if user_id not in reaction['reactors']:
                 reaction['reactors'].append(user_id)
+                save_data(data)
                 return {}
             else:
                 raise InputError(description="message already contains an active reaction from the user")
         else:
             message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
+            save_data(data)
             return {}
 
     elif "dm_id" in message_source and is_user_in_dm(message_source['dm_id'], user_id, data):
@@ -372,12 +374,14 @@ def message_react_v1(token, message_id, react_id):
                 raise InputError(description="react id is invalid")
             if user_id not in reaction['reactors']:
                 reaction['reactors'].append(user_id)
+                save_data(data)
                 return {}
             else:
                 raise InputError(description="message already contains an active reaction from the user")
         else:
             message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
+            save_data(data)
             return {}
     else:
-        raise InputError(descroption="the message id is invalid within a channel or DM that the authorised user is "
+        raise InputError(description="the message id is invalid within a channel or DM that the authorised user is "
                                      "part of")
