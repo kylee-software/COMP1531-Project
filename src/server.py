@@ -325,7 +325,7 @@ def message_sendlater():
 @APP.route("/message/sendlaterdm/v1", methods=['POST'])
 def message_sendlaterdm():
     data = request.get_json()
-    message_id = message_sendlaterdm_v1(data['token'], data['channel_id'], data['message'], data['time_sent'])
+    message_id = message_sendlaterdm_v1(data['token'], data['dm_id'], data['message'], data['time_sent'])
     return jsonify(message_id)
 
 
