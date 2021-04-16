@@ -366,4 +366,51 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     save_data(data)
     return message_send_v2(token, channel_id, message)
 
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    '''
+    message_sendlaterdm() send a message from authorised user to the DM with dm id automatically at a specific
+    time in the future
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        dm_id (int)          - the dm id of the channel the message will send to
+        message (string)     - the content of the message
+        time_sent (int)      - the time that the message will send out
+
+    Exceptions:
+        AccessError  - token is invalid
+                     - the authorised user has not joined the DM they are trying to post
+        InputError   - dm id is not a valid DM
+                     - message is more than 1000 characters
+                     - Time sent is time in the past
+
+    Assumption: N/A
+
+    Return Value: {'message_id': message_id} where message_id is an integer
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Invalid token id.")
+
+    if not is_valid_dm_id(dm_id):
+        raise InputError(description="Invalid dm id.")
+
+    user_id = is_valid_token(token)['user_id']
+    if not is_user_in_dm(dm_id, user_id, data):
+        raise AccessError(description=f"user is not a member of the DM with dm id {dm_id}.")
+
+    if len(message) > 1000:
+        raise InputError(description="message is longer than 1000 characters")
+
+    current_timestamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    if time_sent < current_timestamp:
+        raise InputError(description="the time for the message to send is in the past.")
+
+    delay_time = time_sent - current_timestamp
+    time.sleep(delay_time)
+    save_data(data)
+    return message_senddm_v1(token, dm_id, message)
+
 
