@@ -347,7 +347,11 @@ def message_react_v1(token, message_id, react_id):
     user_id = is_valid_token(token)['user_id']
 
     message_source = find_message_source(message_id, data)
-    if "channel_id" in message_source and is_user_in_channel(message_source['channel_id'], user_id, data):
+    if message_source is None:
+        raise InputError(description="the message id is invalid within a channel or DM that the authorised user is "
+                                     "part of")
+
+    elif "channel_id" in message_source and is_user_in_channel(message_source['channel_id'], user_id, data):
         channel = next(channel for channel in data['channels'] if channel['channel_id'] == message_source['channel_id'])
         message = next(message for message in channel['messages'] if message['message_id'] == message_id)
         if 'reactions' in message:
@@ -386,6 +390,3 @@ def message_react_v1(token, message_id, react_id):
             return {}
     elif "dm_id" in message_source and not is_user_in_dm(message_source['channel_id'], user_id, data):
         raise AccessError(description="The authorised user is not a member of the dm that the message is within")
-    else:
-        raise InputError(description="the message id is invalid within a channel or DM that the authorised user is "
-                                     "part of")
