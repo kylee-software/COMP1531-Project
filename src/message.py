@@ -364,15 +364,12 @@ def message_react_v1(token, message_id, react_id):
             save_data(data)
             return {}
         else:
-            if user_id not in reaction['reactors']:
-                reaction['reactors'].append(user_id)
-                save_data(data)
-                return {}
-            else:
+            if user_id in reaction['reactors']:
                 raise InputError(description="message already contains an active reaction from the user")
 
-    elif "channel_id" in message_source and not is_user_in_channel(message_source['channel_id'], user_id, data):
-        raise AccessError(description="The authorised user is not a member of the channel that the message is within")
+            reaction['reactors'].append(user_id)
+            save_data(data)
+            return {}
 
     elif "dm_id" in message_source and is_user_in_dm(message_source['dm_id'], user_id, data):
         dm = next(dm for dm in data['dms'] if dm['dm_id'] == message_source['dm_id'])
@@ -384,12 +381,12 @@ def message_react_v1(token, message_id, react_id):
             save_data(data)
             return {}
         else:
-            if user_id not in reaction['reactors']:
-                reaction['reactors'].append(user_id)
-                save_data(data)
-                return {}
-            else:
+            if user_id in reaction['reactors']:
                 raise InputError(description="message already contains an active reaction from the user")
 
-    elif "dm_id" in message_source and not is_user_in_dm(message_source['dm_id'], user_id, data):
-        raise AccessError(description="The authorised user is not a member of the dm that the message is within")
+            reaction['reactors'].append(user_id)
+            save_data(data)
+            return {}
+    else:
+        raise AccessError(description="The authorised user is not a member of the channel "
+                                      "or DM that the message is within")

@@ -123,36 +123,42 @@ def test_invalid_react_id(clear, owner, channel_message_id, dm_message_id):
         'react_id': 0
     }).status_code
 
-    dm_status_code = requests.post(config.url + 'message/react/v1', json={
-        'token': owner,
-        'message_id': dm_message_id,
-        'react_id': 0
-    }).status_code
-
     assert channel_status_code == 400
-    assert dm_status_code == 400
 
-def test_react_twice(clear, owner, member, channel_message_id, dm_message_id):
+def test_react_twice_channel(clear, member, channel_message_id):
     requests.post(config.url + 'message/react/v1',
                  json={'token': member['token'], 'message_id': channel_message_id, 'react_id': 1})
-    requests.post(config.url + 'message/react/v1',
-                 json={'token': owner, 'message_id': dm_message_id, 'react_id': 1})
 
     channel_status_code = requests.post(config.url + 'message/react/v1',
                  json={'token': member['token'], 'message_id': channel_message_id, 'react_id': 1}).status_code
+
+    assert channel_status_code == 400
+
+def test_react_twice_dm(clear, owner, dm_message_id):
+    requests.post(config.url + 'message/react/v1',
+                 json={'token': owner, 'message_id': dm_message_id, 'react_id': 1})
+
     dm_status_code = requests.post(config.url + 'message/react/v1',
                  json={'token': owner, 'message_id': dm_message_id, 'react_id': 1}).status_code
 
-    assert channel_status_code == 400
     assert dm_status_code == 400
 
 def test_message_react(clear, owner, member, channel_message_id, dm_message_id):
+    requests.post(config.url + 'message/react/v1', json={
+        'token': owner,
+        'message_id': channel_message_id,
+        'react_id': 1}).json()
+    requests.post(config.url + 'message/react/v1', json={
+        'token': owner,
+        'message_id': dm_message_id,
+        'react_id': 1}).json()
+
     channel_resp = requests.post(config.url + 'message/react/v1', json={
         'token': member['token'],
         'message_id': channel_message_id,
         'react_id': 1}).json()
     dm_resp = requests.post(config.url + 'message/react/v1', json={
-        'token': owner,
+        'token': member['token'],
         'message_id': dm_message_id,
         'react_id': 1}).json()
 
