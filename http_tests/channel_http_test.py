@@ -2,10 +2,6 @@ import pytest
 import requests
 import json
 from src import config
-from src.other import clear_v1
-from src.auth import auth_register_v2, auth_login_v2
-from src.channel import channel_join_v1, channel_details_v1
-from src.channels import channels_create_v2
 from src.error import InputError, AccessError
 
 @pytest.fixture
