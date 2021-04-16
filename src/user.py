@@ -126,16 +126,27 @@ def user_profile_setemail_v2(token, email):
 
 
 def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Update the authorised user's handle
+
+    Arguments:
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+        handle (string)   - new handle user want's to use
+
+    Exceptions:
+        InputError  - handle is not between 3 and 20 characters
+                    - handle is already being used by another user
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {}
+    '''
     data = load_data()
     token_data = is_valid_token(token)
 
-    if token_data == False:
+    if is not token_data:
         raise AccessError(description=f"Token invalid")
-
     auth_user_id = token_data['user_id']
-    if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(
-            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(handle_str) <= 3 or len(handle_str) >= 20:
         raise InputError(
@@ -151,3 +162,31 @@ def user_profile_sethandle_v1(token, handle_str):
     save_data(data)
     return {
     }
+
+def users_stats_v1(token):
+    '''
+    Gives back a list of dreams stats
+
+    Arguments:
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+
+    Exceptions:
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {dreams_stats}
+                where dreams stats is a dictionary as follows
+                    {
+                    channels_exist: [{num_channels_exist, time_stamp}], 
+                    dms_exist: [{num_dms_exist, time_stamp}], 
+                    messages_exist: [{num_messages_exist, time_stamp}], 
+                    utilization_rate 
+                    }
+    '''
+    data = load_data()
+    token_data = is_valid_token(token)
+
+    if is not token_data:
+        raise AccessError(description=f"Token invalid")
+
+    return {data['dreams_stats']}

@@ -108,6 +108,4 @@ def test_message_stat(clear, user2, channel, dm):
     message_remove_v1(owner['token'], message['message_id'])
     stats = stats = users_stats_v1(user2['token'])
     assert len(stats['messages_exist']) == 2   
-
-
     
