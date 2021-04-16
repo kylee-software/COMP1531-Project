@@ -358,7 +358,7 @@ def message_react_v1(token, message_id, react_id):
         channel = next(channel for channel in data['channels'] if channel['channel_id'] == message_source['channel_id'])
         message = next(message for message in channel['messages'] if message['message_id'] == message_id)
         reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
-                         and len(message['reactions'] != 0)), False)
+                         and len(message['reactions']) != 0), False)
         if not reaction:
             message['reactions'].append({'react_id': react_id, 'reactors': [user_id]})
             save_data(data)
@@ -378,7 +378,7 @@ def message_react_v1(token, message_id, react_id):
         dm = next(dm for dm in data['dms'] if dm['dm_id'] == message_source['dm_id'])
         message = next(message for message in dm['messages'] if message['message_id'] == message_id)
         reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
-                         and len(message['reactions'] != 0)), False)
+                         and len(message['reactions']) != 0), False)
         if not reaction:
             message['reactions'].append({'react_id': react_id, 'reactors': [user_id]})
             save_data(data)
