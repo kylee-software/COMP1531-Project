@@ -46,7 +46,7 @@ def message_send_v2(token, channel_id, message):
         raise AccessError(description='You have not joined this channel')
     else:
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
-                       'message': message, "time_created": str(datetime.now())}
+                       'message': message, "time_created": str(datetime.now()), 'reactions': []}
         channel['messages'].insert(0, new_message)
 
         auth_messages = next(user['sent_messages']
@@ -303,7 +303,7 @@ def message_senddm_v1(token, dm_id, message):
 
     message_id = data['msg_counter'] + 1
     new_message = {'message_id': message_id, 'message_author': auth_user_id,
-                   'message': message, "time_created": str(datetime.now())}
+                   'message': message, "time_created": str(datetime.now()), 'reactions': []}
     dm['messages'].insert(0, new_message)
 
     # notify tagged users
@@ -357,39 +357,39 @@ def message_react_v1(token, message_id, react_id):
     elif "channel_id" in message_source and is_user_in_channel(message_source['channel_id'], user_id, data):
         channel = next(channel for channel in data['channels'] if channel['channel_id'] == message_source['channel_id'])
         message = next(message for message in channel['messages'] if message['message_id'] == message_id)
-        if 'reactions' in message:
-            reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id), False)
-            if not reaction:
-                raise InputError(description="react id is invalid")
+        reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
+                         and len(message['reactions'] != 0)), False)
+        if not reaction:
+            message['reactions'].append({'react_id': react_id, 'reactors': [user_id]})
+            save_data(data)
+            return {}
+        else:
             if user_id not in reaction['reactors']:
                 reaction['reactors'].append(user_id)
                 save_data(data)
                 return {}
             else:
                 raise InputError(description="message already contains an active reaction from the user")
-        else:
-            message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
-            save_data(data)
-            return {}
+
     elif "channel_id" in message_source and not is_user_in_channel(message_source['channel_id'], user_id, data):
         raise AccessError(description="The authorised user is not a member of the channel that the message is within")
 
     elif "dm_id" in message_source and is_user_in_dm(message_source['dm_id'], user_id, data):
         dm = next(dm for dm in data['dms'] if dm['dm_id'] == message_source['dm_id'])
         message = next(message for message in dm['messages'] if message['message_id'] == message_id)
-        if 'reactions' in message:
-            reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id), False)
-            if not reaction:
-                raise InputError(description="react id is invalid")
+        reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
+                         and len(message['reactions'] != 0)), False)
+        if not reaction:
+            message['reactions'].append({'react_id': react_id, 'reactors': [user_id]})
+            save_data(data)
+            return {}
+        else:
             if user_id not in reaction['reactors']:
                 reaction['reactors'].append(user_id)
                 save_data(data)
                 return {}
             else:
                 raise InputError(description="message already contains an active reaction from the user")
-        else:
-            message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
-            save_data(data)
-            return {}
+
     elif "dm_id" in message_source and not is_user_in_dm(message_source['dm_id'], user_id, data):
         raise AccessError(description="The authorised user is not a member of the dm that the message is within")
