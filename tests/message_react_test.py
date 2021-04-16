@@ -15,7 +15,7 @@ def owner():
     return owner
 
 @pytest.fixture
-def member(owner):
+def member():
     member_info = auth_register_v2("testmail1@gmail.com", "Testpass123456", "memberfirst", "memberlast")
     return member_info
 
@@ -36,7 +36,7 @@ def dm_message_id(owner, member):
 def clear():
     return clear_v1()
 
-def test_invalid_owner(clear, dm_message_id):
+def test_invalid_token(clear, dm_message_id):
     with pytest.raises(AccessError):
         message_react_v1("invalid_owner", dm_message_id, 1)
 

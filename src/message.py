@@ -318,3 +318,66 @@ def message_senddm_v1(token, dm_id, message):
     save_data(data)
 
     return {'message_id': message_id}
+
+def message_react_v1(token, message_id, react_id):
+    '''
+    message_react() allows users to react to the message with the message_id
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        message_id (int)     - the message id of the message the user is reacting to
+        react_id (int)       - the react id of the reaction the user is using
+
+    Exceptions:
+        AccessError  - the token is invalid
+                     - the authorised user is not a member of the channel or DM that the message is within
+        InputError   - the message id is invalid within a channel or DM that the authorised user is part of
+                     - react id is invalid (currently the only valid react id is 1)
+                     - the message already contains an active reaction from the authorised user
+
+    Return Value:
+        {} on successful reacting to the message
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Invalid token.")
+
+    user_id = is_valid_token(token)['user_id']
+
+    message_source = find_message_source(message_id, data)
+    if "channel_id" in message_source and is_user_in_channel(message_source['channel_id'], user_id, data):
+        channel = next(channel for channel in data['channels'] if channel['channel_id'] == message_source['channel_id'])
+        message = next(message for message in channel['messages'] if message['message_id'] == message_id)
+        if 'reactions' in message:
+            reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id), False)
+            if not reaction:
+                raise InputError(description="react id is invalid")
+            if user_id not in reaction['reactors']:
+                reaction['reactors'].append(user_id)
+                return {}
+            else:
+                raise InputError(description="message already contains an active reaction from the user")
+        else:
+            message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
+            return {}
+
+    elif "dm_id" in message_source and is_user_in_dm(message_source['dm_id'], user_id, data):
+        dm = next(dm for dm in data['dms'] if dm['dm_id'] == message_source['dm_id'])
+        message = next(message for message in dm['messages'] if message['message_id'] == message_id)
+        if 'reactions' in message:
+            reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id), False)
+            if not reaction:
+                raise InputError(description="react id is invalid")
+            if user_id not in reaction['reactors']:
+                reaction['reactors'].append(user_id)
+                return {}
+            else:
+                raise InputError(description="message already contains an active reaction from the user")
+        else:
+            message['reactions'] = [{'react_id': react_id, 'reactors': [user_id]}]
+            return {}
+    else:
+        raise InputError(descroption="the message id is invalid within a channel or DM that the authorised user is "
+                                     "part of")
