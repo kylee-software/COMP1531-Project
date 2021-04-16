@@ -2,7 +2,6 @@ import pytest
 import requests
 import json
 from src import config
-from src.error import InputError, AccessError
 
 @pytest.fixture
 def user1():
