@@ -50,5 +50,5 @@ def test_invalid_time_sent(clear, token, channel_id, timestamp):
         message_sendlater_v1(token, channel_id, "messageTest", timestamp - 2.0)
 
 def test_message_send_later(clear, token, channel_id, timestamp):
-    message_id = message_sendlater_v1(token, channel_id, "messageTest", timestamp + 2.0)
+    message_id = message_sendlater_v1(token, channel_id, "messageTest", timestamp + 2.0)['message_id']
     assert message_id == 1
