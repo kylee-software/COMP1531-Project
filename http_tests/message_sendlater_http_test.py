@@ -37,17 +37,8 @@ def channel_id(token):
 def timestamp():
     return datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
-def test_invalid_input(clear, token, channel_id):
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
-        'token': token,
-        'channel_id': channel_id,
-        'message': "Hi",
-        'time_sent': "ab"
-    }).status_code
-    assert status_code == 400
-
 def test_invalid_token(clear, token, channel_id, timestamp):
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
+    status_code = requests.post(config.url + 'message/sendlater/v1', json={
         'token': "invalid_token",
         'channel_id': channel_id,
         'message': "Hi",
@@ -56,7 +47,7 @@ def test_invalid_token(clear, token, channel_id, timestamp):
     assert status_code == 403
 
 def test_invalid_channel_id(clear, token, channel_id, timestamp):
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
+    status_code = requests.post(config.url + 'message/sendlater/v1', json={
         'token': token,
         'channel_id': channel_id + 1,
         'message': "Hi",
@@ -71,7 +62,7 @@ def test_user_not_in_channel(clear, token, channel_id, timestamp):
         'name_first': 'secondFirst',
         'name_last': 'secondLast'}).json()['token']
 
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
+    status_code = requests.post(config.url + 'message/sendlater/v1', json={
         'token': not_member_token,
         'channel_id': channel_id,
         'message': "Hi",
@@ -81,7 +72,7 @@ def test_user_not_in_channel(clear, token, channel_id, timestamp):
 
 def test_message_too_long(clear, token, channel_id, timestamp):
     message = ''.join(random.choices(string.ascii_letters, k=1001))
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
+    status_code = requests.post(config.url + 'message/sendlater/v1', json={
         'token': token,
         'channel_id': channel_id,
         'message': message,
@@ -90,7 +81,7 @@ def test_message_too_long(clear, token, channel_id, timestamp):
     assert status_code == 400
 
 def test_invalid_time_sent(clear, token, channel_id, timestamp):
-    status_code = requests.post(config.url + '/message/sendlater/v1', json={
+    status_code = requests.post(config.url + 'message/sendlater/v1', json={
         'token': token,
         'channel_id': channel_id,
         'message': "Hi",
@@ -99,7 +90,7 @@ def test_invalid_time_sent(clear, token, channel_id, timestamp):
     assert status_code == 400
 
 def test_message_send_later(clear, token, channel_id, timestamp):
-    message_id = requests.post(config.url + '/message/sendlater/v1', json={
+    message_id = requests.post(config.url + 'message/sendlater/v1', json={
         'token': token,
         'channel_id': channel_id,
         'message': "Hi",

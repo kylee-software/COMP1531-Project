@@ -319,10 +319,7 @@ def search():
 @APP.route("/message/sendlater/v1", methods=['POST'])
 def message_sendlater():
     data = request.get_json()
-    if not data['time_sent'].isdigit():
-        raise InputError(description="timestamp is not a number")
-
-    message_id = message_sendlater_v1(data['token'], int(data['channel_id']), data['message'], float(data['time_sent']))
+    message_id = message_sendlater_v1(data['token'], data['channel_id'], data['message'], data['time_sent'])
     return jsonify(message_id)
 
 
