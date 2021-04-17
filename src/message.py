@@ -1,9 +1,10 @@
-from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_message, \
+from src.helper import is_valid_token, return_valid_tagged_handles, save_data, find_message, \
     is_valid_channel_id, is_user_in_channel, find_user, is_valid_dm_id, find_dm, tag_users, find_message_source, \
     is_user_in_dm, message_notification_message
 from src.error import AccessError, InputError
 from datetime import datetime, timezone
 from src.channel import channel_details_v1
+from src.data import dataStore
 
 
 def message_send_v2(token, channel_id, message):
@@ -27,7 +28,7 @@ def message_send_v2(token, channel_id, message):
     Returns:
         int: a unique number identifying the message
     """
-    data = load_data()
+    data = dataStore
     channel_name = channel_details_v1(token, channel_id)['name']
     if not is_valid_token(token):
         raise AccessError(description='Unauthorised User')
@@ -86,7 +87,7 @@ def message_remove_v1(token, message_id):
     Return Value: {}
     '''
 
-    data = load_data()
+    data = dataStore
     in_channel = False
     in_dm = False
     is_authorised = False
@@ -148,7 +149,7 @@ def message_edit_v2(token, message_id, message):
     if decoded_token is False:
         raise AccessError(description='Invalid Token.')
 
-    data = load_data()
+    data = dataStore
 
     token_user = find_user(decoded_token['user_id'], data)
     is_dreams_owner = token_user['permission_id'] == 1
@@ -221,7 +222,7 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
     Returns:
         int: a unique number identifying the message
     """
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(description='Unauthorised User')
 
@@ -281,7 +282,7 @@ def message_senddm_v1(token, dm_id, message):
         {} on successful leaving of the channel
 
     '''
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:

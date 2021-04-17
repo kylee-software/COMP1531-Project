@@ -1,8 +1,9 @@
 import re
 
 from src.error import AccessError, InputError
-from src.helper import (find_user, is_valid_token, is_valid_user_id, load_data,
+from src.helper import (find_user, is_valid_token, is_valid_user_id,
                         save_data)
+from src.data import dataStore
 
 
 def user_profile_v2(token, u_id):
@@ -24,7 +25,7 @@ def user_profile_v2(token, u_id):
     if not is_valid_user_id(u_id):
         raise InputError(description="Invalid user_id")
 
-    data = load_data()
+    data = dataStore
     token = is_valid_token(token)
     user = next(user for user in data['users'] if user['user_id'] == u_id)
 
@@ -40,7 +41,7 @@ def users_all_v1(token):
     if not is_valid_token(token):
         raise AccessError("Token is invalid")
     token = is_valid_token(token)
-    data = load_data()
+    data = dataStore
     return_list = []
     for user in data['users']:
         if not user['is_removed']:
@@ -73,7 +74,7 @@ def user_profile_setname_v2(token, name_first, name_last):
         raise InputError(
             description="The length of the first or last name given has exceeded the limit of 50 characters.")
     else:
-        data = load_data()
+        data = dataStore
 
         user_modified = find_user(token_data['user_id'], data)
 
@@ -102,7 +103,7 @@ def user_profile_setemail_v2(token, email):
     Return Value:
         Returns {}
     '''
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid.")
 
@@ -126,7 +127,7 @@ def user_profile_setemail_v2(token, email):
 
 
 def user_profile_sethandle_v1(token, handle_str):
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:

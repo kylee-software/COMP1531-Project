@@ -1,6 +1,7 @@
 
-from src.helper import load_data, save_data, is_valid_token
+from src.helper import save_data, is_valid_token
 from src.error import AccessError, InputError
+from src.data import dataStore
 
 
 def clear_v1():
@@ -18,7 +19,7 @@ def search_v2(token, query_str):
         raise InputError(description='Query string too long.')
     messages = []
 
-    data = load_data()
+    data = dataStore
 
     for channel in data['channels']:
         is_in_channel = False
@@ -53,7 +54,7 @@ def notifications_get_v1(token):
     if not is_valid_token(token):
         raise AccessError("Invalid Token")
     token = is_valid_token(token)
-    data = load_data()
+    data = dataStore
     user = next(user for user in data['users']
                 if user['user_id'] == token['user_id'])
     return {'notifications': user['notifications'][:20]}

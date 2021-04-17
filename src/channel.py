@@ -2,8 +2,8 @@ from src.error import AccessError, InputError
 from src.helper import (find_channel, find_user,
                         find_user_channel_owner_status,
                         invite_notification_message, is_user_in_channel,
-                        is_valid_channel_id, is_valid_token, is_valid_user_id,
-                        load_data, save_data)
+                        is_valid_channel_id, is_valid_token, is_valid_user_id, save_data)
+from src.data import dataStore
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -22,7 +22,7 @@ def channel_invite_v1(token, channel_id, u_id):
     Return Value:
         Returns {} on successfully added u_id to channel_id
     '''
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:
@@ -91,7 +91,7 @@ def channel_details_v1(token, channel_id):
         Returns {name, is_public, owner_members, all_members} on successful obtaining of channel details
     '''
 
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:
@@ -179,7 +179,7 @@ def channel_messages_v2(token, channel_id, start):
             Returns {messages, start, end} where messages is a dictionary
     '''
 
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid")
@@ -248,7 +248,7 @@ def channel_leave_v1(token, channel_id):
         {} on successful leaving of the channel
 
     '''
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:
@@ -296,7 +296,7 @@ def channel_join_v1(token, channel_id):
         Returns {} on successfully joining a channel
     '''
 
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:
@@ -343,7 +343,7 @@ def channel_join_v1(token, channel_id):
 
 
 def channel_addowner_v1(token, channel_id, u_id):
-    data = load_data()
+    data = dataStore
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)
     if channel_id_valid is False:
@@ -411,7 +411,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
             Returns {}
     '''
 
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid.")

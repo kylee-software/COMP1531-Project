@@ -1,7 +1,7 @@
 import re
-
+from src.data import dataStore
 from src.error import AccessError, InputError
-from src.helper import save_data, load_data, create_token, hash_password, is_valid_token
+from src.helper import save_data, create_token, hash_password, is_valid_token
 import uuid
 import jwt
 import json
@@ -56,16 +56,16 @@ def auth_login_v2(email, password):
         belongs to a registered user and that the password belongs to the registered user.
 
     """
-    data = load_data()
+    
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) == None:
         raise InputError('Please enter a valid email address.')
 
-    for user in data['users']:
+    for user in dataStore['users']:
         if user['email_address'] == email:
             hashed_password = hash_password(password)
             if user['account_password'] == hashed_password:
                 login_session_id = create_session(user)
-                save_data(data)
+                save_data(dataStore)
                 login_token = create_token(user['user_id'], login_session_id)
                 return {'token': login_token, 'auth_user_id': user['user_id']}
             else:
@@ -103,7 +103,7 @@ Return Value:
     Additionally, that the password, first and last names are the correct length.
     Further that the handle has no '@' or whitespace.
     """
-    data = load_data()
+    
     password_length = len(password)
     first_name_length = len(name_first)
     last_name_length = len(name_last)
@@ -111,7 +111,7 @@ Return Value:
     if re.match('^[a-zA-Z0-9]+[\\._]?[a-zA-Z0-9]+[@]\\w+[.]\\w{2,3}$', email) is None:
         raise InputError('Please enter a valid email address.')
 
-    for user in data['users']:
+    for user in dataStore['users']:
         if user['email_address'] == email:
             raise InputError('Email already registered.')
 
@@ -134,7 +134,7 @@ Return Value:
         handle = handle[0:20]
         handle = handle.lower()
 
-    user_list = data['users']
+    user_list = dataStore['users']
     i = 0
     number = 0
     updated_handle = handle
@@ -146,7 +146,7 @@ Return Value:
             number += 1
         i += 1
     permission_id = 2
-    if len(data['users']) == 0:
+    if len(dataStore['users']) == 0:
         permission_id = 1
     new_user = {
         'first_name': name_first,
@@ -156,7 +156,7 @@ Return Value:
         'permission_id': permission_id,
         'account_handle': updated_handle,
         'session_list': [],
-        'user_id': len(data['users']) + 1,
+        'user_id': len(dataStore['users']) + 1,
         'notifications': [],
         'sent_messages': [],
         'is_removed': False
@@ -164,7 +164,7 @@ Return Value:
     login_session_id = create_session(new_user)
 
     user_list.append(new_user)
-    save_data(data)
+    save_data(dataStore)
 
     login_token = create_token(new_user['user_id'], login_session_id)
 
@@ -184,12 +184,12 @@ def auth_logout_v1(token):
     if not is_valid_token(token):
         raise AccessError('Token is invalid')
     else: 
-        data = load_data()
+       
         token = is_valid_token(token)
-        for user in data['users']:
+        for user in dataStore['users']:
             if user['session_list'].count(token['session_id']) != 0:
                 user['session_list'].remove(token['session_id'])
-                save_data(data)
+                save_data(dataStore)
                 return {'is_success': True}
 
     return {'is_success': False}

@@ -1,7 +1,8 @@
 from src.error import AccessError, InputError
 from src.helper import (find_dm, find_user, invite_notification_message,
                         is_user_in_dm, is_valid_dm_id, is_valid_token,
-                        is_valid_user_id, load_data, save_data)
+                        is_valid_user_id, save_data)
+from src.data import dataStore
 
 
 def dm_list_v1(token):
@@ -9,7 +10,7 @@ def dm_list_v1(token):
     if decoded_token is False:
         raise AccessError("Invalid Token.")
 
-    data = load_data()
+    data = dataStore
     dm_list = []
 
     for dm in data['dms']:
@@ -43,7 +44,7 @@ def dm_invite_v1(token, dm_id, user_id):
     if not is_valid_token(token):
         raise AccessError("Invalid Token")
     token = is_valid_token(token)
-    data = load_data()
+    data = dataStore
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
     if not dm:
@@ -83,7 +84,7 @@ def dm_remove_v1(token, dm_id):
         {} on successful removal of a dm
 
     '''
-    data = load_data()
+    data = dataStore
     token_data = is_valid_token(token)
 
     if token_data == False:
@@ -130,7 +131,7 @@ def dm_details_v1(token, dm_id):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
 
-    data = load_data()
+    data = dataStore
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
     #dm = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
@@ -174,7 +175,7 @@ def dm_create_v1(token, u_ids):
         - a user who is removed from Dreams can not be added to a dm
     '''
 
-    data = load_data()
+    data = dataStore
     dms = data['dms']
     dm_id = len(dms) + 1
 
@@ -213,7 +214,7 @@ def dm_leave_v1(token, dm_id):
     if decoded_token is False:
         raise AccessError("Invalid Token.")
 
-    data = load_data()
+    data = dataStore
 
     dm_id_found = False
     user_in_dm = False
@@ -260,7 +261,7 @@ def dm_messages_v1(token, dm_id, start):
         Returns {messages, start, end} where messages is a dictionary
     '''
 
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid")
