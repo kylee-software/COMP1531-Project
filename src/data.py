@@ -1,6 +1,6 @@
 
 #data = {'users': [], 'channels': [], 'dms': []}
-
+dataStore = {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
 # users =     [ {'first_name' : string,
 #                'last_name' : string,
 #                'email' : string,
