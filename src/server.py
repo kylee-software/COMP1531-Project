@@ -19,7 +19,7 @@ from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
 from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import (message_edit_v2, message_send_v2, message_senddm_v1,
-                         message_share_v1, message_pin_v1)
+                         message_share_v1, message_pin_v1, message_unpin_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2)
@@ -302,6 +302,13 @@ def search():
 def message_pin():
     data = request.get_json()
     message_pin_v1(data['token'], data['message_id'])
+    return jsonify({})
+
+
+@APP.route("/message/unpin/v1", methods=["POST"])
+def message_unpin():
+    data = request.get_json()
+    message_unpin_v1(data['token'], data['message_id'])
     return jsonify({})
 
 

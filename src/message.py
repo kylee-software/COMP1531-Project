@@ -323,5 +323,72 @@ def message_pin_v1(token: str, message_id: int) -> dict:
 
 
 def message_unpin_v1(token: str, message_id: int) -> dict:
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description="Invalid Token.")
+
+    data = load_data()
+
+    message_found = find_message_source(message_id, data)
+
+    if message_found is None:
+        raise InputError(description="Message was not found.")
+
+    for dm in data['dms']:
+        for dm_msg in dm['messages']:
+            if dm_msg['message_id'] == message_id:
+
+                is_member = False
+                for member in dm['members']:
+                    if member == decoded_token['user_id']:
+                        is_member = True
+
+                is_owner = False
+                if dm['creator'] == decoded_token['user_id']:
+                    is_owner = True
+                    is_member = True
+
+                if is_member is False:
+                    raise AccessError(description="Not a member of the DM")
+
+                if is_owner is False:
+                    raise AccessError(description="Not a owner of the DM")
+
+                if dm_msg['is_pinned'] is False:
+                    raise InputError(
+                        description="DM Message already unpinned")
+
+                dm_msg['is_pinned'] = False
+
+    for channel in data['channels']:
+        for channel_msg in channel['messages']:
+            if channel_msg['message_id'] == message_id:
+
+                is_member = False
+                for member in channel['members']:
+                    if member == decoded_token['user_id']:
+                        is_member = True
+
+                is_owner = False
+                for owner in channel['owner']:
+                    if owner == decoded_token['user_id']:
+                        is_owner = True
+                        is_member = True
+
+                if is_member is False:
+                    raise AccessError(
+                        description="Not a member of this channel")
+
+                if is_owner is False:
+                    raise AccessError(
+                        description="Not an owner of this channel")
+
+                if channel_msg['is_pinned'] is False:
+                    raise InputError(
+                        description="Channel Message already unpinned")
+
+                channel_msg['is_pinned'] = False
+
+    save_data(data)
 
     return {}
