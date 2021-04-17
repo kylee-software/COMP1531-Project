@@ -7,6 +7,11 @@ from src.data import dataStore
 def clear_v1():
     """empties the data dictionary
     """
+    global dataStore
+    dataStore['users'] = []
+    dataStore['channels'] = []
+    dataStore['dms'] = []
+    dataStore['msg_counter'] = 0
     save_data({'users': [], 'channels': [], 'dms': [], 'msg_counter': 0})
 
 

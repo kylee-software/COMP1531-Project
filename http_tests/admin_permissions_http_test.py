@@ -11,15 +11,20 @@ INVALID_PERMISSION = 3
 
 @pytest.fixture
 def clear():
-    clear_v1()
+    requests.delete(config.url + 'clear/v1')
 
 @pytest.fixture
 def user1():
-    email = "testemail@gmail.com"
-    password = "TestTest"
-    firstname = "firstname"
-    lastname = "lastname"
-    return auth_register_v2(email,password,firstname, lastname)
+    email = "testmail@gamil.com"
+    password = "Testpass12345"
+    first_name = "firstname"
+    last_name = "lastname"
+    return requests.post(config.url + '/auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
+    }).json()
 
 @pytest.fixture
 def user2():
@@ -27,7 +32,12 @@ def user2():
     password = "TestTest2"
     firstname = "firstname2"
     lastname = "lastname2"
-    return auth_register_v2(email,password,firstname, lastname)
+    return requests.post(config.url + '/auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': firstname,
+        'name_last': lastname
+    }).json()
 
 def test_admin_permissions_change(clear, user1, user2):
     '''

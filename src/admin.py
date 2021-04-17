@@ -56,7 +56,7 @@ def admin_user_remove_v1(token, u_id):
         Returns {}
     '''
 
-    
+    global dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Invalid token.")

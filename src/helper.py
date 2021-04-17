@@ -30,7 +30,10 @@ def load_data():
                 return
             else:
                 #return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
-                dataStore = {'users' : [], 'channels' : [], 'dms': [], 'msg_counter' : 0}
+                dataStore['users'] = []
+                dataStore['channels'] = []
+                dataStore['dms'] = []
+                dataStore['msg_counter'] = 0
                 return
     except:
         """print('THE DATA IS BEING RESEEEEEEEET')

@@ -50,7 +50,12 @@ def global_owner():
     password = "Testpass1"
     first_name = "firstone"
     last_name = "lastone"
-    user_info = auth_register_v2(email, password, first_name, last_name)
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
+    }).json()
     return user_info
 
 @pytest.fixture
@@ -59,8 +64,14 @@ def owner2(global_owner):
     password = "Testpass2"
     first_name = "firsttwo"
     last_name = "lasttwo"
-    user_info = auth_register_v2(email, password, first_name, last_name)
-    admin_changepermission_v1(global_owner['token'], user_info['auth_user_id'], 1) # Make the user an owner of Dreams
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
+    }).json()
+    # Make the user an owner of Dreams
+    requests.post(config.url + "admin/userpermission/change/v1", json={'token': global_owner['token'], 'u_id': user_info['auth_user_id'], 'permission_id':1})
     return user_info
 
 @pytest.fixture
@@ -69,20 +80,34 @@ def member():
     password = "Testpass3"
     first_name = "firstthree"
     last_name = "lastthree"
-    user_info = auth_register_v2(email, password, first_name, last_name)
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': email,
+        'password': password,
+        'name_first': first_name,
+        'name_last': last_name
+    }).json()
     return user_info
 
 @pytest.fixture
 def channel_id(global_owner, member):
-    channel_id = channels_create_v2(global_owner['token'], "channelName", True)['channel_id']
-    channel_join_v1(member['token'], channel_id)
-    message_send_v2(member['token'], channel_id, "Hi!")
+    channel_id = requests.post(config.url + 'channels/create/v2', json={
+        'token': global_owner['token'],
+        'name': "channelName",
+        'is_public': True
+    }).json()['channel_id']
+
+    requests.post(config.url + 'channel/join/v2', json={'token' : member['token'], 'channel_id': channel_id})
+    requests.post(config.url + 'message/send/v2', json={'token': member['token'], 'channel_id': channel_id, 'message': 'Hi!'})
     return channel_id
 
 @pytest.fixture
 def dm_id(global_owner, member):
-    dm_id = dm_create_v1(global_owner['token'], [member['auth_user_id']])['dm_id']
+    dm_id = requests.post(config.url + 'dm/create/v1', json={
+        'token': global_owner['token'],
+        'u_ids': [member['auth_user_id']]
+    }).json()['dm_id']
     message_senddm_v1(member['token'], dm_id, "Hi!")
+    requests.post(config.url + 'message/senddm/v1', json={'token': member['token'], 'dm_id': dm_id, 'message':'Hi!'})
     return dm_id
 
 
@@ -92,5 +117,9 @@ def test_user_in_channel(clear, global_owner, owner2, member, channel_id):
         'u_id': member['auth_user_id'],
     })
 
-    messages = channel_messages_v2(global_owner['token'], channel_id, 0)['messages']
+    messages = requests.get(config.url + '/channel/messages/v2', params={
+        'token': global_owner['token'],
+        'channel_id': channel_id,
+        'start': 0
+    }).json()['messages']
     assert messages[0]['message'] == "Removed user"
