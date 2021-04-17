@@ -36,6 +36,25 @@ def user_profile_v2(token, u_id):
                      }
             }
 
+def users_all_v1(token):
+    if not is_valid_token(token):
+        raise AccessError("Token is invalid")
+    token = is_valid_token(token)
+    data = load_data()
+    return_list = []
+    for user in data['users']:
+        if not user['is_removed']:
+            return_list.append({'u_id': user['user_id'],
+                                'email': user['email_address'],
+                                'name_first': user['first_name'],
+                                'name_last': user['last_name'],
+                                'handle_str': user['account_handle'],
+                                })
+    return {'users' : return_list}
+
+def user_profile_setname_v1(auth_user_id, name_first, name_last):
+    return {
+    }
 
 def user_profile_setname_v2(token, name_first, name_last):
     token_data = is_valid_token(token)

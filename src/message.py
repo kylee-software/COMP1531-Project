@@ -1,8 +1,12 @@
-from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_user, message_notification_message
-from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm, find_message_source, find_message, find_channel, find_dm, is_user_in_channel, is_valid_channel_id
-from src.error import AccessError, InputError
 from datetime import datetime
 from src.channel import channel_details_v1
+from src.error import AccessError, InputError
+from src.helper import (find_channel, find_dm, find_message,
+                        find_message_source, find_user, is_user_in_channel,
+                        is_user_in_dm, is_valid_channel_id, is_valid_dm_id,
+                        is_valid_token, load_data,
+                        message_notification_message,
+                        return_valid_tagged_handles, save_data, tag_users)
 
 
 def message_send_v2(token, channel_id, message):
@@ -29,20 +33,20 @@ def message_send_v2(token, channel_id, message):
     data = load_data()
     channel_name = channel_details_v1(token, channel_id)['name']
     if not is_valid_token(token):
-        raise AccessError('Unauthorised User')
+        raise AccessError(description='Unauthorised User')
     token = is_valid_token(token)
     if len(message) > 1000:
-        raise InputError('Message is longer than 1000 characters')
+        raise InputError(description='Message is longer than 1000 characters')
 
     channel = next(
         (channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
     if not channel:
-        raise InputError('Channel does not exist')
+        raise InputError(description='Channel does not exist')
 
     msg_user = next(
         (user for user in channel['members'] if user['user_id'] == token['user_id']), False)
     if not msg_user:
-        raise AccessError('You have not joined this channel')
+        raise AccessError(description='You have not joined this channel')
     else:
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
                        'message': message, "time_created": str(datetime.now()), "is_pinned": False}
@@ -65,9 +69,77 @@ def message_send_v2(token, channel_id, message):
         return {'message_id': data['msg_counter']}
 
 
-def message_remove_v1(auth_user_id, message_id):
-    return {
-    }
+def message_remove_v1(token, message_id):
+    '''
+    Function to remove a message from a channel or a dm.
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        message_id (int)     - the message id of the message that needs to be removed
+
+    Exceptions:
+        AccessError  - the message is not sent by this user nor is an owner of the channel/dm this
+                       messages is in nor an owner of Dreams
+                     - the token is invalid
+        InputError   - message id of this message no longer exists
+
+    Assumption:
+            - the creator of dms can not remove a message sent by other users in the dm
+
+    Return Value: {}
+    '''
+
+    data = load_data()
+    in_channel = False
+    in_dm = False
+    is_authorised = False
+
+    if not is_valid_token(token):
+        raise AccessError(description="Not an authorised user of Dreams")
+
+    user_id = is_valid_token(token)['user_id']
+    is_authorised = True if find_user(
+        user_id, data)['permission_id'] == 1 else False
+
+    for channel in data['channels']:
+        for message in channel['messages']:
+            if message['message_id'] == message_id:
+                in_channel = True
+                if message['message_author'] == user_id:
+                    is_authorised = True
+                if user_id in channel['owner']:
+                    is_authorised = True
+
+    if in_channel and not is_authorised:
+        raise AccessError(
+            description="Not the sender nor an owner of the channel the message was sent in nor an owner of Dreams.")
+    if in_channel and is_authorised:
+        for channel in data['channels']:
+            for message in channel['messages']:
+                if message['message_id'] == message_id:
+                    channel['messages'].remove(message)
+                    save_data(data)
+                    return {}
+
+    for dm in data['dms']:
+        for message in dm['messages']:
+            if message['message_id'] == message_id:
+                in_dm = True
+                if message['message_author'] == user_id:
+                    is_authorised = True
+
+    if in_dm and not is_authorised:
+        raise AccessError(description="Not the sender nor an owner of Dreams")
+    if in_dm and is_authorised:
+        for dm in data['dms']:
+            for message in dm['messages']:
+                if message['message_id'] == message_id:
+                    dm['messages'].remove(message)
+                    save_data(data)
+                    return {}
+
+    if not in_channel and not in_dm:
+        raise InputError(description="Message no longer exists.")
 
 
 def message_edit_v2(token, message_id, message):

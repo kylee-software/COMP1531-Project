@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src import config
-from src.admin import admin_changepermission_v1
+from src.admin import admin_changepermission_v1, admin_user_remove_v1
 from src.auth import auth_login_v2, auth_logout_v1, auth_register_v2
 from src.channel import (channel_addowner_v1, channel_details_v1,
                          channel_invite_v1, channel_join_v1, channel_leave_v1,
@@ -18,11 +18,12 @@ from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
                     dm_list_v1, dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
 from src.helper import is_valid_token
-from src.message import (message_edit_v2, message_send_v2, message_senddm_v1,
-                         message_share_v1, message_pin_v1, message_unpin_v1)
+from src.message import (message_edit_v2, message_pin_v1, message_remove_v1,
+                         message_send_v2, message_senddm_v1, message_share_v1,
+                         message_unpin_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_setname_v2, user_profile_v2)
+                      user_profile_setname_v2, user_profile_v2, users_all_v1)
 
 
 def defaultHandler(err):
@@ -55,6 +56,13 @@ def echo():
     return dumps({
         'data': data
     })
+
+
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+    token = request.args.get('token')
+    list = users_all_v1(token)
+    return jsonify(list)
 
 
 @APP.route("/notifications/get/v1", methods=['GET'])
@@ -122,6 +130,14 @@ def register_v2():
 def admin_userpermission():
     data = request.get_json()
     return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
+
+
+@APP.route('/admin/user/remove/v1', methods=['DELETE'])
+def admin_user_remove():
+    token = request.get_json()['token']
+    u_id = request.get_json()['u_id']
+
+    return jsonify(admin_user_remove_v1(token, u_id))
 
 
 @APP.route("/message/senddm/v1", methods=['POST'])
@@ -276,6 +292,12 @@ def channel_messages():
 
     data = channel_messages_v2(token, int(channel_id), int(start))
     return jsonify(data)
+
+
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    data = request.get_json()
+    return jsonify(message_remove_v1(data['token'], data['message_id']))
 
 
 @APP.route("/channel/removeowner/v1", methods=['POST'])
