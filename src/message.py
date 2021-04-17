@@ -1,5 +1,5 @@
 from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_user, message_notification_message
-from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm, find_message_source, find_message
+from src.helper import is_valid_dm_id, find_dm, tag_users, is_user_in_dm, find_message_source, find_message, find_channel, find_dm, is_user_in_channel, is_valid_channel_id
 from src.error import AccessError, InputError
 from datetime import datetime
 from src.channel import channel_details_v1
@@ -45,7 +45,7 @@ def message_send_v2(token, channel_id, message):
         raise AccessError('You have not joined this channel')
     else:
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
-                       'message': message, "time_created": str(datetime.now())}
+                       'message': message, "time_created": str(datetime.now()), "is_pinned": False}
         channel['messages'].insert(0, new_message)
 
         auth_messages = next(user['sent_messages']
@@ -147,7 +147,7 @@ def message_share_v1(token, OG_message_id, message, channel_id, dm_id):
         AccessError: raised when the user is not part of the channel or dm the OG message
         is from
         Input Error: raised if the channel_id or dm_id not being shared to is not -1
-        Input Error: raised if both channel_id and dm_id are -1 
+        Input Error: raised if both channel_id and dm_id are -1
 
     Returns:
         int: a unique number identifying the message
@@ -209,7 +209,7 @@ def message_senddm_v1(token, dm_id, message):
         InputError   - Occurs when dm_id is not a valid dm or when the message is over 1000 characters
 
     Return Value:
-        {} on successful leaving of the channel
+        { message_id } on successful leaving of the channel
 
     '''
     data = load_data()
@@ -234,7 +234,7 @@ def message_senddm_v1(token, dm_id, message):
 
     message_id = data['msg_counter'] + 1
     new_message = {'message_id': message_id, 'message_author': auth_user_id,
-                   'message': message, "time_created": str(datetime.now())}
+                   'message': message, "time_created": str(datetime.now()), "is_pinned": False}
     dm['messages'].insert(0, new_message)
 
     # notify tagged users
@@ -249,3 +249,79 @@ def message_senddm_v1(token, dm_id, message):
     save_data(data)
 
     return {'message_id': message_id}
+
+
+def message_pin_v1(token: str, message_id: int) -> dict:
+    decoded_token = is_valid_token(token)
+    if decoded_token is False:
+        raise AccessError(description="Invalid Token.")
+
+    data = load_data()
+
+    message_found = find_message_source(message_id, data)
+
+    if message_found is None:
+        raise InputError(description="Message was not found.")
+
+    for dm in data['dms']:
+        for dm_msg in dm['messages']:
+            if dm_msg['message_id'] == message_id:
+
+                is_member = False
+                for member in dm['members']:
+                    if member == decoded_token['user_id']:
+                        is_member = True
+
+                is_owner = False
+                if dm['creator'] == decoded_token['user_id']:
+                    is_owner = True
+                    is_member = True
+
+                if is_member is False:
+                    raise AccessError(description="Not a member of the DM")
+
+                if is_owner is False:
+                    raise AccessError(description="Not a owner of the DM")
+
+                if dm_msg['is_pinned'] is True:
+                    raise InputError(description="DM Message already pinned")
+
+                dm_msg['is_pinned'] = True
+
+    for channel in data['channels']:
+        for channel_msg in channel['messages']:
+            if channel_msg['message_id'] == message_id:
+
+                is_member = False
+                for member in channel['members']:
+                    if member == decoded_token['user_id']:
+                        is_member = True
+
+                is_owner = False
+                for owner in channel['owner']:
+                    if owner == decoded_token['user_id']:
+                        is_owner = True
+                        is_member = True
+
+                if is_member is False:
+                    raise AccessError(
+                        description="Not a member of this channel")
+
+                if is_owner is False:
+                    raise AccessError(
+                        description="Not an owner of this channel")
+
+                if channel_msg['is_pinned'] is True:
+                    raise InputError(
+                        description="Channel Message already pinned")
+
+                channel_msg['is_pinned'] = True
+
+    save_data(data)
+
+    return {}
+
+
+def message_unpin_v1(token: str, message_id: int) -> dict:
+
+    return {}
