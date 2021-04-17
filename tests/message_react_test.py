@@ -46,24 +46,28 @@ def test_user_not_a_member(clear, channel_message_id, dm_message_id):
         message_react_v1(non_member, channel_message_id, 1)
         message_react_v1(non_member, dm_message_id, 1)
 
-def test_invalid_message_id(clear, owner, channel_message_id, dm_message_id):
+def test_invalid_message_id(clear, owner, channel_message_id):
     with pytest.raises(InputError):
         message_react_v1(owner, channel_message_id + 2, 1)
-        message_react_v1(owner, dm_message_id + 1, 1)
 
-def test_invalid_react_id(clear, owner, channel_message_id, dm_message_id):
+def test_invalid_react_id(clear, owner, channel_message_id):
     with pytest.raises(InputError):
         message_react_v1(owner, channel_message_id, 0)
-        message_react_v1(owner, dm_message_id, 0)
 
-def test_react_twice(clear, owner, member, channel_message_id, dm_message_id):
+def test_react_twice_channel(clear, member, channel_message_id):
     message_react_v1(member['token'], channel_message_id, 1)
-    message_react_v1(owner, dm_message_id, 1)
 
     with pytest.raises(InputError):
         message_react_v1(member['token'], channel_message_id, 1)
+
+def test_react_twice_dm(clear, owner, dm_message_id):
+    message_react_v1(owner, dm_message_id, 1)
+
+    with pytest.raises(InputError):
         message_react_v1(owner, dm_message_id, 1)
 
 def test_message_react(clear, owner, member, channel_message_id, dm_message_id):
+    message_react_v1(owner, channel_message_id, 1)
+    message_react_v1(owner, dm_message_id, 1)
     assert message_react_v1(member['token'], channel_message_id, 1) == {}
-    assert message_react_v1(owner, dm_message_id, 1) == {}
+    assert message_react_v1(member['token'], dm_message_id, 1) == {}

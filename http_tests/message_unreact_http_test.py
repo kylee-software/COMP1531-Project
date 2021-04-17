@@ -107,14 +107,7 @@ def test_invalid_message_id(clear, owner, channel_message_id, dm_message_id):
         'react_id': 1
     }).status_code
 
-    dm_status_code = requests.post(config.url + 'message/unreact/v1', json={
-        'token': owner,
-        'message_id': dm_message_id + 1,
-        'react_id': 1
-    }).status_code
-
     assert channel_status_code == 400
-    assert dm_status_code == 400
 
 def test_invalid_react_id(clear, owner, channel_message_id, dm_message_id):
     channel_status_code = requests.post(config.url + 'message/unreact/v1', json={
@@ -123,30 +116,44 @@ def test_invalid_react_id(clear, owner, channel_message_id, dm_message_id):
         'react_id': 0
     }).status_code
 
-    dm_status_code = requests.post(config.url + 'message/unreact/v1', json={
-        'token': owner,
-        'message_id': dm_message_id,
-        'react_id': 0
-    }).status_code
-
     assert channel_status_code == 400
-    assert dm_status_code == 400
 
-def test_no_reaction(clear, owner, member, channel_message_id, dm_message_id):
+def test_no_reaction_channel(clear, member, channel_message_id):
     channel_status_code = requests.post(config.url + 'message/unreact/v1',
                                         json={'token': member['token'], 'message_id': channel_message_id, 'react_id': 1}).status_code
+
+    assert channel_status_code == 400
+
+def test_no_reaction_dm(clear, owner, dm_message_id):
     dm_status_code = requests.post(config.url + 'message/unreact/v1',
                                    json={'token': owner, 'message_id': dm_message_id, 'react_id': 1}).status_code
 
-    assert channel_status_code == 400
     assert dm_status_code == 400
 
 def test_message_unreact(clear, owner, member, channel_message_id, dm_message_id):
+    requests.post(config.url + 'message/react/v1', json={
+        'token': owner,
+        'message_id': channel_message_id,
+        'react_id': 1})
+    requests.post(config.url + 'message/react/v1', json={
+        'token': owner,
+        'message_id': dm_message_id,
+        'react_id': 1})
+
     requests.post(config.url + 'message/react/v1', json={
         'token': member['token'],
         'message_id': channel_message_id,
         'react_id': 1})
     requests.post(config.url + 'message/react/v1', json={
+        'token':  member['token'],
+        'message_id': dm_message_id,
+        'react_id': 1})
+
+    requests.post(config.url + 'message/unreact/v1', json={
+        'token': owner,
+        'message_id': channel_message_id,
+        'react_id': 1})
+    requests.post(config.url + 'message/unreact/v1', json={
         'token': owner,
         'message_id': dm_message_id,
         'react_id': 1})
@@ -156,7 +163,7 @@ def test_message_unreact(clear, owner, member, channel_message_id, dm_message_id
         'message_id': channel_message_id,
         'react_id': 1}).json()
     dm_resp = requests.post(config.url + 'message/unreact/v1', json={
-        'token': owner,
+        'token': member['token'],
         'message_id': dm_message_id,
         'react_id': 1}).json()
 
