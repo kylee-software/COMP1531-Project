@@ -69,7 +69,7 @@ def test_auth_user_not_in_dm(clear, dm, token, user_id_list):
         dm_invite_v1(token2, dm['dm_id'], user_id_list[0])
 
 def test_everything_valid(clear, dm, token, user_id_list):
-    dm = dm_create_v1(token['token'], user_id_list[1:] + [token['auth_user_id']])
+    dm = dm_create_v1(token['token'], user_id_list[1:])
     dm_invite_v1(token['token'], dm['dm_id'], user_id_list[0])
     assert len(dm_details_v1(token['token'], dm['dm_id'])['members']) == 6
 

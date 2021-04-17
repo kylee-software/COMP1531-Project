@@ -15,7 +15,8 @@ def dm_list_v1(token):
     for dm in data['dms']:
         for member in dm['members']:
             if member == decoded_token['user_id']:
-                dm_list.append(dm['dm_id'])
+                dm_list.append({'dm_id': dm['dm_id'],
+                                'name': dm['name']})
                 break
 
     return {'dms': dm_list}
@@ -197,7 +198,7 @@ def dm_create_v1(token, u_ids):
         'creator': user_id,
         'dm_id': dm_id,
         'name': dm_name,
-        'members': u_ids,
+        'members': [user_id] + u_ids,
         'messages': []
     }
 
@@ -277,7 +278,7 @@ def dm_messages_v1(token, dm_id, start):
             description=f"User is not a member of the dm with dm id {dm_id}")
 
     # Check valid start number
-    if start >= len(dm_messages):
+    if start >= len(dm_messages) and start != 0:
         raise InputError(
             description="Start is greater than the total number of messages in the dm.")
 

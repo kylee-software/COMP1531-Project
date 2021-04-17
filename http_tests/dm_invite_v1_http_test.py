@@ -31,7 +31,7 @@ def clear():
 def dm_id(user):
     dm = requests.post(config.url + 'dm/create/v1', json={
         'token': user['token'],
-        'u_ids': [user['auth_user_id']]})
+        'u_ids': []})
     return dm.json()['dm_id']
 
 def test_invalid_token(clear, user, user2, dm_id):

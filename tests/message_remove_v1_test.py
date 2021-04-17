@@ -47,8 +47,7 @@ def test_remove_channel_message(clear, auth_user, channel_id):
     assert channel_messages_count_before == 1
 
     message_remove_v1(auth_user, message_id)
-    with pytest.raises(InputError):
-        channel_messages_v2(auth_user, channel_id, 0)
+    assert len(channel_messages_v2(auth_user, channel_id, 0)['messages']) == 0
 
 def test_remove_dm_message(clear, auth_user, dm_id):
     message_id = message_senddm_v1(auth_user, dm_id, "Hi!")['message_id']
@@ -56,8 +55,7 @@ def test_remove_dm_message(clear, auth_user, dm_id):
     assert dm_messages_count_before == 1
 
     message_remove_v1(auth_user, message_id)
-    with pytest.raises(InputError):
-        dm_messages_v1(auth_user, dm_id, 0)
+    assert len(dm_messages_v1(auth_user, dm_id, 0)['messages']) == 0
 
 def test_invalid_token(clear, auth_user, channel_id):
     channel_message_id = message_send_v2(auth_user, channel_id, "Hi!")['message_id']

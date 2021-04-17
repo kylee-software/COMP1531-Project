@@ -180,8 +180,8 @@ def dm_create():
 
 @APP.route("/dm/list/v1", methods=['GET'])
 def dm_list():
-    data = request.get_json()
-    dm_list_generated = dm_list_v1(data['token'])
+    data = request.args.get('token')
+    dm_list_generated = dm_list_v1(data)
 
     return jsonify(dm_list_generated)
 

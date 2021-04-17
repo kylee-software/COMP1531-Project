@@ -54,7 +54,7 @@ def test_invalid_dm_id(clear, users):
     assert response.status_code == 400
 
 def test_dm_details_http_all_works(clear, users, num_members):
-    dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][0], 'u_ids': users['u_ids']})
+    dm = requests.post(config.url + 'dm/create/v1', json={'token': users['tokens'][0], 'u_ids': users['u_ids'][1:]})
     dm = dm.json()
     p = {'token' : users['tokens'][0], 'dm_id' : dm['dm_id']}
     details = requests.get(config.url + 'dm/details/v1', params=p)
