@@ -52,9 +52,6 @@ def users_all_v1(token):
                                 })
     return {'users' : return_list}
 
-def user_profile_setname_v1(auth_user_id, name_first, name_last):
-    return {
-    }
 
 def user_profile_setname_v2(token, name_first, name_last):
     token_data = is_valid_token(token)
@@ -134,9 +131,6 @@ def user_profile_sethandle_v1(token, handle_str):
         raise AccessError(description=f"Token invalid")
 
     auth_user_id = token_data['user_id']
-    if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(
-            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(handle_str) <= 3 or len(handle_str) >= 20:
         raise InputError(
