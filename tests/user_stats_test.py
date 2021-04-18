@@ -8,17 +8,7 @@ from src.channels import channels_create_v2
 from src.dm import dm_create_v1, dm_remove_v1
 from src.message import message_senddm_v1, message_send_v2, message_remove_v1
 from src.user import user_stats_v1
-'''
-so far tests -> 
-channels create
-channel invite, channel leave
-dm create, dm remove
-message send, message send dm, message remove
-need to test ->
-channel join, channel addowner
-message send later
-standups
-'''
+
 @pytest.fixture
 def user1():
     email = "testemail@gmail.com"
