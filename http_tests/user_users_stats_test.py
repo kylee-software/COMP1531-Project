@@ -31,19 +31,14 @@ def channel():
     channel_name = "OGchannel"
     owner = requests.post(config.url + '/auth/login/v2',
                                  json={'email': "channelcreator@gmail.com", 'password': "TestTest2"})
-    user1 = requests.post(config.url + '/auth/login/v2',
-                                 json={'email': "testemail@gmail.com", 'password': "TestTest"})
     owner = json.loads(owner.text)
-    user1 = json.loads(user1.text)
     channel_id = requests.post(config.url + 'channels/create/v2', json={
                                 'token': owner['token'],
                                 'name': channel_name,
                                 'is_public': True
                                 })
     channel_id = json.loads(channel_id.text)['channel_id']
-    requests.post(config.url + '/channel/invite/v2',
-                json={'token': owner['token'], 'channel_id':channel_id, 'u_id':user1['auth_user_id']})
-   
+
     return channel_id
 
 @pytest.fixture
@@ -63,7 +58,7 @@ def dm():
 def clear():
     requests.delete(config.url + '/clear/v1')
 
-def test_user_stats_valid(clear, creator, channel):
+def test_user_stats_valid(clear, creator, user1, channel, dm):
     '''
     A simple test to check user stats
     '''
@@ -71,23 +66,19 @@ def test_user_stats_valid(clear, creator, channel):
         json={'token':creator['token'], 'channel_id':channel, 'message':"TestMessage"})
 
     resp = requests.get(config.url + 'user/stats/v1', params={'token': creator['token']})
-    resp = resp.json()
+    resp = json.loads(resp.text)
     assert len(resp['channels_joined']) == 1
     assert len(resp['dms_joined']) == 1
     assert len(resp['messages_sent']) == 1
-    assert len(resp['involvement_rate']) == 1
+    assert resp['involvement_rate'] == 1
 
-def test_channel_details_access_error(clear, creator, channel):
-    resp = requests.get(config.url + 'user/stats/v1', params={'token': 'bad.token.input', 'channel_id':channel})
+def test_user_stats_access_error(clear, creator, channel):
+    resp = requests.get(config.url + 'user/stats/v1', params={'token': 'bad.token.input'})
     assert resp.status_code == ACCESS_ERROR_CODE
-
-def test_channel_details_input_error(clear, creator, channel):
-    resp = requests.get(config.url + 'user/stats/v1', params={'token': creator['token'], 'channel_id':channel + 1})
-    assert resp.status_code == INPUT_ERROR_CODE
 
 
 ### TEST USERS STATS (DREAMS STATS) ###
-def test_users_stats_valid(clear, creator, channel):
+def test_users_stats_valid(clear, creator, user1, channel, dm):
     '''
     A simple test to check user stats
     '''
@@ -95,16 +86,12 @@ def test_users_stats_valid(clear, creator, channel):
         json={'token':creator['token'], 'channel_id':channel, 'message':"TestMessage"})
 
     resp = requests.get(config.url + 'users/stats/v1', params={'token': creator['token']})
-    resp = resp.json()
+    resp = json.loads(resp.text)
     assert len(resp['channels_exist']) == 1
     assert len(resp['dms_exist']) == 1
     assert len(resp['messages_exist']) == 1
-    assert len(resp['utilization_rate']) == 1
+    assert resp['utilization_rate'] == 1
 
-def test_channel_details_access_error(clear, creator, channel):
-    resp = requests.get(config.url + 'users/stats/v1', params={'token': 'bad.token.input', 'channel_id':channel})
+def test_users_stats_access_error(clear, creator, channel):
+    resp = requests.get(config.url + 'users/stats/v1', params={'token': 'bad.token.input'})
     assert resp.status_code == ACCESS_ERROR_CODE
-
-def test_channel_details_input_error(clear, creator, channel):
-    resp = requests.get(config.url + 'users/stats/v1', params={'token': creator['token'], 'channel_id':channel + 1})
-    assert resp.status_code == INPUT_ERROR_CODE

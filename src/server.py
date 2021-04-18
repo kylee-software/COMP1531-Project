@@ -22,7 +22,8 @@ from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
                          message_senddm_v1, message_share_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_setname_v2, user_profile_v2, users_all_v1)
+                      user_profile_setname_v2, user_profile_v2, users_all_v1,
+                      user_stats_v1, users_stats_v1)
 
 
 def defaultHandler(err):
@@ -316,6 +317,18 @@ def search():
     data = request.args
     return jsonify(search_v2(data['token'], data['query_str']))
 
+
+@APP.route('/user/stats/v1', methods=['GET'])
+def user_stats():
+    token = request.args.get('token')
+    stats = user_stats_v1(token)
+    return jsonify(stats)
+
+@APP.route('/users/stats/v1', methods=['GET'])
+def users_stats():
+    token = request.args.get('token')
+    stats = users_stats_v1(token)
+    return jsonify(stats)
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
