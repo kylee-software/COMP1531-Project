@@ -104,7 +104,6 @@ def channel_details_v1(token, channel_id):
     owner_ids = []
     member_ids = []
     channel = find_channel(channel_id, data)
-    auth_user = find_user(auth_user_id, data)
     
     if is_user_in_channel(channel_id, auth_user_id, data) == False:
         raise AccessError(
@@ -250,7 +249,6 @@ def channel_leave_v1(token, channel_id):
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     channel = find_channel(channel_id, data)
-    auth_user = find_user(auth_user_id, data)
     if is_user_in_channel(channel_id, auth_user_id, data) == False:
         raise AccessError(
             description=f"user is not a member of this channel")

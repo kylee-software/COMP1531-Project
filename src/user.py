@@ -162,6 +162,25 @@ def user_profile_sethandle_v1(token, handle_str):
     }
 
 def user_stats_v1(token):
+    '''
+    Gives back a list of user stats
+
+    Arguments:
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+
+    Exceptions:
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {user_stats}
+                where user stats is a dictionary as follows
+                    {
+                    channels_joined: [{num_channels_joined, time_stamp}], 
+                    dms_joined: [{num_dms_joined, time_stamp}], 
+                    messages_sent: [{num_messages_sent, time_stamp}], 
+                    involovement_rate 
+                    }
+    '''
     data = load_data()
     if not is_valid_token(token):
         raise AccessError(description=f"Token invalid")
