@@ -39,8 +39,7 @@ def test_correct_output(clear, user):
 
     p = {'token' : user['token'], 'u_id' : user2['auth_user_id']}
     call = requests.get(config.url + 'user/profile/v2', params=p)
-    test_user = call.json()
-    test_user = test_user['user']
+    test_user = call.json()['user']
 
     assert isinstance(test_user["u_id"], int)
     assert test_user["email"] == email
