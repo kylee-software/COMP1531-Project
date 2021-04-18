@@ -24,6 +24,11 @@ def user_profile_v2(token, u_id):
     if not is_valid_user_id(u_id):
         raise InputError(description="Invalid user_id")
 
+    try:
+        u_id = int(u_id)
+    except:
+        raise InputError(description='u_id must be an integer')
+    
     data = load_data()
     token = is_valid_token(token)
     user = next(user for user in data['users'] if user['user_id'] == u_id)
@@ -37,6 +42,17 @@ def user_profile_v2(token, u_id):
             }
 
 def users_all_v1(token):
+    """Returns a list of all users and their associated details
+
+    Args:
+        token (str): a jwt encoded dict with keys session_id and user_id
+
+    Raises:
+        AccessError: raises if token is invalid
+
+    Returns:
+        {users}: a dictionary of users details
+    """
     if not is_valid_token(token):
         raise AccessError("Token is invalid")
     token = is_valid_token(token)
@@ -52,11 +68,21 @@ def users_all_v1(token):
                                 })
     return {'users' : return_list}
 
-def user_profile_setname_v1(auth_user_id, name_first, name_last):
-    return {
-    }
 
 def user_profile_setname_v2(token, name_first, name_last):
+    """Update the authorised user's first and last name
+
+    Args:
+        token (str): a jwt encoded dict with keys session_id and user_id
+        name_first (str): the new first name for the user
+        name_last (str): the new last name for the user
+    Raises:
+        AccessError: raises if token is invalid
+        InputError: raises if either of the names is not between 1 and 50 characters
+
+    Returns:
+        {}
+    """
     token_data = is_valid_token(token)
     if token_data is False:
         raise AccessError(description="Authorised user id invalid.")
@@ -126,6 +152,21 @@ def user_profile_setemail_v2(token, email):
 
 
 def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Update the authorised user's handle (i.e. display name)
+
+    Arguments:
+        token (string)         - a jwt encoded dict with keys session_id and user_id
+        handle_str (string)    - new handle the user wishes to use
+
+    Exceptions:
+        InputError  - handle str is not between 3 and 20 characters
+                    - handle is already being used
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {}
+    '''
     data = load_data()
     token_data = is_valid_token(token)
     handle_str = handle_str.lower()

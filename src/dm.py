@@ -5,6 +5,17 @@ from src.helper import (find_dm, find_user, invite_notification_message,
 
 
 def dm_list_v1(token):
+    """Returns the list of DMs that the user is a member of
+
+    Args:
+        token (string): jwt encode dict with keys session_id and user_id
+
+    Raises:
+        AccessError: raises if the token is invalid
+
+    Returns:
+        {dms}: a list of dms the user is a member of
+    """
     decoded_token = is_valid_token(token)
     if decoded_token is False:
         raise AccessError("Invalid Token.")
@@ -128,7 +139,12 @@ def dm_details_v1(token, dm_id):
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
-
+    
+    try:
+        dm_id = int(dm_id)
+    except:
+        raise InputError(description='dm_id must be an integer')
+    
     data = load_data()
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
@@ -208,6 +224,21 @@ def dm_create_v1(token, u_ids):
 
 
 def dm_leave_v1(token, dm_id):
+    '''
+    Given a DM ID, the user is removed as a member of this DM
+
+    Arguments:
+        token (string)      - an authorisation hash of the user
+        dm_id (int)         - dm_id of the dm the user is part of
+
+    Exceptions:
+        AccessError - Occurs when the token is invalid and authorised user is not a member of the dm
+
+        InputError  - Occurs when dm_id is invalid
+
+    Return Value:
+        Returns {}
+    '''
     decoded_token = is_valid_token(token)
     if decoded_token is False:
         raise AccessError("Invalid Token.")
@@ -258,7 +289,15 @@ def dm_messages_v1(token, dm_id, start):
     Return Value:
         Returns {messages, start, end} where messages is a dictionary
     '''
-
+    try:
+        dm_id = int(dm_id)
+    except:
+        raise InputError(description='dm_id must be an integer')
+    try:
+        start = int(start)
+    except:
+        raise InputError(description='start must be an integer')
+    
     data = load_data()
 
     if not is_valid_token(token):

@@ -60,8 +60,8 @@ def echo():
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
     token = request.args.get('token')
-    list = users_all_v1(token)
-    return jsonify(list)
+    user_list = users_all_v1(token)
+    return jsonify(user_list)
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications():
@@ -74,10 +74,6 @@ def notifications():
 def channel_details():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    try:
-        channel_id = int(channel_id)
-    except:
-        pass
     return dumps(channel_details_v1(token, channel_id))
 
 
@@ -99,10 +95,7 @@ def channel_invite():
 def user_profile():
     token = request.args.get('token')
     u_id = request.args.get('u_id')
-    if u_id.isdigit():
-        details = user_profile_v2(token, int(u_id))
-    else:
-        details = user_profile_v2(token, u_id)
+    details = user_profile_v2(token, u_id)
     return jsonify(details)
 
 
@@ -133,7 +126,6 @@ def admin_userpermission():
 def admin_user_remove():
     token = request.get_json()['token']
     u_id = request.get_json()['u_id']
-
     return jsonify(admin_user_remove_v1(token, u_id))
 
 
@@ -166,15 +158,14 @@ def user_profile_setname():
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
     data = request.get_json()
-    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
-    return jsonify(dict)
+    channel_dict = channels_create_v2(data['token'], data['name'], data['is_public'])
+    return jsonify(channel_dict)
 
 
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create():
     data = request.get_json()
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
-
     return jsonify(dm_dict)
 
 
@@ -182,7 +173,6 @@ def dm_create():
 def dm_list():
     data = request.get_json()
     dm_list_generated = dm_list_v1(data['token'])
-
     return jsonify(dm_list_generated)
 
 
@@ -190,15 +180,14 @@ def dm_list():
 def dm_leave():
     data = request.get_json()
     dm_leave_v1(data['token'], data['dm_id'])
-
     return jsonify({})
 
 
 @APP.route('/channels/list/v2', methods=['GET'])
 def list_channels():
     token = request.args.get('token')
-    list = channels_list_v2(token)
-    return jsonify(list)
+    channel_list = channels_list_v2(token)
+    return jsonify(channel_list)
 
 
 @APP.route('/channels/listall/v2', methods=['GET'])
@@ -212,11 +201,7 @@ def listall_channels():
 def dm_details():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id')
-    if dm_id.isdigit():
-        details = dm_details_v1(token, int(dm_id))
-    else:
-        details = dm_details_v1(token, dm_id)
-
+    details = dm_details_v1(token, dm_id)
     return jsonify(details)
 
 
@@ -272,10 +257,7 @@ def dm_messages():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id')
     start = request.args.get('start')
-    if (not dm_id.isdigit()) or (not start.isdigit()):
-        raise InputError(description="dm id or start is not an integer")
-
-    messages_dict = dm_messages_v1(token, int(dm_id), int(start))
+    messages_dict = dm_messages_v1(token, dm_id, start)
     return jsonify(messages_dict)
 
 
@@ -284,10 +266,7 @@ def channel_messages():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
     start = request.args.get('start')
-    if (not channel_id.isdigit()) or (not start.isdigit()):
-        raise InputError(description="channel id or start is not a number")
-
-    data = channel_messages_v2(token, int(channel_id), int(start))
+    data = channel_messages_v2(token, channel_id, start)
     return jsonify(data)
 
 
