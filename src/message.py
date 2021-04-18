@@ -1,6 +1,6 @@
 from src.helper import is_valid_token, return_valid_tagged_handles, load_data, save_data, find_message, \
     is_valid_channel_id, is_user_in_channel, find_user, is_valid_dm_id, find_dm, tag_users, find_message_source, \
-    is_user_in_dm, message_notification_message
+    is_user_in_dm, message_notification_message, find_channel
 from src.error import AccessError, InputError
 from datetime import datetime
 from src.channel import channel_details_v1
@@ -35,10 +35,10 @@ def message_send_v2(token, channel_id, message):
     if len(message) > 1000:
         raise InputError(description='Message is longer than 1000 characters')
 
-    channel = next(
-        (channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
-    if not channel:
+    if not is_valid_channel_id(channel_id):
         raise InputError(description='Channel does not exist')
+
+    channel = find_channel(channel_id, data)
 
     msg_user = next(
         (user for user in channel['members'] if user['user_id'] == token['user_id']), False)
@@ -48,11 +48,13 @@ def message_send_v2(token, channel_id, message):
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
                        'message': message, "time_created": str(datetime.now())}
         channel['messages'].insert(0, new_message)
-
-        auth_messages = next(user['sent_messages']
-                             for user in data['users'] if user['user_id'] == token['user_id'])
-        auth_messages.insert(0, data['msg_counter'] + 1)
-
+        
+        # Add to user stats; messages sent
+        user = find_user(token['user_id'], data)
+        user['sent_messages'].insert(0, data['msg_counter'] + 1)
+        '''
+        user['user_stats']['messages_sent'].append({'num_messages_sent':len(user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
+        '''
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         for user in channel['members']:
             user = next(
@@ -314,6 +316,9 @@ def message_senddm_v1(token, dm_id, message):
         user['notifications'].insert(0, message)
 
     auth_user['sent_messages'].append(message_id)
+    '''
+    auth_user['user_stats']['messages_sent'].append({'num_messages_sent':len(auth_user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
+    '''
     data['msg_counter'] += 1
     save_data(data)
 

@@ -255,15 +255,9 @@ def channel_leave_v1(token, channel_id):
         raise AccessError(
             description=f"user is not a member of this channel")
     
-    '''
-    channels_joined = auth_user['user_stats']['channels_joined'][-1]['num_channels_joined'] - 1
-    '''
     for idx, member in enumerate(channel['members']):
         if member['user_id'] == auth_user_id:
             del channel['members'][idx]
-            '''
-            auth_user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
-            '''
             break
     save_data(data)
 
