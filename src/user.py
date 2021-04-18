@@ -26,8 +26,8 @@ def user_profile_v2(token, u_id):
 
     try:
         u_id = int(u_id)
-    except:
-        raise InputError(description='u_id must be an integer')
+    except Exception as e:
+        raise InputError(description='u_id must be an integer') from e
     
     data = load_data()
     token = is_valid_token(token)

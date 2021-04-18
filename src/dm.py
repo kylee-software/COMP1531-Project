@@ -142,8 +142,8 @@ def dm_details_v1(token, dm_id):
     
     try:
         dm_id = int(dm_id)
-    except:
-        raise InputError(description='dm_id must be an integer')
+    except Exception as e:
+        raise InputError(description='dm_id must be an integer') from e
     
     data = load_data()
 
@@ -291,12 +291,12 @@ def dm_messages_v1(token, dm_id, start):
     '''
     try:
         dm_id = int(dm_id)
-    except:
-        raise InputError(description='dm_id must be an integer')
+    except Exception as e: 
+        raise InputError(description='dm_id must be an integer') from e
     try:
         start = int(start)
-    except:
-        raise InputError(description='start must be an integer')
+    except Exception as e:
+        raise InputError(description='start must be an integer') from e
     
     data = load_data()
 

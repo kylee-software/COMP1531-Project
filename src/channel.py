@@ -98,8 +98,8 @@ def channel_details_v1(token, channel_id):
         raise AccessError(description=f"Token invalid")
     try:
         channel_id = int(channel_id)
-    except:
-        raise InputError(description='channel_id must be an integer')
+    except Exception as e:
+        raise InputError(description='channel_id must be an integer') from e
     
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
@@ -186,13 +186,13 @@ def channel_messages_v2(token, channel_id, start):
     data = load_data()
     try:
         channel_id = int(channel_id)
-    except:
-        raise InputError(description='channel_id must be an integer')
+    except Exception as e:
+        raise InputError(description='channel_id must be an integer') from e
     
     try:
         start = int(start)
-    except:
-        raise InputError(description='start must be an integer')
+    except Exception as e:
+        raise InputError(description='start must be an integer')from e
     
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid")
