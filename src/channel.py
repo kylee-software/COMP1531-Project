@@ -43,16 +43,6 @@ def channel_invite_v1(token, channel_id, u_id):
     if is_user_in_channel(channel_id, auth_user_id, data) is False:
         raise AccessError(description=f"auth_user_id was not in channel")
 
-    '''auth_in_channel = False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            for member in channel['members']:
-                if member['user_id'] == auth_user_id:
-                    auth_in_channel = True
-                    break
-    if auth_in_channel == False:
-        raise AccessError(description=f"auth_user_id was not in channel")
-    '''
     # check if user being added is global owner
     user = find_user(u_id, data)
     permission = user['permission_id']
@@ -69,8 +59,9 @@ def channel_invite_v1(token, channel_id, u_id):
     channel = find_channel(channel_id, data)
     channel['members'].append(
         {'user_id': u_id, 'permission_id': permission})
-    #user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
-    
+    '''
+    user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+    '''
     # notification message
     user['notifications'].insert(0, invite_notification_message(
         token_data, channel_id, channel['name'], True))
@@ -258,17 +249,22 @@ def channel_leave_v1(token, channel_id):
     if is_valid_channel_id(channel_id) == False:
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
-    found_member = False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            for idx, member in enumerate(channel['members']):
-                if member['user_id'] == auth_user_id:
-                    found_member = True
-                    del channel['members'][idx]
-                    break
-            if found_member == False:
-                raise AccessError(
-                    description=f"user is not a member of this channel")
+    channel = find_channel(channel_id, data)
+    auth_user = find_user(auth_user_id, data)
+    if is_user_in_channel(channel_id, auth_user_id, data) == False:
+        raise AccessError(
+            description=f"user is not a member of this channel")
+    
+    '''
+    channels_joined = auth_user['user_stats']['channels_joined'][-1]['num_channels_joined'] - 1
+    '''
+    for idx, member in enumerate(channel['members']):
+        if member['user_id'] == auth_user_id:
+            del channel['members'][idx]
+            '''
+            auth_user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+            '''
+            break
     save_data(data)
 
     return {
@@ -299,39 +295,31 @@ def channel_join_v1(token, channel_id):
         raise AccessError(description=f"Token invalid")
 
     auth_user_id = token_data['user_id']
-    if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(
-            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if is_valid_channel_id(channel_id) == False:
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     # Next we find out if the auth_user_id user is a global owner
-    global_status = 2
-    for user in data['users']:
-        if user['user_id'] == auth_user_id:
-            global_status = user.get('permission_id')
-            break
-
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            # Now we check to see if the user is already in the channel
-            for member in channel['members']:
-                if member['user_id'] == auth_user_id:
-                    # member is already in channel so return as successful
-                    return {}
-            is_public = channel['public_status']
-
-            # Now if the user is a global owner or the channel is public they can be added
-            if global_status == 1 or is_public == True:
-                user_dict = {'user_id': auth_user_id,
-                             'permission_id': global_status, }
-                channel['members'].append(user_dict)
-            else:
-                # If not this means the channel is private and the user doesn't have access
-                raise AccessError(
-                    description=f"channel is private and user is not global owner")
-            break
+    auth_user = find_user(auth_user_id, data)
+    if is_user_in_channel(channel_id, auth_user_id, data) == True:
+        return {}
+    '''
+    if len(auth_user['user_stats']['channels_joined']) == 0:
+        channels_joined = 1
+    else:
+        channels_joined = auth_user['user_stats']['channels_joined'][-1]['num_channels_joined'] + 1
+    '''
+    channel = find_channel(channel_id, data)
+    if auth_user['permission_id'] == 1 or channel['public_status'] == True:
+        user_dict = {'user_id': auth_user_id,
+                    'permission_id': auth_user['permission_id'], }
+        channel['members'].append(user_dict)
+        '''
+        auth_user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+        '''
+    else:
+        raise AccessError(
+            description=f"channel is private and user is not global owner")
 
     save_data(data)
     return {
@@ -366,7 +354,14 @@ def channel_addowner_v1(token, channel_id, u_id):
     first_user_owner_status = first_user_owner['permission_id']
     owner_channel_status = find_user_channel_owner_status(
         channel_id, first_user_owner['permission_id'], data)
-
+    
+    user = find_user(u_id, data)
+    '''
+    if len(user['user_stats']['channels_joined']) == 0:
+        channels_joined = 1
+    else:
+        channels_joined = user['user_stats']['channels_joined'][-1]['num_channels_joined'] + 1
+    '''
     if first_user_owner_status == 1 or owner_channel_status == 1:
         if is_user_in_channel(channel_id, u_id, data) is True:
             for member in channel['members']:
@@ -375,7 +370,11 @@ def channel_addowner_v1(token, channel_id, u_id):
                     if not u_id in channel['owner']:
                         channel['owner'].append(u_id)
         else:
+
             new_owner = {'user_id': u_id, 'permission_id': True}
+            '''
+            user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+            '''
             channel['members'].append(new_owner)
             channel['owner'].append(u_id)
 
