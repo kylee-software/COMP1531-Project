@@ -176,6 +176,7 @@ def user_stats_v1(token):
     else:
         user_stats['involvement_rate'] = sum_user/sum_dreams
 
+    save_data(data)
     return user_stats
 
     
@@ -200,9 +201,20 @@ def users_stats_v1(token):
                     }
     '''
     data = load_data()
-    token_data = is_valid_token(token)
-
-    if is not token_data:
+    if not is_valid_token(token):
         raise AccessError(description=f"Token invalid")
+    
+    utilization_users = 0
+    for user in data['users']:
+        if len(user['user_stats']['channels_joined']) != 0 or len(user['user_stats']['dms_joined']) != 0:
+            utilization_users += 1
 
-    return {data['dreams_stats']}
+    dreams_stats = data['dreams_stats']
+
+    if len(data['users']) == 0:
+        dreams_stats['utilization_rate'] = 0
+    else:
+        dreams_stats['utilization_rate'] = utilization_users/len(data['users'])
+
+    save_data(data)
+    return dreams_stats

@@ -101,11 +101,15 @@ def channels_create_v2(token, name, is_public):
     channels.append(new_channel)
     
     user = find_user(user_id, data)
-    if len(user['user_stats']['channels_joined']) == 0:
-        channels_joined = 1
-    else:
-        channels_joined = user['user_stats']['channels_joined'][-1]['num_channels_joined'] + 1
+    channels_joined = len(user['user_stats']['channels_joined']) + 1
     user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+    
+    if len(data['dreams_stats']['channels_exist']) == 0:
+        channels_exist = 1
+    else:
+        channels_exist = data['dreams_stats']['channels_exist'][-1]['num_channels_exist'] + 1
 
+    data['dreams_stats']['channels_exist'].append({'num_channels_exist':channels_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
     return {'channel_id': channel_id}

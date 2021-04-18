@@ -112,7 +112,11 @@ def dm_remove_v1(token, dm_id):
 
     if found_dm == False:
         raise InputError(description=f"Dm id was invalid")
+    
+    dms_exist = data['dreams_stats']['dms_exist'][-1]['num_dms_exist'] - 1
 
+    data['dreams_stats']['dms_exist'].append({'num_dms_exist':dms_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
     return {}
 
@@ -221,8 +225,14 @@ def dm_create_v1(token, u_ids):
         else:
             dms_joined = user['user_stats']['dms_joined'][-1]['num_dms_joined'] + 1
         user['user_stats']['dms_joined'].append({'num_dms_joined':dms_joined, 'time_stamp':int(datetime.now().timestamp())})
-        
+    
+    if len(data['dreams_stats']['dms_exist']) == 0:
+        dms_exist = 1
+    else:
+        dms_exist = data['dreams_stats']['dms_exist'][-1]['num_dms_exist'] + 1
 
+    data['dreams_stats']['dms_exist'].append({'num_dms_exist':dms_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}

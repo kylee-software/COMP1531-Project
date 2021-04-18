@@ -64,6 +64,14 @@ def message_send_v2(token, channel_id, message):
                     token, channel_id, channel_name, True, message))
 
         data['msg_counter'] += 1
+        
+        if len(data['dreams_stats']['messages_exist']) == 0:
+            messages_exist = 1
+        else:
+            messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] + 1
+
+        data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
+        
         save_data(data)
         return {'message_id': data['msg_counter']}
 
@@ -117,6 +125,8 @@ def message_remove_v1(token, message_id):
             for message in channel['messages']:
                 if message['message_id'] == message_id:
                     channel['messages'].remove(message)
+                    messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] - 1
+                    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
                     save_data(data)
                     return {}
 
@@ -133,7 +143,9 @@ def message_remove_v1(token, message_id):
         for dm in data['dms']:
             for message in dm['messages']:
                 if message['message_id'] == message_id:
-                    dm['messages'].remove(message)
+                    dm['messages'].remove(message)                    
+                    messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] - 1
+                    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
                     save_data(data)
                     return {}
 
@@ -320,6 +332,14 @@ def message_senddm_v1(token, dm_id, message):
     auth_user['user_stats']['messages_sent'].append({'num_messages_sent':len(auth_user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
     
     data['msg_counter'] += 1
+    
+    if len(data['dreams_stats']['messages_exist']) == 0:
+        messages_exist = 1
+    else:
+        messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] + 1
+
+    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
 
     return {'message_id': message_id}

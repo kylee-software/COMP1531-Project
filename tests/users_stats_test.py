@@ -2,9 +2,10 @@ import pytest
 from src.error import AccessError
 from src.other import clear_v1
 from src.auth import auth_register_v2, auth_login_v2
-from src.channel import channel_invite_v1, channel_create_v2
+from src.channel import channel_invite_v1
+from src.channels import channels_create_v2
 from src.dm import dm_create_v1, dm_remove_v1
-from src.message import message_senddm_v1, message_send_v2
+from src.message import message_senddm_v1, message_send_v2, message_remove_v1
 from src.user import users_stats_v1
 
 @pytest.fixture
@@ -19,8 +20,8 @@ def user1():
 def user2():
     email = "testemail2@gmail.com"
     password = "TestTest"
-    firstname = "firstname"
-    lastname = "lastname"
+    firstname = "firstname2"
+    lastname = "lastname2"
     return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
@@ -32,13 +33,13 @@ def creator():
     return auth_register_v2(email,password,firstname, lastname)
 
 @pytest.fixture
-def channel():
+def channel(user1, creator):
     name = "channel"
-    owner = auth_login_v2("channelcreator@gmail.com", "TestTest2")
+    creator = auth_login_v2("channelcreator@gmail.com", "TestTest2")
     user1 = auth_login_v2("testemail@gmail.com", "TestTest")
 
-    channel_id = channels_create_v2(owner['token'], name, True)['channel_id']
-    channel_invite_v1(owner['token'], channel_id, user1['auth_user_id'])
+    channel_id = channels_create_v2(creator['token'], name, True)['channel_id']
+    channel_invite_v1(creator['token'], channel_id, user1['auth_user_id'])
     return channel_id
 
 @pytest.fixture
@@ -56,26 +57,26 @@ def test_invalid_token(clear, user2, channel):
         users_stats_v1('bad.token.input')
 
 def test_all_stats_zero(clear, user2):
-    assert users_stats_v1(user2['token']) ==  
-                {
-                    'channels_exist': [], 
-                    'dms_exist': [], 
-                    'messages_exist': [], 
-                    'utilization_rate':0,
-                }
+    assert users_stats_v1(user2['token']) =={'channels_exist': [], 
+                                            'dms_exist': [], 
+                                            'messages_exist': [], 
+                                            'utilization_rate':0,
+                                            }
 
-def test_channel_stat(clear, user2, channel):
+def test_channel_create(clear, user2, channel):
     stats = users_stats_v1(user2['token'])
     assert len(stats['channels_exist']) == 1
+    assert stats['channels_exist'][-1]['num_channels_exist'] == 1
     assert len(stats['dms_exist']) == 0
     assert len(stats['messages_exist']) == 0
     assert stats['utilization_rate'] == 2/3
 
 
-def test_dm_stat(clear, user2, channel, dm):
+def test_dm_create_remove(clear, user2, channel, dm):
     stats = users_stats_v1(user2['token'])
     assert len(stats['channels_exist']) == 1
     assert len(stats['dms_exist']) == 1
+    assert stats['dms_exist'][-1]['num_dms_exist'] == 1
     assert len(stats['messages_exist']) == 0
     assert stats['utilization_rate'] == 2/3
     
@@ -83,15 +84,13 @@ def test_dm_stat(clear, user2, channel, dm):
     owner = auth_login_v2("channelcreator@gmail.com", "TestTest2")
     dm_remove_v1(owner['token'], dm['dm_id'])
     stats = users_stats_v1(user2['token'])
-    assert len(stats['channels_exist']) == 1
-    assert len(stats['dms_exist']) == 0
-    assert len(stats['messages_exist']) == 0
-    assert stats['utilization_rate'] == 2/3
+    assert len(stats['dms_exist']) == 2
+    assert stats['dms_exist'][-1]['num_dms_exist'] == 0
 
-def test_message_stat(clear, user2, channel, dm):
+def test_message_send_senddm_remove(clear, user2, channel, dm):
     owner = auth_login_v2("channelcreator@gmail.com", "TestTest2")
-    message_senddm_v1(owner['token'], dm['dm_id'], "Message1")
-    message = message_send_v2(owner['token'], channel['channel_id'], "message2")
+    dmmessage = message_senddm_v1(owner['token'], dm['dm_id'], "Message1")
+    message = message_send_v2(owner['token'], channel, "message2")
     
     stats = users_stats_v1(user2['token'])
     assert len(stats['channels_exist']) == 1
@@ -103,9 +102,15 @@ def test_message_stat(clear, user2, channel, dm):
     dm_remove_v1(owner['token'], dm['dm_id'])
     stats = stats = users_stats_v1(user2['token'])
     assert len(stats['messages_exist']) == 2
+    assert stats['messages_exist'][-1]['num_messages_exist'] == 2
 
-    # Check removing messafe doesnt change the message count
+    # Check removing message does change the message count
     message_remove_v1(owner['token'], message['message_id'])
     stats = stats = users_stats_v1(user2['token'])
-    assert len(stats['messages_exist']) == 2   
-    
+    assert len(stats['messages_exist']) == 3
+    assert stats['messages_exist'][-1]['num_messages_exist'] == 1
+
+    message_remove_v1(owner['token'], dmmessage['message_id'])
+    stats = stats = users_stats_v1(user2['token'])
+    assert len(stats['messages_exist']) == 4
+    assert stats['messages_exist'][-1]['num_messages_exist'] == 0

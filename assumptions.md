@@ -87,10 +87,9 @@
 
 ## user/stats
 
-- when calculating involvement, number of channels joined and number of dms joined will be the net number - ie if the user leaves a channel the number of channels joined will go down by one.
-- removing a message will still count as a message sent - ie the number of messages sent will not change if a message is removed.  This includes messages that are removed when a dm is deleted.
+- user stats will not consider messages, channnels or dms that have been removed
 
 ## users/stats
 
-- similar to user/stats, when calculating utilization a user will not be considered to have joined a channel or dm if they have then removed themselves from that channel or dm.
-- removing a message will still count as a message sent - ie the number of messages sent will not change if a message is removed. This includes messages that are removed when a dm is deleted.
+- removing a message, channel or dm will decrease the respective count.
+- removing a dm does NOT decrease the message count
