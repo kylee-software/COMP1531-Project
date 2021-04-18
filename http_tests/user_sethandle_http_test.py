@@ -2,8 +2,6 @@ import pytest
 import requests
 import json
 from src import config
-from src.other import clear_v1
-from src.auth import auth_register_v2
 
 @pytest.fixture
 def user1():
@@ -11,11 +9,14 @@ def user1():
     password = "TestTest"
     firstname = "first"
     lastname = "last"
-    return auth_register_v2(email,password,firstname, lastname)
+    user = requests.post(config.url + '/auth/register/v2',
+                                 json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
+    return json.loads(user.text)
+
 
 @pytest.fixture
 def clear():
-    clear_v1()
+    requests.delete(config.url + '/clear/v1')
 
 def test_user_profile_sethandle(clear, user1):
     '''

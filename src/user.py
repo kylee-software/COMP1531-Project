@@ -128,7 +128,8 @@ def user_profile_setemail_v2(token, email):
 def user_profile_sethandle_v1(token, handle_str):
     data = load_data()
     token_data = is_valid_token(token)
-
+    handle_str = handle_str.lower()
+    
     if token_data == False:
         raise AccessError(description=f"Token invalid")
 
