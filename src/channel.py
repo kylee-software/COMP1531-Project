@@ -112,25 +112,17 @@ def channel_details_v1(token, channel_id):
 
     owner_ids = []
     member_ids = []
+    channel = find_channel(channel_id, data)
+    auth_user = find_user(auth_user_id, data)
+    
+    if is_user_in_channel(channel_id, auth_user_id, data) == False:
+        raise AccessError(
+            description=f"auth_user_id is not a channel member")
 
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            found_member = False
-            channel_name = channel['name']
-            public_status = channel['public_status']
-
-            for member in channel['members']:
-                member_ids.append(member['user_id'])
-                if member['permission_id'] == 1:
-                    owner_ids.append(member['user_id'])
-                if member['user_id'] == auth_user_id:
-                    found_member = True
-
-            if found_member == False:
-                raise AccessError(
-                    description=f"auth_user_id is not a channel member")
-
-            break
+    for member in channel['members']:
+        member_ids.append(member['user_id'])
+        if member['permission_id'] == 1:
+            owner_ids.append(member['user_id'])
 
     owner_details = []
     member_details = []
@@ -144,6 +136,7 @@ def channel_details_v1(token, channel_id):
                 'handle_str': user['account_handle'],
             }
             member_details.append(member)
+
         if user['user_id'] in owner_ids:
             owner = {
                 'u_id': user['user_id'],
@@ -154,11 +147,9 @@ def channel_details_v1(token, channel_id):
             }
             owner_details.append(owner)
 
-    channel
-    save_data(data)
     return {
-        'name': channel_name,
-        'is_public': public_status,
+        'name': channel['name'],
+        'is_public': channel['public_status'],
         'owner_members': owner_details,
         'all_members': member_details,
     }
