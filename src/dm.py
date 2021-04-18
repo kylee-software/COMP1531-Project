@@ -2,7 +2,7 @@ from src.error import AccessError, InputError
 from src.helper import (find_dm, find_user, invite_notification_message,
                         is_user_in_dm, is_valid_dm_id, is_valid_token,
                         is_valid_user_id, load_data, save_data)
-
+from datetime import datetime
 
 def dm_list_v1(token):
     decoded_token = is_valid_token(token)
@@ -64,13 +64,13 @@ def dm_invite_v1(token, dm_id, user_id):
 
     dm['members'].append(user_id)
     user = find_user(user_id, data)
-    '''
+    
     if len(user['user_stats']['dms_joined']) == 0:
         dms_joined = 1
     else:
         dms_joined = user['user_stats']['dms_joined'][-1]['num_dms_joined'] + 1
     user['user_stats']['dms_joined'].append({'num_dms_joined':dms_joined, 'time_stamp':int(datetime.now().timestamp())})
-    '''
+    
     save_data(data)
 
 
@@ -215,13 +215,13 @@ def dm_create_v1(token, u_ids):
     # now increase dms joined stat by one for all users in the dm
     for u_id in all_ids:
         user = find_user(u_id, data)
-        '''
+        
         if len(user['user_stats']['dms_joined']) == 0:
             dms_joined = 1
         else:
             dms_joined = user['user_stats']['dms_joined'][-1]['num_dms_joined'] + 1
         user['user_stats']['dms_joined'].append({'num_dms_joined':dms_joined, 'time_stamp':int(datetime.now().timestamp())})
-        '''
+        
 
     save_data(data)
 

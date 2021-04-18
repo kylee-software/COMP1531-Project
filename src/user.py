@@ -152,3 +152,20 @@ def user_profile_sethandle_v1(token, handle_str):
     save_data(data)
     return {
     }
+
+def user_stats_v1(token):
+    data = load_data()
+    if not is_valid_token(token):
+        raise AccessError(description=f"Token invalid")
+
+    user_id = is_valid_token(token)['user_id']    
+    user_stats = find_user(user_id, data)['user_stats']
+    sum_user = len(user_stats['channels_joined']) + len(user_stats['dms_joined']) + len(user_stats['messages_sent'])
+    sum_dreams = len(data['channels']) + len(data['dms']) + data['msg_counter']
+
+    if sum_dreams == 0:
+        user_stats['involvement_rate'] = 0
+    else:
+        user_stats['involvement_rate'] = sum_user/sum_dreams
+
+    return user_stats

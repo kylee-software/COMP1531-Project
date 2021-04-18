@@ -1,5 +1,6 @@
 from src.error import AccessError, InputError  
-from src.helper import is_valid_token, load_data, save_data
+from src.helper import is_valid_token, load_data, save_data, find_user
+from datetime import datetime
 
 def channels_list_v2(token):
     """Returns a list of channels that the authorised user is a part of
@@ -98,6 +99,13 @@ def channels_create_v2(token, name, is_public):
                    'messages': []
                    }
     channels.append(new_channel)
+    
+    user = find_user(user_id, data)
+    if len(user['user_stats']['channels_joined']) == 0:
+        channels_joined = 1
+    else:
+        channels_joined = user['user_stats']['channels_joined'][-1]['num_channels_joined'] + 1
+    user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
 
     save_data(data)
     return {'channel_id': channel_id}

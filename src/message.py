@@ -52,9 +52,9 @@ def message_send_v2(token, channel_id, message):
         # Add to user stats; messages sent
         user = find_user(token['user_id'], data)
         user['sent_messages'].insert(0, data['msg_counter'] + 1)
-        '''
+        
         user['user_stats']['messages_sent'].append({'num_messages_sent':len(user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
-        '''
+        
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         for user in channel['members']:
             user = next(
@@ -316,9 +316,9 @@ def message_senddm_v1(token, dm_id, message):
         user['notifications'].insert(0, message)
 
     auth_user['sent_messages'].append(message_id)
-    '''
+    
     auth_user['user_stats']['messages_sent'].append({'num_messages_sent':len(auth_user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
-    '''
+    
     data['msg_counter'] += 1
     save_data(data)
 
