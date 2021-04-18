@@ -1,4 +1,3 @@
-# Assumptions For Iteration One
 
 ## admin_user_remove
 
@@ -55,7 +54,6 @@
 - channel_details_v1
 - auth_login_v1
 - channel_messages_v2
-- channels_create
 
 ## Dm/Invite
 
@@ -67,6 +65,7 @@
 
 ## user/profile/v1
 - Will not list removed users
+
 ## message share
 
 - If the optional message plus the shared messaged together is over 1000 characters its too long and an input error is raised
@@ -86,3 +85,12 @@
 - User id of the user who is having their ownership taking away remains a member of the channel
 - Channel owner can remove their ownership themself
 
+## user/stats
+
+- when calculating involvement, number of channels joined and number of dms joined will be the net number - ie if the user leaves a channel the number of channels joined will go down by one.
+- removing a message will still count as a message sent - ie the number of messages sent will not change if a message is removed.  This includes messages that are removed when a dm is deleted.
+
+## users/stats
+
+- similar to user/stats, when calculating utilization a user will not be considered to have joined a channel or dm if they have then removed themselves from that channel or dm.
+- removing a message will still count as a message sent - ie the number of messages sent will not change if a message is removed. This includes messages that are removed when a dm is deleted.
