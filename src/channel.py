@@ -40,7 +40,10 @@ def channel_invite_v1(token, channel_id, u_id):
         raise InputError(description=f"Channel_id: {channel_id} is invalid")
 
     # check auth_user is in channel
-    auth_in_channel = False
+    if is_user_in_channel(channel_id, auth_user_id, data) is False:
+        raise AccessError(description=f"auth_user_id was not in channel")
+
+    '''auth_in_channel = False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             for member in channel['members']:
@@ -49,26 +52,28 @@ def channel_invite_v1(token, channel_id, u_id):
                     break
     if auth_in_channel == False:
         raise AccessError(description=f"auth_user_id was not in channel")
-
+    '''
     # check if user being added is global owner
-    global_owner = 2
-    for user in data['users']:
-        if user['user_id'] == u_id:
-            invited_user = user
-            global_owner = user['permission_id']
+    user = find_user(u_id, data)
+    permission = user['permission_id']
+    '''if len(user['user_stats']['channels_joined']) == 0:
+        channels_joined = 1
+    else:
+        channels_joined = user['user_stats']['channels_joined'][-1]['num_channels_joined'] + 1
+    '''
 
     # add if user isnt already in the channel
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            for member in channel['members']:
-                if member['user_id'] == u_id:
-                    return {}
-            channel['members'].append(
-                {'user_id': u_id, 'permission_id': global_owner})
-            # notification message
-            channel_name = channel_details_v1(token, channel_id)['name']
-            invited_user['notifications'].insert(0, invite_notification_message(
-                token_data, channel_id, channel_name, True))
+    if is_user_in_channel(channel_id, u_id, data) == True:
+        return {}
+
+    channel = find_channel(channel_id, data)
+    channel['members'].append(
+        {'user_id': u_id, 'permission_id': permission})
+    #user['user_stats']['channels_joined'].append({'num_channels_joined':channels_joined, 'time_stamp':int(datetime.now().timestamp())})
+    
+    # notification message
+    user['notifications'].insert(0, invite_notification_message(
+        token_data, channel_id, channel['name'], True))
 
     save_data(data)
     return {
