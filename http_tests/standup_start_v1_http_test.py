@@ -35,7 +35,7 @@ def test_invalid_token(clear, channel_id):
     assert response.status_code == 403
 
 def test_invalid_channel_id(clear, token):
-    response = requests.post(config.url + 'standup/start/v1', json={'token': token, 'invalid_channel_id': channel_id, 'length' : 1})
+    response = requests.post(config.url + 'standup/start/v1', json={'token': token, 'channel_id': 'invalid_channel_id', 'length' : 1})
     assert response.status_code == 400
 
 def test_standup_already_running(clear, token, channel_id):

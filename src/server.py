@@ -23,7 +23,7 @@ from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2, users_all_v1)
-
+from src.standup import standup_active_v1, standup_start_v1, standup_send_v1
 
 def defaultHandler(err):
     response = err.get_response()
@@ -316,6 +316,26 @@ def search():
     data = request.args
     return jsonify(search_v2(data['token'], data['query_str']))
 
+@APP.route("/standup/start/v1", methods=['POST'])
+def standup_start():
+    data = request.get_json()
+    response = standup_start_v1(data['token'], data['channel_id'], data['length'])
+    return jsonify(response)
+
+@APP.route("/standup/active/v1", methods=['GET'])
+def standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    if not channel_id.isdigit():
+        raise InputError(description="channel id is not a number")
+    response = standup_active_v1(token, int(channel_id))
+    return jsonify(response)
+
+@APP.route("/standup/send/v1", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+    standup_send_v1(data['token'], data['channel_id'], data['message'])
+    return jsonify({})
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port

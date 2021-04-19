@@ -41,10 +41,13 @@ def test_invalid_channel_id(clear, token):
 def test_standup_running_returns_true(clear, token, channel_id):
     requests.post(config.url + 'standup/start/v1', json={'token': token, 'channel_id': channel_id, 'length' : 1})
     response = requests.get(config.url + 'standup/active/v1', params={'token' : token, 'channel_id': channel_id})
+    print(response.json())
+    print(channel_id)
     assert response.json()['is_active'] == True
 
 def test_returns_false(clear, token, channel_id):
     response = requests.get(config.url + 'standup/active/v1', params={'token' : token, 'channel_id': channel_id})
+    print(response.json())
     assert response.json()['is_active'] == False
     response = requests.get(config.url + 'standup/active/v1', params={'token' : token, 'channel_id': channel_id})
     assert response.json()['time_finish'] == None
