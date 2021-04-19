@@ -363,7 +363,8 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
 
     delay_time = time_sent - current_timestamp
     time.sleep(delay_time)
+    messageID_dict = message_send_v2(token, channel_id, message)
     save_data(data)
-    return message_send_v2(token, channel_id, message)
+    return messageID_dict
 
 
