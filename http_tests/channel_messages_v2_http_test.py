@@ -1,12 +1,6 @@
 import pytest
 import requests
 from src import config
-from src.helper import load_data
-
-
-# @pytest.fixture
-# def clear():
-#     requests.delete(config.url + '/clear/v1')
 
 @pytest.fixture
 def clear():

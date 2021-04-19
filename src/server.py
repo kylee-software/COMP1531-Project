@@ -20,7 +20,7 @@ from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import (message_edit_v2, message_pin_v1, message_remove_v1,
                          message_send_v2, message_senddm_v1, message_share_v1,
-                         message_unpin_v1)
+                         message_unpin_v1, message_sendlater_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2, users_all_v1,
@@ -299,6 +299,12 @@ def message_edit():
 def search():
     data = request.args
     return jsonify(search_v2(data['token'], data['query_str']))
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    data = request.get_json()
+    message_id = message_sendlater_v1(data['token'], data['channel_id'], data['message'], data['time_sent'])
+    return jsonify(message_id)
 
 
 @APP.route('/user/stats/v1', methods=['GET'])

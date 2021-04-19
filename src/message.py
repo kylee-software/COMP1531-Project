@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timezone
+import time
 from src.channel import channel_details_v1
 from src.error import AccessError, InputError
 from src.helper import (find_channel, find_dm, find_message,
@@ -7,7 +8,6 @@ from src.helper import (find_channel, find_dm, find_message,
                         is_valid_token, load_data,
                         message_notification_message,
                         return_valid_tagged_handles, save_data, tag_users)
-
 
 def message_send_v2(token, channel_id, message):
     """Sends a message from the user referenced by the token to the channel referenced by
@@ -364,6 +364,55 @@ def message_senddm_v1(token, dm_id, message):
     save_data(data)
 
     return {'message_id': message_id}
+
+
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    '''
+    message_sendlater() send a message from authorised user to the channel with channel_id automatically at a specific
+    time in the future
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        channel_id (int)     - the channel id of the channel the message will send to
+        message (string)     - the content of the message
+        time_sent (int)      - the time that the message will send out
+
+    Exceptions:
+        AccessError  - token is invalid
+                     - the authorised user has not joined the channel they are trying to post
+        InputError   - channel id is not a valid channel
+                     - message is more than 1000 characters
+                     - Time sent is time in the past
+
+    Assumption:
+
+    Return Value: {'message_id': message_id} where message_id is an integer
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Invalid token id.")
+
+    if not is_valid_channel_id(channel_id):
+        raise InputError(description="Invalid channel id.")
+
+    user_id = is_valid_token(token)['user_id']
+    if not is_user_in_channel(channel_id, user_id, data):
+        raise AccessError(description=f"user is not a member of the channel with channel id {channel_id}.")
+
+    if len(message) > 1000:
+        raise InputError(description="message is longer than 1000 characters")
+
+    current_timestamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    if time_sent < current_timestamp:
+        raise InputError(description="the time for the message to send is in the past.")
+
+    delay_time = time_sent - current_timestamp
+    time.sleep(delay_time)
+    messageID_dict = message_send_v2(token, channel_id, message)
+    save_data(data)
+    return messageID_dict
 
 
 def message_pin_v1(token: str, message_id: int) -> dict:
