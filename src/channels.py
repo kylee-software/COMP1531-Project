@@ -95,7 +95,8 @@ def channels_create_v2(token, name, is_public):
                         'permission_id': 1}  # owner has permission_id = 1
                    ],
                    'public_status': is_public,
-                   'messages': []
+                   'messages': [],
+                   'standup': {},
                    }
     channels.append(new_channel)
 
