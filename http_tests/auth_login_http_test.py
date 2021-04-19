@@ -1,7 +1,6 @@
 import pytest
 import requests
 from src import config
-from src.helper import is_valid_token
 
 # Test that email is a valid format
 
@@ -43,6 +42,6 @@ def test_correct_login_details():
                                json={'email': 'testing123@unsw.au', 'password': 'password'})
     login_details = login_call.json()
     registration_details = registration.json()
+    print(login_details)
     assert login_call.status_code == 200
-    assert is_valid_token(login_details['token'])
     assert registration_details['auth_user_id'] == login_details['auth_user_id']
