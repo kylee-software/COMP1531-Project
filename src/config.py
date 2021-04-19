@@ -1,3 +1,3 @@
 port = 8001
 
-url = f"http://localhost:{port}/"
+url = f"http://wed09becho.alwaysdata.net"
