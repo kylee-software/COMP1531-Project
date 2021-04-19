@@ -11,7 +11,7 @@ def channel_invite_v1(token, channel_id, u_id):
     Function to invite and add a user of u_id to a channel of channel_id.
 
     Arguments:
-        auth_user_id (int)      - user_id of the person already in the channel
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
         channel_id (int)        - unique channel identifier
         u_id (int)              - user_id of the person being invited to the channel
 
@@ -76,7 +76,7 @@ def channel_details_v1(token, channel_id):
     channel details returns the name and member details of a channel a user is in
 
     Arguments:
-        auth_user_id (int)      - user id of the user requesting channel information
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
         channel_id (int)        - channel_id of the channel details being requested
 
     Exceptions:
@@ -92,7 +92,11 @@ def channel_details_v1(token, channel_id):
 
     if token_data == False:
         raise AccessError(description=f"Token invalid")
-
+    try:
+        channel_id = int(channel_id)
+    except Exception as e:
+        raise InputError(description='channel_id must be an integer') from e
+    
     auth_user_id = token_data['user_id']
     if is_valid_user_id(auth_user_id) == False:
         raise AccessError(
@@ -166,7 +170,16 @@ def channel_messages_v2(token, channel_id, start):
     '''
 
     data = load_data()
-
+    try:
+        channel_id = int(channel_id)
+    except Exception as e:
+        raise InputError(description='channel_id must be an integer') from e
+    
+    try:
+        start = int(start)
+    except Exception as e:
+        raise InputError(description='start must be an integer')from e
+    
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid")
 
@@ -203,20 +216,6 @@ def channel_messages_v2(token, channel_id, start):
 
     save_data(data)
     return messages_dict
-    # example
-    # {
-    #     'messages': [
-    #         {
-    #             'message_id': 1,
-    #             'u_id': 1,
-    #             'message': 'Hello world',
-    #             'time_created': 1582426789,
-    #         }
-    #     ],
-    #     'start': 0,
-    #     'end': 50,
-    # }
-
 
 def channel_leave_v1(token, channel_id):
     '''
@@ -268,7 +267,7 @@ def channel_join_v1(token, channel_id):
     Channel join adds a user to a channel if they are authorised to join
 
     Arguments:
-        auth_user_id (int)      - User id of user attempting to join channel
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
         channel_id (int)    - channel id of channel user is attempting to join
         ...
 
@@ -319,6 +318,24 @@ def channel_join_v1(token, channel_id):
 
 
 def channel_addowner_v1(token, channel_id, u_id):
+    '''
+    Make user with user id u_id an owner of this channel    
+    
+    Arguments:
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
+        channel_id (int)    - channel id of the channel the user is being made an owner of
+        u_id (int)          - user id of the user who is becoming an owner
+
+    Exceptions:
+        InputError  - Channel id is not a valid channel
+                    - User with u_id is already an owner of the channel
+        AccessError - The authorised user is not an owner of this channel
+                    - User is an authorised user but not an owner of the **Dreams**
+                    - User is not an authorised user of **Dreams**
+
+    Return Value:
+            Returns {}
+    '''
     data = load_data()
     # Check if channel exists or not
     channel_id_valid = is_valid_channel_id(channel_id)

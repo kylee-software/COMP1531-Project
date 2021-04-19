@@ -21,8 +21,13 @@ def user_profile_v2(token, u_id):
     """
     if not is_valid_token(token):
         raise AccessError(description="Invalid token")
+    try:
+        u_id = int(u_id)      
+    except Exception as e:
+        raise InputError(description='u_id must be an int') from e
+    
     if not is_valid_user_id(u_id):
-        raise InputError(description="Invalid user_id")
+        raise InputError(description=f"Invalid user_id {u_id}")
 
     data = load_data()
     token = is_valid_token(token)
@@ -37,6 +42,17 @@ def user_profile_v2(token, u_id):
             }
 
 def users_all_v1(token):
+    """Returns a list of all users and their associated details
+
+    Args:
+        token (str): a jwt encoded dict with keys session_id and user_id
+
+    Raises:
+        AccessError: raises if token is invalid
+
+    Returns:
+        {users}: a dictionary of users details
+    """
     if not is_valid_token(token):
         raise AccessError("Token is invalid")
     token = is_valid_token(token)
@@ -54,6 +70,19 @@ def users_all_v1(token):
 
 
 def user_profile_setname_v2(token, name_first, name_last):
+    """Update the authorised user's first and last name
+
+    Args:
+        token (str): a jwt encoded dict with keys session_id and user_id
+        name_first (str): the new first name for the user
+        name_last (str): the new last name for the user
+    Raises:
+        AccessError: raises if token is invalid
+        InputError: raises if either of the names is not between 1 and 50 characters
+
+    Returns:
+        {}
+    """
     token_data = is_valid_token(token)
     if token_data is False:
         raise AccessError(description="Authorised user id invalid.")
