@@ -65,5 +65,4 @@ def test_registration_successful():
     requests.delete(config.url + '/clear/v1')
     registration = requests.post(config.url + '/auth/register/v2', json={'email': 'test@unsw.au',
                                                                          'password': 'password', 'name_first': 'firstname', 'name_last': 'lastname'})
-    registration_details = registration.json()
     assert registration.status_code == 200
