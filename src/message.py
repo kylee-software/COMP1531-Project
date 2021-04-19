@@ -49,7 +49,8 @@ def message_send_v2(token, channel_id, message):
         raise AccessError(description='You have not joined this channel')
     else:
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
-                       'message': message, "time_created": str(datetime.now()), "is_pinned": False}
+                       'message': message, "time_created": int(datetime.now().timestamp()), "is_pinned": False}
+
         channel['messages'].insert(0, new_message)
         
         # Add to user stats; messages sent
@@ -157,7 +158,23 @@ def message_remove_v1(token, message_id):
 
 
 def message_edit_v2(token, message_id, message):
+    '''
+    Given a message, update its text with new text. If the new message is an empty string, the message is deleted.
 
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        message_id (int)     - the message id of the message that needs to be removed
+        message (string)     - the new message, if empty it will delete the message
+    
+    Exceptions:
+        AccessError  - the message is not sent by this user nor is an owner of the channel/dm this
+                       messages is in nor an owner of Dreams
+                     - the token is invalid
+        InputError   - message id of this message no longer exists
+                     - new message is over 1000 characters
+
+    Return Value: {}
+    '''
     if len(message) > 1000:
         raise InputError(description='Message over 1000 characters.')
 
@@ -320,7 +337,8 @@ def message_senddm_v1(token, dm_id, message):
 
     message_id = data['msg_counter'] + 1
     new_message = {'message_id': message_id, 'message_author': auth_user_id,
-                   'message': message, "time_created": str(datetime.now()), "is_pinned": False}
+                   'message': message, "time_created": int(datetime.now().timestamp()),  "is_pinned": False}
+
     dm['messages'].insert(0, new_message)
 
     # notify tagged users
