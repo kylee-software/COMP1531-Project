@@ -83,6 +83,11 @@ def standup_active_v1(token, channel_id):
     Returns:
         dict:  dictionary with keys 'is_active', boolean, and 'time_finish', a unix timestamp
     """
+    try:
+        channel_id = int(channel_id)
+    except Exception as e:
+        raise InputError(description='channel_id must be an integer') from e
+
     data = load_data()
     if not is_valid_token(token):
         raise AccessError ("Invalid Token")

@@ -312,8 +312,6 @@ def standup_start():
 def standup_active():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    if not channel_id.isdigit():
-        raise InputError(description="channel id is not a number")
     response = standup_active_v1(token, int(channel_id))
     return jsonify(response)
 
