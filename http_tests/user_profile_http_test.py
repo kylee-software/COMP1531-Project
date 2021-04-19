@@ -14,7 +14,8 @@ def user():
     lastname = "lastname1"
     user = requests.post(config.url + '/auth/register/v2',
                                  json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
-    return user.json()
+    return json.loads(user.text)
+
 
 @pytest.fixture
 def clear():
@@ -35,12 +36,10 @@ def test_correct_output(clear, user):
     lastname = "lastname2"
     user2 = requests.post(config.url + '/auth/register/v2',
                                  json={'email': email, 'password': password, 'name_first': firstname, 'name_last': lastname})
-    user2 = user2.json()
-
+    user2 = json.loads(user2.text)
     p = {'token' : user['token'], 'u_id' : user2['auth_user_id']}
     call = requests.get(config.url + 'user/profile/v2', params=p)
-    test_user = call.json()
-    test_user = test_user['user']
+    test_user = json.loads(call.text)['user']
 
     assert isinstance(test_user["u_id"], int)
     assert test_user["email"] == email
