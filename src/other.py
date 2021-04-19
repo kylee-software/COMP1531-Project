@@ -6,7 +6,15 @@ from src.error import AccessError, InputError
 def clear_v1():
     """empties the data dictionary
     """
-    save_data({'users': [], 'channels': [], 'dms': [], 'msg_counter': 0})
+    save_data({ 'users': [], 
+                'channels': [], 
+                'dms': [], 
+                'msg_counter': 0,
+                'dreams_stats': {'channels_exist':[], 
+                                'dms_exist':[], 
+                                'messages_exist':[], 
+                                'utilization_rate':0}
+                })
 
 
 def search_v2(token, query_str):
