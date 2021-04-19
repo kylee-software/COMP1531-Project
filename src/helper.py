@@ -27,6 +27,7 @@ def load_data():
                 dataStore['channels'] = data['channels']
                 dataStore['dms'] = data['dms']
                 dataStore['msg_counter'] = data['msg_counter']
+                dataStore['dreams_stats'] = data['dreams_stats']
                 return
             else:
                 #return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
@@ -34,18 +35,35 @@ def load_data():
                 dataStore['channels'] = []
                 dataStore['dms'] = []
                 dataStore['msg_counter'] = 0
+                dataStore['dreams_stats'] = {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
+                        
                 return
+                
     except:
         """print('THE DATA IS BEING RESEEEEEEEET')
         with open('src/data.json', 'w') as FILE:
-            data_setup = {'users': [], 'channels': [],
-                          'dms': [], 'msg_counter': 0}
+            data_setup = {'users': [], 
+                        'channels': [], 
+                        'dms': [], 
+                        'msg_counter': 0,
+                        'dreams_stats': {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
+                        }
             json.dump(data_setup, FILE)
             return data_setup"""
         dataStore['users'] = []
         dataStore['channels'] = []
         dataStore['dms'] = []
         dataStore['msg_counter'] = 0
+        dataStore['dreams_stats'] = {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
 
 def return_valid_tagged_handles(message, channel_id):
     data = dataStore
