@@ -54,12 +54,18 @@ def standup_start_v1(token, channel_id, length):
     return {'time_finish': channel['standup']['time_finish']}
 
 def standup_end(*args):
+
     channel = find_channel(args[1], args[2])
+    
     message = channel['standup']['messages']
     message_send_v2(args[0], args[1], message)
+    
+    data = load_data()
+    channel = next(channel for channel in data['channels'] if channel['channel_id'] == args[1])
     channel['standup']['is_active'] = False
     channel['standup']['time_finish'] = None
-
+    save_data(data)
+    
     global t
     t.cancel()
 

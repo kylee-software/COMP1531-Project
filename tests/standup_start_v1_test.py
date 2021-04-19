@@ -4,6 +4,7 @@ from src.error import AccessError, InputError
 from src.auth import auth_register_v2
 from src.channels import channels_create_v2
 from src.other import clear_v1
+import time
 
 @pytest.fixture
 def token():
@@ -38,3 +39,9 @@ def test_user_not_in_channel(clear, channel_id):
 def test_standup_works(clear, token, channel_id):
     standup_start_v1(token, channel_id, 1)
     assert standup_active_v1(token, channel_id)['is_active'] == True
+
+def test_standup_ends(clear, token, channel_id):
+    standup_start_v1(token, channel_id, 2)
+    assert standup_active_v1(token, channel_id)['is_active'] == True
+    time.sleep(3)
+    assert standup_active_v1(token, channel_id)['is_active'] == False

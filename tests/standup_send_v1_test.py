@@ -47,12 +47,11 @@ def test_user_not_in_channel(clear, token, channel_id):
     standup_start_v1(token, channel_id, 2)
     with pytest.raises(AccessError):
         standup_send_v1(token2, channel_id, 'Hello There')
-    pass
 
 def test_everything_valid(clear, token, channel_id):
     standup_start_v1(token, channel_id, 2)
     standup_send_v1(token, channel_id, 'Hello There')
-    time.sleep(3)
+    time.sleep(5)
     assert len(channel_messages_v2(token, channel_id, 0)['messages']) == 1
 
 def test_multiple_messages_are_one(clear, token, channel_id):
@@ -60,6 +59,6 @@ def test_multiple_messages_are_one(clear, token, channel_id):
     standup_send_v1(token, channel_id, 'Hello There')
     standup_send_v1(token, channel_id, 'Hello There1')
     standup_send_v1(token, channel_id, 'Hello There2')
-    time.sleep(2)
+    time.sleep(5)
     print(channel_messages_v2(token, channel_id, 0)['messages'][0]['message'])
     assert len(channel_messages_v2(token, channel_id, 0)['messages']) == 1
