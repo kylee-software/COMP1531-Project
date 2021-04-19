@@ -6,10 +6,33 @@ from src.error import AccessError, InputError
 def clear_v1():
     """empties the data dictionary
     """
-    save_data({'users': [], 'channels': [], 'dms': [], 'msg_counter': 0})
+    save_data({ 'users': [], 
+                'channels': [], 
+                'dms': [], 
+                'msg_counter': 0,
+                'dreams_stats': {'channels_exist':[], 
+                                'dms_exist':[], 
+                                'messages_exist':[], 
+                                'utilization_rate':0}
+                })
 
 
 def search_v2(token, query_str):
+    '''
+    Given a query string, return a collection of messages in all of the channels/DMs that the user has joined that match the query
+
+    Arguments:
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
+        channel_id (int)    - channel id of channel user is attempting to join
+        ...
+
+    Exceptions:
+        InputError  - query string is more than 1000 characters
+        AccessError - token is invalid
+
+    Return Value:
+        Returns {messages}
+    '''
     decoded_token = is_valid_token(token)
     if decoded_token is False:
         raise AccessError(description='Not authorised to search.')
@@ -50,6 +73,18 @@ def search_v2(token, query_str):
 
 
 def notifications_get_v1(token):
+    '''
+    Return the user's most recent 20 notifications
+    
+    Arguments:
+        token (string)      - an authorisation hash of the user who is adding the ownership of the user with u_id
+
+    Exceptions:
+        AccessError - token is invalid
+
+    Return Value:
+        Returns {notifications}
+    '''
     if not is_valid_token(token):
         raise AccessError("Invalid Token")
     token = is_valid_token(token)

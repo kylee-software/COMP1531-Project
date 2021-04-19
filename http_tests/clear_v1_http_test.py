@@ -1,7 +1,4 @@
 import pytest
-
-
-import pytest
 import requests
 from src import config
 

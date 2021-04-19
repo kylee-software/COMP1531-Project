@@ -123,10 +123,10 @@ def test_user_not_in_sharedm(clear, creator, user1, OGchannel, dm, user2):
 
 def test_share_to_channel(clear, creator, user1, OGchannel, share_channel):
     OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
-    assert isinstance(message_share_v1(user1['token'], OGmessage, "additional mesage", share_channel, -1)['message_id'], int)
+    assert isinstance(message_share_v1(user1['token'], OGmessage, "additional mesage", share_channel, -1)['shared_message_id'], int)
 
 def test_share_to_dm(clear, creator, user1, OGchannel, dm):
     OGmessage = message_send_v2(creator['token'], OGchannel, "TestMessage")['message_id']
-    message = message_share_v1(user1['token'], OGmessage, "additional mesage", -1, dm['dm_id'])['message_id']
+    message = message_share_v1(user1['token'], OGmessage, "additional mesage", -1, dm['dm_id'])['shared_message_id']
     assert isinstance(message, int)
     clear_v1()

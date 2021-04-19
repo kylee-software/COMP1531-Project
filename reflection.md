@@ -4,4 +4,9 @@
 - more peer coding could be beneficial in keeping style consistent
 - variable names and types need to be considered very carefully so that integration goes smoothly:
     - for example in iteration one the channels functions were written using a dict as the auth user id input whereas the other functions were written assuming it was an int, which causes issues when merging everything together
+
+## GROUP REFLECTION FOR ITERATION TWO AND THREE:
+- more regular meetings would have ensured we all used helper functions/worked on solutions together more efficiently
+- code reviews should be more extensive to catch errors
+- documentation is important, and updating regularly and sharing the load more would ensure everyone knows what is happening at all times.
           
