@@ -23,11 +23,26 @@ def load_data():
             if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
                 return data
             else:
-                return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+                return {'users': [], 
+                        'channels': [], 
+                        'dms': [], 
+                        'msg_counter': 0,
+                        'dreams_stats': {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
+                        }   
     except:
         with open('src/data.json', 'w') as FILE:
-            data_setup = {'users': [], 'channels': [],
-                          'dms': [], 'msg_counter': 0}
+            data_setup = {'users': [], 
+                        'channels': [], 
+                        'dms': [], 
+                        'msg_counter': 0,
+                        'dreams_stats': {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
+                        }
             json.dump(data_setup, FILE)
             return data_setup
 

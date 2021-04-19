@@ -38,10 +38,10 @@ def message_send_v2(token, channel_id, message):
     if len(message) > 1000:
         raise InputError(description='Message is longer than 1000 characters')
 
-    channel = next(
-        (channel for channel in data['channels'] if channel['channel_id'] == channel_id), False)
-    if not channel:
+    if not is_valid_channel_id(channel_id):
         raise InputError(description='Channel does not exist')
+
+    channel = find_channel(channel_id, data)
 
     msg_user = next(
         (user for user in channel['members'] if user['user_id'] == token['user_id']), False)
@@ -51,11 +51,13 @@ def message_send_v2(token, channel_id, message):
         new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
                        'message': message, "time_created": str(datetime.now()), "is_pinned": False}
         channel['messages'].insert(0, new_message)
-
-        auth_messages = next(user['sent_messages']
-                             for user in data['users'] if user['user_id'] == token['user_id'])
-        auth_messages.insert(0, data['msg_counter'] + 1)
-
+        
+        # Add to user stats; messages sent
+        user = find_user(token['user_id'], data)
+        user['sent_messages'].insert(0, data['msg_counter'] + 1)
+        
+        user['user_stats']['messages_sent'].append({'num_messages_sent':len(user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
+        
         tagged_handles = return_valid_tagged_handles(message, channel_id)
         for user in channel['members']:
             user = next(
@@ -65,6 +67,14 @@ def message_send_v2(token, channel_id, message):
                     token, channel_id, channel_name, True, message))
 
         data['msg_counter'] += 1
+        
+        if len(data['dreams_stats']['messages_exist']) == 0:
+            messages_exist = 1
+        else:
+            messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] + 1
+
+        data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
+        
         save_data(data)
         return {'message_id': data['msg_counter']}
 
@@ -118,6 +128,8 @@ def message_remove_v1(token, message_id):
             for message in channel['messages']:
                 if message['message_id'] == message_id:
                     channel['messages'].remove(message)
+                    messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] - 1
+                    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
                     save_data(data)
                     return {}
 
@@ -134,7 +146,9 @@ def message_remove_v1(token, message_id):
         for dm in data['dms']:
             for message in dm['messages']:
                 if message['message_id'] == message_id:
-                    dm['messages'].remove(message)
+                    dm['messages'].remove(message)                    
+                    messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] - 1
+                    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
                     save_data(data)
                     return {}
 
@@ -317,7 +331,18 @@ def message_senddm_v1(token, dm_id, message):
         user['notifications'].insert(0, message)
 
     auth_user['sent_messages'].append(message_id)
+    
+    auth_user['user_stats']['messages_sent'].append({'num_messages_sent':len(auth_user['sent_messages']), 'time_stamp':int(datetime.now().timestamp())})
+    
     data['msg_counter'] += 1
+    
+    if len(data['dreams_stats']['messages_exist']) == 0:
+        messages_exist = 1
+    else:
+        messages_exist = data['dreams_stats']['messages_exist'][-1]['num_messages_exist'] + 1
+
+    data['dreams_stats']['messages_exist'].append({'num_messages_exist':messages_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
 
     return {'message_id': message_id}
