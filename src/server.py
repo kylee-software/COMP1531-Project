@@ -359,7 +359,7 @@ def users_stats():
     stats = users_stats_v1(token)
     return jsonify(stats)
 
-@APP.route("/message/pin", methods=["POST"])
+@APP.route("/message/pin/v1", methods=["POST"])
 def message_pin():
     data = request.get_json()
     message_pin_v1(data['token'], data['message_id'])
