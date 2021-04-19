@@ -153,15 +153,15 @@ def user_profile_setemail_v2(token, email):
 
 def user_profile_sethandle_v1(token, handle_str):
     '''
-    Update the authorised user's handle (i.e. display name)
+    Update the authorised user's handle
 
     Arguments:
-        token (string)         - a jwt encoded dict with keys session_id and user_id
-        handle_str (string)    - new handle the user wishes to use
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+        handle (string)   - new handle user want's to use
 
     Exceptions:
-        InputError  - handle str is not between 3 and 20 characters
-                    - handle is already being used
+        InputError  - handle is not between 3 and 20 characters
+                    - handle is already being used by another user
         AccessError - Token is invalid
 
     Return Value:
@@ -173,11 +173,7 @@ def user_profile_sethandle_v1(token, handle_str):
     
     if token_data == False:
         raise AccessError(description=f"Token invalid")
-
     auth_user_id = token_data['user_id']
-    if is_valid_user_id(auth_user_id) == False:
-        raise AccessError(
-            description=f"Auth_user_id: {auth_user_id} is invalid")
 
     if len(handle_str) <= 3 or len(handle_str) >= 20:
         raise InputError(
@@ -193,3 +189,80 @@ def user_profile_sethandle_v1(token, handle_str):
     save_data(data)
     return {
     }
+
+def user_stats_v1(token):
+    '''
+    Gives back a list of user stats
+
+    Arguments:
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+
+    Exceptions:
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {user_stats}
+                where user stats is a dictionary as follows
+                    {
+                    channels_joined: [{num_channels_joined, time_stamp}], 
+                    dms_joined: [{num_dms_joined, time_stamp}], 
+                    messages_sent: [{num_messages_sent, time_stamp}], 
+                    involovement_rate 
+                    }
+    '''
+    data = load_data()
+    if not is_valid_token(token):
+        raise AccessError(description=f"Token invalid")
+
+    user_id = is_valid_token(token)['user_id']    
+    user_stats = find_user(user_id, data)['user_stats']
+    sum_user = len(user_stats['channels_joined']) + len(user_stats['dms_joined']) + len(user_stats['messages_sent'])
+    sum_dreams = len(data['channels']) + len(data['dms']) + data['msg_counter']
+
+    if sum_dreams == 0:
+        user_stats['involvement_rate'] = 0
+    else:
+        user_stats['involvement_rate'] = sum_user/sum_dreams
+
+    save_data(data)
+    return user_stats
+
+    
+def users_stats_v1(token):
+    '''
+    Gives back a list of dreams stats
+
+    Arguments:
+        token (string)    - a jwt encoded dict with keys session_id and user_id
+
+    Exceptions:
+        AccessError - Token is invalid
+
+    Return Value:
+        Returns {dreams_stats}
+                where dreams stats is a dictionary as follows
+                    {
+                    channels_exist: [{num_channels_exist, time_stamp}], 
+                    dms_exist: [{num_dms_exist, time_stamp}], 
+                    messages_exist: [{num_messages_exist, time_stamp}], 
+                    utilization_rate 
+                    }
+    '''
+    data = load_data()
+    if not is_valid_token(token):
+        raise AccessError(description=f"Token invalid")
+    
+    utilization_users = 0
+    for user in data['users']:
+        if len(user['user_stats']['channels_joined']) != 0 or len(user['user_stats']['dms_joined']) != 0:
+            utilization_users += 1
+
+    dreams_stats = data['dreams_stats']
+
+    if len(data['users']) == 0:
+        dreams_stats['utilization_rate'] = 0
+    else:
+        dreams_stats['utilization_rate'] = utilization_users/len(data['users'])
+
+    save_data(data)
+    return dreams_stats

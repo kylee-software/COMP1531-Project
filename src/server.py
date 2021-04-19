@@ -18,11 +18,13 @@ from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
                     dm_list_v1, dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
 from src.helper import is_valid_token
-from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
-                         message_senddm_v1, message_share_v1)
+from src.message import (message_edit_v2, message_pin_v1, message_remove_v1,
+                         message_send_v2, message_senddm_v1, message_share_v1,
+                         message_unpin_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_setname_v2, user_profile_v2, users_all_v1)
+                      user_profile_setname_v2, user_profile_v2, users_all_v1,
+                      user_stats_v1, users_stats_v1)
 
 
 def defaultHandler(err):
@@ -62,6 +64,7 @@ def users_all():
     token = request.args.get('token')
     user_list = users_all_v1(token)
     return jsonify(user_list)
+
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications():
@@ -122,6 +125,7 @@ def register_v2():
 def admin_userpermission():
     data = request.get_json()
     return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
+
 
 @APP.route('/admin/user/remove/v1', methods=['DELETE'])
 def admin_user_remove():
@@ -295,6 +299,33 @@ def message_edit():
 def search():
     data = request.args
     return jsonify(search_v2(data['token'], data['query_str']))
+
+
+@APP.route('/user/stats/v1', methods=['GET'])
+def user_stats():
+    token = request.args.get('token')
+    stats = user_stats_v1(token)
+    return jsonify(stats)
+
+@APP.route('/users/stats/v1', methods=['GET'])
+def users_stats():
+    token = request.args.get('token')
+    stats = users_stats_v1(token)
+    return jsonify(stats)
+
+@APP.route("/message/pin/v1", methods=["POST"])
+def message_pin():
+    data = request.get_json()
+    message_pin_v1(data['token'], data['message_id'])
+    return jsonify({})
+
+
+@APP.route("/message/unpin/v1", methods=["POST"])
+def message_unpin():
+    data = request.get_json()
+    message_unpin_v1(data['token'], data['message_id'])
+    return jsonify({})
+
 
 
 if __name__ == "__main__":

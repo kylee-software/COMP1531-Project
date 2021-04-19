@@ -81,7 +81,11 @@ def test_save_incorrect_data():
 
 def test_save_correct_data():
     data = {'users': ['testing'], 'channels': [
-        'testing'], 'dms': ['testing'], 'msg_counter': 0}
+        'testing'], 'dms': ['testing'], 'msg_counter': 0,
+        'dreams_stats': {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}}
     save_data(data)
     assert load_data() == data
     clear_v1()
@@ -91,7 +95,11 @@ def test_load_incorrect_data():
     with open('src/data.json', 'w') as FILE:
         json.dump("incorrect", FILE)
     assert load_data() == {'users': [], 'channels': [],
-                           'dms': [], 'msg_counter': 0}
+                           'dms': [], 'msg_counter': 0,
+                           'dreams_stats': {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}}
     clear_v1()
 
 

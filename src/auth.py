@@ -159,7 +159,13 @@ Return Value:
         'user_id': len(data['users']) + 1,
         'notifications': [],
         'sent_messages': [],
-        'is_removed': False
+        'is_removed': False,
+        'user_stats':{
+                    'channels_joined': [],
+                    'dms_joined': [], 
+                    'messages_sent': [], 
+                    'involvement_rate':0 
+                    },
     }
     login_session_id = create_session(new_user)
 
