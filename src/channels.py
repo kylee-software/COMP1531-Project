@@ -1,4 +1,6 @@
 from src.error import AccessError, InputError  
+from src.helper import is_valid_token, save_data
+from src.data import dataStore
 from src.helper import is_valid_token, load_data, save_data, find_user
 from datetime import datetime
 
@@ -14,7 +16,7 @@ def channels_list_v2(token):
     Returns:
         Dictionary: has key 'channels' and list of dicts with keys channel_id and name
     """
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(f"Auth_user_id: {token} is invalid")
     token = is_valid_token(token)
@@ -40,7 +42,7 @@ def channels_listall_v2(token):
     Returns:
         Dictionary: key 'channels' and list of dicts with keys channel_id and name
     """
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(f"Auth_user_id: {token} is invalid")
     token = is_valid_token(token)
@@ -77,7 +79,7 @@ def channels_create_v2(token, name, is_public):
     if len(name) > 20 or len(name) == 0:
         raise InputError("No channel name is entered or channel name is longer than 20 characters.")
 
-    data = load_data()
+    data = dataStore
     channels = data['channels']
     user_id = is_valid_token(token)['user_id']
 

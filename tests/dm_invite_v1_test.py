@@ -5,6 +5,7 @@ from src.error import InputError, AccessError
 from src.other import clear_v1, notifications_get_v1
 import jwt
 from src.helper import find_user, load_data
+from src.data import dataStore
 
 @pytest.fixture
 def token():
@@ -69,7 +70,7 @@ def test_auth_user_not_in_dm(clear, dm, token, user_id_list):
         dm_invite_v1(token2, dm['dm_id'], user_id_list[0])
 
 def test_everything_valid(clear, dm, token, user_id_list):
-    dm = dm_create_v1(token['token'], user_id_list[1:] + [token['auth_user_id']])
+    dm = dm_create_v1(token['token'], user_id_list[1:])
     dm_invite_v1(token['token'], dm['dm_id'], user_id_list[0])
     assert len(dm_details_v1(token['token'], dm['dm_id'])['members']) == 6
 
@@ -77,8 +78,7 @@ def test_user_gets_notifications_when_invited(clear, dm, token, user2):
     dm_invite_v1(token['token'], dm['dm_id'], user2['auth_user_id'])
     notifications = notifications_get_v1(user2['token'])
     
-    data = load_data()
-    token_user = find_user(token['auth_user_id'], data)['account_handle']
+    token_user = find_user(token['auth_user_id'], dataStore)['account_handle']
     assert len(notifications['notifications']) == 1
     assert notifications['notifications'][0]['notification_message'] == f"{token_user} added you to {dm['dm_name']}"
     assert notifications['notifications'][0]['channel_id'] == -1

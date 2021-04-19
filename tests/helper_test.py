@@ -7,6 +7,7 @@ import pytest
 from src.channels import channels_create_v2
 from src.dm import dm_create_v1
 import json
+from src.data import dataStore
 
 
 def test_invalid_user_id():
@@ -87,14 +88,16 @@ def test_save_correct_data():
                                         'messages_exist':[], 
                                         'utilization_rate':0}}
     save_data(data)
-    assert load_data() == data
+    load_data()
+    assert dataStore == data
     clear_v1()
 
 
 def test_load_incorrect_data():
     with open('src/data.json', 'w') as FILE:
         json.dump("incorrect", FILE)
-    assert load_data() == {'users': [], 'channels': [],
+    load_data()
+    assert dataStore == {'users': [], 'channels': [],
                            'dms': [], 'msg_counter': 0,
                            'dreams_stats': {'channels_exist':[], 
                                         'dms_exist':[], 

@@ -8,6 +8,7 @@ from src.message import message_send_v2
 from src.error import InputError, AccessError
 from src.other import clear_v1, notifications_get_v1
 from src.helper import load_data, find_user, is_valid_token
+from src.data import dataStore
 
 @pytest.fixture
 def token():
@@ -60,9 +61,8 @@ def test_notification_message(clear, token, channel_id):
     message_send_v2(token, channel_id, message)
     notif = notifications_get_v1(token)
     assert len(notif['notifications']) == 1
-    data = load_data()
-    channel_name = next(channel['name'] for channel in data['channels'] if channel['channel_id'] == channel_id)
-    user_handle = find_user(is_valid_token(token)['user_id'], data)['account_handle']
+    channel_name = next(channel['name'] for channel in dataStore['channels'] if channel['channel_id'] == channel_id)
+    user_handle = find_user(is_valid_token(token)['user_id'], dataStore)['account_handle']
     assert notif['notifications'][0]['channel_id'] == channel_id
     assert notif['notifications'][0]['dm_id'] == -1
     assert notif['notifications'][0]['notification_message'] == f"{user_handle} tagged you in {channel_name}: {message[:20]}"

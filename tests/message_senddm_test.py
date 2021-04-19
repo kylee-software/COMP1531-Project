@@ -5,6 +5,7 @@ from src.dm import dm_create_v1
 from src.error import InputError, AccessError
 from src.message import message_senddm_v1
 from src.helper import is_valid_token, find_user, load_data
+from src.data import dataStore
 
 @pytest.fixture
 def user1():
@@ -84,11 +85,10 @@ def test_notification_message(clear, user1, user2):
     dm = dm_create_v1(user1['token'], [user2['auth_user_id']] + [user1['auth_user_id']])
     message = 'test message @firstname2lastname2'
     message_senddm_v1(user1['token'], dm['dm_id'], message)
-    data = load_data()
-    user = next(u for u in data['users'] if u['user_id'] == user2['auth_user_id'])
+    user = next(u for u in dataStore['users'] if u['user_id'] == user2['auth_user_id'])
     print(user)
 
-    user_handle = find_user(is_valid_token(user1['token'])['user_id'], data)['account_handle']
+    user_handle = find_user(is_valid_token(user1['token'])['user_id'], dataStore)['account_handle']
     notif = notifications_get_v1(user2['token'])
     dm_name = dm['dm_name']
     

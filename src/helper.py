@@ -2,9 +2,9 @@ import hashlib
 from types import prepare_class
 import jwt
 import json
+from src.data import dataStore
 
 SECRET = 'WED09B-ECHO'
-
 
 def load_data():
     '''
@@ -17,22 +17,33 @@ def load_data():
         or returns empty data ({'users':[], 'channels':[]}) 
         if the data in the json file was the incorrect format
     '''
+    global dataStore
     try:
         with open('src/data.json', 'r') as FILE:
             data = json.load(FILE)
             if 'users' and 'channels' and 'dms' and 'msg_counter' in data:
-                return data
+                #return data
+                dataStore['users'] = data['users']
+                dataStore['channels'] = data['channels']
+                dataStore['dms'] = data['dms']
+                dataStore['msg_counter'] = data['msg_counter']
+                dataStore['dreams_stats'] = data['dreams_stats']
+                return
             else:
-                return {'users': [], 
-                        'channels': [], 
-                        'dms': [], 
-                        'msg_counter': 0,
-                        'dreams_stats': {'channels_exist':[], 
+                #return {'users': [], 'channels': [], 'dms': [], 'msg_counter': 0}
+                dataStore['users'] = []
+                dataStore['channels'] = []
+                dataStore['dms'] = []
+                dataStore['msg_counter'] = 0
+                dataStore['dreams_stats'] = {'channels_exist':[], 
                                         'dms_exist':[], 
                                         'messages_exist':[], 
                                         'utilization_rate':0}
-                        }   
+                        
+                return
+                
     except:
+        """print('THE DATA IS BEING RESEEEEEEEET')
         with open('src/data.json', 'w') as FILE:
             data_setup = {'users': [], 
                         'channels': [], 
@@ -44,11 +55,18 @@ def load_data():
                                         'utilization_rate':0}
                         }
             json.dump(data_setup, FILE)
-            return data_setup
-
+            return data_setup"""
+        dataStore['users'] = []
+        dataStore['channels'] = []
+        dataStore['dms'] = []
+        dataStore['msg_counter'] = 0
+        dataStore['dreams_stats'] = {'channels_exist':[], 
+                                        'dms_exist':[], 
+                                        'messages_exist':[], 
+                                        'utilization_rate':0}
 
 def return_valid_tagged_handles(message, channel_id):
-    data = load_data()
+    data = dataStore
     split_message = message.split()
     handles = []
     for word in split_message:
@@ -84,7 +102,7 @@ def is_valid_user_id(auth_user_id):
         Returns True is user id is valid, False if it is not
     '''
 
-    data = load_data()
+    data = dataStore
     for user in data['users']:
         if user['user_id'] == auth_user_id:
             return True
@@ -105,7 +123,7 @@ def is_valid_channel_id(channel_id):
         Returns True is channel_id is valid, False if it is not
     '''
 
-    data = load_data()
+    data = dataStore
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             return True
@@ -113,7 +131,7 @@ def is_valid_channel_id(channel_id):
 
 
 def is_valid_dm_id(dm_id):
-    data = load_data()
+    data = dataStore
     for dm in data['dms']:
         if dm['dm_id'] == dm_id:
             return True
@@ -157,7 +175,7 @@ def is_valid_token(token):
     Return Value:
         Returns False if the token is invalid, returns the payload if the token is valid
     '''
-    data = load_data()
+    data = dataStore
     try:
         payload = jwt.decode(token, SECRET, algorithms=['HS256'])
     except:
@@ -219,7 +237,7 @@ def is_user_in_channel(channel_id, user_id, data):
 
 
 def invite_notification_message(token, id, name, is_channel):
-    data = load_data()
+    data = dataStore
 
     if is_channel:
         token_user = find_user(token['user_id'], data)
@@ -230,7 +248,7 @@ def invite_notification_message(token, id, name, is_channel):
 
 
 def message_notification_message(token, id, name, is_channel, message):
-    data = load_data()
+    data = dataStore
     if is_channel:
         token_user = find_user(token['user_id'], data)
         notification_message = f"{token_user['account_handle']} tagged you in {name}: {message[:20]}"
@@ -285,7 +303,7 @@ def find_message(message_id, data):
 
 
 def tag_users(message, sender_handle, dm_id, channel_id):
-    data = load_data()
+    data = dataStore
     split_message = message.split()
     tagged_handles = []
     for word in split_message:

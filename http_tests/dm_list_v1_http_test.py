@@ -33,9 +33,9 @@ def test_success_case():
                   json={'token': admin_details['token'], 'u_ids': member_list})
 
     member_1_dm = requests.get(
-        config.url + '/dm/list/v1', json={'token': member_1_details['token']})
+        config.url + '/dm/list/v1', params={'token': member_1_details['token']})
     member_2_dm = requests.get(
-        config.url + '/dm/list/v1', json={'token': member_2_details['token']})
+        config.url + '/dm/list/v1', params={'token': member_2_details['token']})
 
     member_1_dm_list = member_1_dm.json()
     member_2_dm_list = member_2_dm.json()

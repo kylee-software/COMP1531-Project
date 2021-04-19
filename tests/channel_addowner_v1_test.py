@@ -5,7 +5,7 @@ from src.channels import channels_create_v2
 from src.other import clear_v1
 from src.error import InputError, AccessError
 from src.helper import is_user_in_channel, load_data, find_user_channel_owner_status, save_data, create_token
-
+from src.data import dataStore
 
 @pytest.fixture()
 def clear():
@@ -72,11 +72,9 @@ def test_successful_addowner(clear, create_admin, create_member):
     channel_addowner_v1(
         admin['token'], channel_id['channel_id'], member['auth_user_id'])
 
-    data = load_data()
-
     assert is_user_in_channel(
-        channel_id['channel_id'], member['auth_user_id'], data)
+        channel_id['channel_id'], member['auth_user_id'], dataStore)
     assert find_user_channel_owner_status(
-        channel_id['channel_id'], member['auth_user_id'], data) == 1
+        channel_id['channel_id'], member['auth_user_id'], dataStore) == 1
 
     clear_v1()

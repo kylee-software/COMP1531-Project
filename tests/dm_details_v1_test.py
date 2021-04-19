@@ -34,7 +34,7 @@ def test_invalid_token(clear):
         dm_details_v1(jwt.encode({'test' : 'token'}, 'testSecret', algorithm='HS256'), 5)
 
 def test_user_not_in_dm(clear, users):
-    dm = dm_create_v1(users['tokens'][1], users['u_ids'][1:])
+    dm = dm_create_v1(users['tokens'][1], users['u_ids'][2:])
     with pytest.raises(AccessError):
         dm_details_v1(users['tokens'][0], dm['dm_id'])
 
@@ -43,7 +43,7 @@ def test_invalid_dm_id(clear, users):
         dm_details_v1(users['tokens'][0], 'test_dm_id')
 
 def test_user_in_dm(clear, users, num_members):
-    dm = dm_create_v1(users['tokens'][0], users['u_ids'])
+    dm = dm_create_v1(users['tokens'][0], users['u_ids'][1:])
     details = dm_details_v1(users['tokens'][1], dm['dm_id'])
     assert len(details) == 2
     assert len(details['members']) == num_members

@@ -1,7 +1,7 @@
 from json import load
 from os import access
 from src.message import message_send_v2
-from src.helper import is_valid_token, is_valid_channel_id, is_user_in_channel, find_channel, load_data, save_data
+from src.helper import is_valid_token, is_valid_channel_id, is_user_in_channel, find_channel, save_data
 from src.error import AccessError, InputError
 from src.data import dataStore
 from datetime import datetime, timezone
@@ -25,7 +25,7 @@ def standup_start_v1(token, channel_id, length):
         dict: a dictionary with key 'time_finish' and value being a unix timestamp
     """
     #data = dataStore
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError('Invalid Token')
@@ -60,7 +60,7 @@ def standup_end(*args):
     message = channel['standup']['messages']
     message_send_v2(args[0], args[1], message)
     
-    data = load_data()
+    data = dataStore
     channel = next(channel for channel in data['channels'] if channel['channel_id'] == args[1])
     channel['standup']['is_active'] = False
     channel['standup']['time_finish'] = None
@@ -88,7 +88,7 @@ def standup_active_v1(token, channel_id):
     except Exception as e:
         raise InputError(description='channel_id must be an integer') from e
 
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError ("Invalid Token")
     
@@ -121,7 +121,7 @@ def standup_send_v1(token, channel_id, message):
         InputError: raised when there is no active standup
         AccessError: raised when the user referenced by token is not in the chnnel
     """
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token_data = is_valid_token(token)
