@@ -1,4 +1,3 @@
-# Assumptions For Iteration One
 
 ## admin_user_remove
 
@@ -55,7 +54,6 @@
 - channel_details_v1
 - auth_login_v1
 - channel_messages_v2
-- channels_create
 
 ## Dm/Invite
 
@@ -67,6 +65,7 @@
 
 ## user/profile/v1
 - Will not list removed users
+
 ## message share
 
 - If the optional message plus the shared messaged together is over 1000 characters its too long and an input error is raised
@@ -86,3 +85,11 @@
 - User id of the user who is having their ownership taking away remains a member of the channel
 - Channel owner can remove their ownership themself
 
+## user/stats
+
+- user stats will not consider messages, channnels or dms that have been removed
+
+## users/stats
+
+- removing a message, channel or dm will decrease the respective count.
+- removing a dm does NOT decrease the message count

@@ -2,9 +2,20 @@ from src.error import AccessError, InputError
 from src.helper import (find_dm, find_user, invite_notification_message,
                         is_user_in_dm, is_valid_dm_id, is_valid_token,
                         is_valid_user_id, load_data, save_data)
-
+from datetime import datetime
 
 def dm_list_v1(token):
+    """Returns the list of DMs that the user is a member of
+
+    Args:
+        token (string): jwt encode dict with keys session_id and user_id
+
+    Raises:
+        AccessError: raises if the token is invalid
+
+    Returns:
+        {dms}: a list of dms the user is a member of
+    """
     decoded_token = is_valid_token(token)
     if decoded_token is False:
         raise AccessError("Invalid Token.")
@@ -63,6 +74,14 @@ def dm_invite_v1(token, dm_id, user_id):
         0, invite_notification_message(token, dm_id, dm['name'], False))
 
     dm['members'].append(user_id)
+    user = find_user(user_id, data)
+    
+    if len(user['user_stats']['dms_joined']) == 0:
+        dms_joined = 1
+    else:
+        dms_joined = user['user_stats']['dms_joined'][-1]['num_dms_joined'] + 1
+    user['user_stats']['dms_joined'].append({'num_dms_joined':dms_joined, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
 
 
@@ -104,7 +123,11 @@ def dm_remove_v1(token, dm_id):
 
     if found_dm == False:
         raise InputError(description=f"Dm id was invalid")
+    
+    dms_exist = data['dreams_stats']['dms_exist'][-1]['num_dms_exist'] - 1
 
+    data['dreams_stats']['dms_exist'].append({'num_dms_exist':dms_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
     return {}
 
@@ -128,7 +151,12 @@ def dm_details_v1(token, dm_id):
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
-
+    
+    try:
+        dm_id = int(dm_id)
+    except Exception as e:
+        raise InputError(description='dm_id must be an integer') from e
+    
     data = load_data()
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
@@ -202,12 +230,46 @@ def dm_create_v1(token, u_ids):
     }
 
     dms.append(dm_dict)
+    all_ids = u_ids.copy()
+    all_ids.append(user_id)
+    # now increase dms joined stat by one for all users in the dm
+    for u_id in all_ids:
+        user = find_user(u_id, data)
+        
+        if len(user['user_stats']['dms_joined']) == 0:
+            dms_joined = 1
+        else:
+            dms_joined = user['user_stats']['dms_joined'][-1]['num_dms_joined'] + 1
+        user['user_stats']['dms_joined'].append({'num_dms_joined':dms_joined, 'time_stamp':int(datetime.now().timestamp())})
+    
+    if len(data['dreams_stats']['dms_exist']) == 0:
+        dms_exist = 1
+    else:
+        dms_exist = data['dreams_stats']['dms_exist'][-1]['num_dms_exist'] + 1
+
+    data['dreams_stats']['dms_exist'].append({'num_dms_exist':dms_exist, 'time_stamp':int(datetime.now().timestamp())})
+    
     save_data(data)
 
     return {'dm_id': dm_id, 'dm_name': dm_name}
 
 
 def dm_leave_v1(token, dm_id):
+    '''
+    Given a DM ID, the user is removed as a member of this DM
+
+    Arguments:
+        token (string)      - an authorisation hash of the user
+        dm_id (int)         - dm_id of the dm the user is part of
+
+    Exceptions:
+        AccessError - Occurs when the token is invalid and authorised user is not a member of the dm
+
+        InputError  - Occurs when dm_id is invalid
+
+    Return Value:
+        Returns {}
+    '''
     decoded_token = is_valid_token(token)
     if decoded_token is False:
         raise AccessError("Invalid Token.")
@@ -258,7 +320,15 @@ def dm_messages_v1(token, dm_id, start):
     Return Value:
         Returns {messages, start, end} where messages is a dictionary
     '''
-
+    try:
+        dm_id = int(dm_id)
+    except Exception as e: 
+        raise InputError(description='dm_id must be an integer') from e
+    try:
+        start = int(start)
+    except Exception as e:
+        raise InputError(description='start must be an integer') from e
+    
     data = load_data()
 
     if not is_valid_token(token):
