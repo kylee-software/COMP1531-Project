@@ -95,6 +95,7 @@ def channel_invite():
 def user_profile():
     token = request.args.get('token')
     u_id = request.args.get('u_id')
+
     details = user_profile_v2(token, u_id)
     return jsonify(details)
 

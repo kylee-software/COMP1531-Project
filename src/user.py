@@ -21,14 +21,14 @@ def user_profile_v2(token, u_id):
     """
     if not is_valid_token(token):
         raise AccessError(description="Invalid token")
-    if not is_valid_user_id(u_id):
-        raise InputError(description="Invalid user_id")
-
     try:
-        u_id = int(u_id)
+        u_id = int(u_id)      
     except Exception as e:
-        raise InputError(description='u_id must be an integer') from e
+        raise InputError(description='u_id must be an int') from e
     
+    if not is_valid_user_id(u_id):
+        raise InputError(description=f"Invalid user_id {u_id}")
+
     data = load_data()
     token = is_valid_token(token)
     user = next(user for user in data['users'] if user['user_id'] == u_id)
