@@ -4,7 +4,7 @@ from src.auth import auth_register_v2
 from src.channel import channel_join_v1
 from src.channels import channels_create_v2
 from src.dm import dm_create_v1
-from src.message import message_react_v1, message_senddm_v1, message_send_v2
+from src.message import message_react_v1, message_unreact_v1, message_senddm_v1, message_send_v2
 from src.error import InputError, AccessError
 
 @pytest.fixture
@@ -38,36 +38,38 @@ def clear():
 
 def test_invalid_token(clear, dm_message_id):
     with pytest.raises(AccessError):
-        message_react_v1("invalid_owner", dm_message_id, 1)
+        message_unreact_v1("invalid_owner", dm_message_id, 1)
 
 def test_user_not_a_member(clear, channel_message_id, dm_message_id):
     non_member = auth_register_v2("testmail2@gmail.com", "Testpass123456", "nota", "member")['token']
     with pytest.raises(AccessError):
-        message_react_v1(non_member, channel_message_id, 1)
-        message_react_v1(non_member, dm_message_id, 1)
+        message_unreact_v1(non_member, channel_message_id, 1)
+        message_unreact_v1(non_member, dm_message_id, 1)
 
-def test_invalid_message_id(clear, owner, channel_message_id):
+def test_invalid_message_id(clear, owner, channel_message_id, dm_message_id):
     with pytest.raises(InputError):
-        message_react_v1(owner, channel_message_id + 2, 1)
+        message_unreact_v1(owner, channel_message_id + 2, 1)
 
 def test_invalid_react_id(clear, owner, channel_message_id):
     with pytest.raises(InputError):
-        message_react_v1(owner, channel_message_id, 0)
+        message_unreact_v1(owner, channel_message_id, 0)
 
-def test_react_twice_channel(clear, member, channel_message_id):
-    message_react_v1(member['token'], channel_message_id, 1)
-
+def test_no_reaction_channel(clear, member, channel_message_id):
     with pytest.raises(InputError):
-        message_react_v1(member['token'], channel_message_id, 1)
+        message_unreact_v1(member['token'], channel_message_id, 1)
 
-def test_react_twice_dm(clear, owner, dm_message_id):
-    message_react_v1(owner, dm_message_id, 1)
-
+def test_no_reaction_dm(clear, owner, dm_message_id):
     with pytest.raises(InputError):
-        message_react_v1(owner, dm_message_id, 1)
+        message_unreact_v1(owner, dm_message_id, 1)
 
-def test_message_react(clear, owner, member, channel_message_id, dm_message_id):
+def test_message_unreact(clear, owner, member, channel_message_id, dm_message_id):
     message_react_v1(owner, channel_message_id, 1)
     message_react_v1(owner, dm_message_id, 1)
-    assert message_react_v1(member['token'], channel_message_id, 1) == {}
-    assert message_react_v1(member['token'], dm_message_id, 1) == {}
+    message_react_v1(member['token'], channel_message_id, 1)
+    message_react_v1(member['token'], dm_message_id, 1)
+
+    message_unreact_v1(member['token'], channel_message_id, 1)
+    message_unreact_v1(member['token'], dm_message_id, 1)
+
+    assert message_unreact_v1(owner, channel_message_id, 1) == {}
+    assert message_unreact_v1(owner, dm_message_id, 1) == {}

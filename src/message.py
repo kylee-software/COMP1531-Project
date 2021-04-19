@@ -440,6 +440,71 @@ def message_react_v1(token, message_id, react_id):
         raise AccessError(description="The authorised user is not a member of the channel "
                                       "or DM that the message is within")
 
+
+def message_unreact_v1(token, message_id, react_id):
+    '''
+    message_react() allows users to remove their reaction to the message with the message_id
+
+    Arguments:
+        token (string)       - an authorisation hash of the user
+        message_id (int)     - the message id of the message the user is removing the reaction from
+        react_id (int)       - the react id of the reaction the user is unchecking
+
+    Exceptions:
+        AccessError  - the token is invalid
+                     - the authorised user is not a member of the channel or DM that the message is within
+        InputError   - the message id is invalid within a channel or DM that the authorised user is part of
+                     - react id is invalid (currently the only valid react id is 1)
+                     - the message does not contain an active reaction from the authorised user
+
+    Return Value:
+        {} on successful removing a reaction to the message
+    '''
+
+    data = load_data()
+
+    if not is_valid_token(token):
+        raise AccessError(description="Invalid token.")
+
+    user_id = is_valid_token(token)['user_id']
+
+    if react_id != 1:
+        raise InputError(f"react id {react_id} is invalid")
+
+    message_source = find_message_source(message_id, data)
+    if message_source is None:
+        raise InputError(description="the message id is invalid within a channel or DM that the authorised user is "
+                                     "part of")
+
+    elif "channel_id" in message_source and is_user_in_channel(message_source['channel_id'], user_id, data):
+        channel = next(channel for channel in data['channels'] if channel['channel_id'] == message_source['channel_id'])
+        message = next(message for message in channel['messages'] if message['message_id'] == message_id)
+        reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
+                         and len(message['reactions']) != 0), False)
+
+        if not reaction or user_id not in reaction['reactors']:
+            raise InputError(description="the message does not contain an active reaction from the authorised user")
+        else:
+            reaction['reactors'].remove(user_id)
+            save_data(data)
+            return {}
+
+    elif "dm_id" in message_source and is_user_in_dm(message_source['dm_id'], user_id, data):
+        dm = next(dm for dm in data['dms'] if dm['dm_id'] == message_source['dm_id'])
+        message = next(message for message in dm['messages'] if message['message_id'] == message_id)
+        reaction = next((reaction for reaction in message['reactions'] if reaction['react_id'] == react_id
+                         and len(message['reactions']) != 0), False)
+
+        if not reaction or user_id not in reaction['reactors']:
+            raise InputError(description="the message does not contain an active reaction from the authorised user")
+        else:
+            reaction['reactors'].remove(user_id)
+            save_data(data)
+            return {}
+    else:
+        raise AccessError(description="The authorised user is not a member of the channel "
+                                      "or DM that the message is within")
+
 def message_sendlater_v1(token, channel_id, message, time_sent):
     '''
     message_sendlater() send a message from authorised user to the channel with channel_id automatically at a specific
@@ -506,8 +571,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     Assumption: N/A
 
     Return Value: {'message_id': message_id} where message_id is an integer
-    '''
-
+'''
     data = load_data()
 
     if not is_valid_token(token):

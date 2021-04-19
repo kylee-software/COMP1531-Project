@@ -20,7 +20,8 @@ from src.error import AccessError, InputError
 from src.helper import is_valid_token
 from src.message import (message_edit_v2, message_pin_v1, message_remove_v1,
                          message_send_v2, message_senddm_v1, message_share_v1,
-                         message_unpin_v1, message_sendlater_v1, message_sendlaterdm_v1, message_react_v1)
+                         message_unpin_v1, message_sendlater_v1, message_sendlaterdm_v1, message_react_v1,
+                         message_unreact_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
                       user_profile_setname_v2, user_profile_v2, users_all_v1,
@@ -304,6 +305,12 @@ def search():
 def message_react():
     data = request.get_json()
     message_react_v1(data['token'], data['message_id'], data['react_id'])
+    return jsonify({})
+
+@APP.route("/message/unreact/v1", methods=['POST'])
+def message_unreact():
+    data = request.get_json()
+    message_unreact_v1(data['token'], data['message_id'], data['react_id'])
     return jsonify({})
 
 @APP.route("/message/sendlater/v1", methods=['POST'])
