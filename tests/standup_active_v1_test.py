@@ -27,7 +27,7 @@ def test_invalid_channel_id(clear, token):
     pass
 
 def test_standup_running(clear, token, channel_id):
-    standup_start_v1(token, channel_id, 5)
+    standup_start_v1(token, channel_id, 1)
     assert standup_active_v1(token, channel_id)['is_active'] == True
 
 def test_returns_false(clear, token, channel_id):
