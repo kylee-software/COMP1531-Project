@@ -41,7 +41,8 @@ def standup_end(*args):
     channel = find_channel(args[1], args[2])
     message = channel['standup']['messages']
     message_send_v2(args[0], args[1], message)
-    chnnel['stanadup']['is_active'] = False
+    channel['standup']['is_active'] = False
+    channel['standup']['time_finish'] = None
 
 def standup_active_v1(token, channel_id):
     data = load_data()
@@ -54,13 +55,33 @@ def standup_active_v1(token, channel_id):
     channel = find_channel(channel_id, data)
 
     if channel['standup']['is_active'] == False:
-        return { 'is_active' : channel['standup']['is_active'],
+        return { 'is_active' : False,
              'time_finish' : None,
             }
     else:
-        return { 'is_active' : channel['standup']['is_active'],
+        return { 'is_active' : True,
                  'time_finish' : channel['standup']['time_finish'],
                 }
 
 def standup_send_v1(token, channel_id, message):
-    pass
+    data = load_data()
+    if not is_valid_token(token):
+        raise AccessError("Invalid token")
+    token_data = is_valid_token(token)
+
+    if not is_valid_channel_id(channel_id):
+        raise InputError('Invalid channel_id')
+
+    if len(message) > 1000:
+        raise InputError("Message is longer than 1000 characters")
+
+    if not standup_active_v1(token, channel_id)['is_active']:
+        raise InputError("No active standup")
+
+    if not is_user_in_channel(channel_id, token_data['user_id'], data):
+        raise InputError("User is not in channel")
+
+    channel = find_channel(channel_id, data)
+    channel['standup']['message'] = channel['standup']['message'] + ' ' + message   
+
+    save_data(data)
