@@ -17,11 +17,15 @@ from src.channels import (channels_create_v2, channels_list_v2,
 from src.dm import (dm_create_v1, dm_details_v1, dm_invite_v1, dm_leave_v1,
                     dm_list_v1, dm_messages_v1, dm_remove_v1)
 from src.error import AccessError, InputError
-from src.message import (message_edit_v2, message_remove_v1, message_send_v2,
-                         message_senddm_v1, message_share_v1, message_react_v1, message_unreact_v1)
+from src.helper import is_valid_token
+from src.message import (message_edit_v2, message_pin_v1, message_remove_v1,
+                         message_send_v2, message_senddm_v1, message_share_v1,
+                         message_unpin_v1, message_sendlater_v1, message_sendlaterdm_v1, message_react_v1,
+                         message_unreact_v1)
 from src.other import clear_v1, notifications_get_v1, search_v2
 from src.user import (user_profile_setemail_v2, user_profile_sethandle_v1,
-                      user_profile_setname_v2, user_profile_v2, users_all_v1)
+                      user_profile_setname_v2, user_profile_v2, users_all_v1,
+                      user_stats_v1, users_stats_v1)
 
 
 def defaultHandler(err):
@@ -59,8 +63,9 @@ def echo():
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
     token = request.args.get('token')
-    list = users_all_v1(token)
-    return jsonify(list)
+    user_list = users_all_v1(token)
+    return jsonify(user_list)
+
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications():
@@ -73,10 +78,6 @@ def notifications():
 def channel_details():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    try:
-        channel_id = int(channel_id)
-    except:
-        pass
     return dumps(channel_details_v1(token, channel_id))
 
 
@@ -98,10 +99,8 @@ def channel_invite():
 def user_profile():
     token = request.args.get('token')
     u_id = request.args.get('u_id')
-    if u_id.isdigit():
-        details = user_profile_v2(token, int(u_id))
-    else:
-        details = user_profile_v2(token, u_id)
+
+    details = user_profile_v2(token, u_id)
     return jsonify(details)
 
 
@@ -128,11 +127,11 @@ def admin_userpermission():
     data = request.get_json()
     return jsonify(admin_changepermission_v1(data['token'], data['u_id'], data['permission_id']))
 
+
 @APP.route('/admin/user/remove/v1', methods=['DELETE'])
 def admin_user_remove():
     token = request.get_json()['token']
     u_id = request.get_json()['u_id']
-
     return jsonify(admin_user_remove_v1(token, u_id))
 
 
@@ -165,15 +164,14 @@ def user_profile_setname():
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
     data = request.get_json()
-    dict = channels_create_v2(data['token'], data['name'], data['is_public'])
-    return jsonify(dict)
+    channel_dict = channels_create_v2(data['token'], data['name'], data['is_public'])
+    return jsonify(channel_dict)
 
 
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create():
     data = request.get_json()
     dm_dict = dm_create_v1(data['token'], data['u_ids'])
-
     return jsonify(dm_dict)
 
 
@@ -181,7 +179,6 @@ def dm_create():
 def dm_list():
     data = request.get_json()
     dm_list_generated = dm_list_v1(data['token'])
-
     return jsonify(dm_list_generated)
 
 
@@ -189,15 +186,14 @@ def dm_list():
 def dm_leave():
     data = request.get_json()
     dm_leave_v1(data['token'], data['dm_id'])
-
     return jsonify({})
 
 
 @APP.route('/channels/list/v2', methods=['GET'])
 def list_channels():
     token = request.args.get('token')
-    list = channels_list_v2(token)
-    return jsonify(list)
+    channel_list = channels_list_v2(token)
+    return jsonify(channel_list)
 
 
 @APP.route('/channels/listall/v2', methods=['GET'])
@@ -211,11 +207,7 @@ def listall_channels():
 def dm_details():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id')
-    if dm_id.isdigit():
-        details = dm_details_v1(token, int(dm_id))
-    else:
-        details = dm_details_v1(token, dm_id)
-
+    details = dm_details_v1(token, dm_id)
     return jsonify(details)
 
 
@@ -271,10 +263,7 @@ def dm_messages():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id')
     start = request.args.get('start')
-    if (not dm_id.isdigit()) or (not start.isdigit()):
-        raise InputError(description="dm id or start is not an integer")
-
-    messages_dict = dm_messages_v1(token, int(dm_id), int(start))
+    messages_dict = dm_messages_v1(token, dm_id, start)
     return jsonify(messages_dict)
 
 
@@ -283,10 +272,7 @@ def channel_messages():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
     start = request.args.get('start')
-    if (not channel_id.isdigit()) or (not start.isdigit()):
-        raise InputError(description="channel id or start is not a number")
-
-    data = channel_messages_v2(token, int(channel_id), int(start))
+    data = channel_messages_v2(token, channel_id, start)
     return jsonify(data)
 
 
@@ -326,6 +312,45 @@ def message_unreact():
     data = request.get_json()
     message_unreact_v1(data['token'], data['message_id'], data['react_id'])
     return jsonify({})
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    data = request.get_json()
+    message_id = message_sendlater_v1(data['token'], data['channel_id'], data['message'], data['time_sent'])
+    return jsonify(message_id)
+
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    data = request.get_json()
+    message_id = message_sendlaterdm_v1(data['token'], data['dm_id'], data['message'], data['time_sent'])
+    return jsonify(message_id)
+
+
+@APP.route('/user/stats/v1', methods=['GET'])
+def user_stats():
+    token = request.args.get('token')
+    stats = user_stats_v1(token)
+    return jsonify(stats)
+
+@APP.route('/users/stats/v1', methods=['GET'])
+def users_stats():
+    token = request.args.get('token')
+    stats = users_stats_v1(token)
+    return jsonify(stats)
+
+@APP.route("/message/pin/v1", methods=["POST"])
+def message_pin():
+    data = request.get_json()
+    message_pin_v1(data['token'], data['message_id'])
+    return jsonify({})
+
+
+@APP.route("/message/unpin/v1", methods=["POST"])
+def message_unpin():
+    data = request.get_json()
+    message_unpin_v1(data['token'], data['message_id'])
+    return jsonify({})
+
 
 if __name__ == "__main__":
     APP.run(port=config.port)  # Do not edit this port
