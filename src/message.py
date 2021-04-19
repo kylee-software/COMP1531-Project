@@ -363,8 +363,9 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
 
     delay_time = time_sent - current_timestamp
     time.sleep(delay_time)
+    messageID_dict = message_send_v2(token, channel_id, message)
     save_data(data)
-    return message_send_v2(token, channel_id, message)
+    return messageID_dict
 
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     '''
@@ -408,9 +409,12 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     if time_sent < current_timestamp:
         raise InputError(description="the time for the message to send is in the past.")
 
+
     delay_time = time_sent - current_timestamp
     time.sleep(delay_time)
+    messageID_dict = message_senddm_v1(token, dm_id, message)
     save_data(data)
-    return message_senddm_v1(token, dm_id, message)
+
+    return messageID_dict
 
 
