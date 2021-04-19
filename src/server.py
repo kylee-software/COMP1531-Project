@@ -312,7 +312,7 @@ def standup_start():
 def standup_active():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    response = standup_active_v1(token, int(channel_id))
+    response = standup_active_v1(token, channel_id)
     return jsonify(response)
 
 @APP.route("/standup/send/v1", methods=['POST'])
