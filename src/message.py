@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from src.helper import is_valid_token, return_valid_tagged_handles, save_data, find_message, \
     is_valid_channel_id, is_user_in_channel, find_user, is_valid_dm_id, find_dm, tag_users, find_message_source, \
     is_user_in_dm, message_notification_message
@@ -7,7 +6,6 @@ from datetime import datetime, timezone
 from src.channel import channel_details_v1
 from src.data import dataStore
 
-=======
 from datetime import datetime, timezone
 import time
 from src.channel import channel_details_v1
@@ -18,7 +16,7 @@ from src.helper import (find_channel, find_dm, find_message,
                         is_valid_token, load_data,
                         message_notification_message,
                         return_valid_tagged_handles, save_data, tag_users)
->>>>>>> master
+from src.data import dataStore
 
 def message_send_v2(token, channel_id, message):
     """Sends a message from the user referenced by the token to the channel referenced by
@@ -59,21 +57,13 @@ def message_send_v2(token, channel_id, message):
     if not msg_user:
         raise AccessError(description='You have not joined this channel')
     else:
-<<<<<<< HEAD
         new_message = {'message_id': data['msg_counter'] + 1, 'u_id': token['user_id'],
-                       'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp()}
+                       'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'is_pinned': False, 'reactions': []}
         channel['messages'].insert(0, new_message)
 
         auth_messages = next(user['sent_messages']
                              for user in data['users'] if user['user_id'] == token['user_id'])
         auth_messages.insert(0, data['msg_counter'] + 1)
-=======
-        new_message = {'message_id': data['msg_counter'] + 1, 'message_author': token['user_id'],
-                       'message': message, "time_created": int(datetime.now().timestamp()), "is_pinned": False,
-                       'reactions': []}
->>>>>>> master
-
-        channel['messages'].insert(0, new_message)
         
         # Add to user stats; messages sent
         user = find_user(token['user_id'], data)
@@ -358,15 +348,9 @@ def message_senddm_v1(token, dm_id, message):
             description='user is not in the dm they are sharing message to')
 
     message_id = data['msg_counter'] + 1
-<<<<<<< HEAD
     new_message = {'message_id': message_id, 'u_id': auth_user_id,
-                   'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp()}
-=======
-    new_message = {'message_id': message_id, 'message_author': auth_user_id,
-                   'message': message, "time_created": int(datetime.now().timestamp()),  "is_pinned": False,
-                   'reactions': []}
+                   'message': message, "time_created": datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'is_pinned': False, 'reactions': []}
 
->>>>>>> master
     dm['messages'].insert(0, new_message)
 
     # notify tagged users
@@ -414,7 +398,7 @@ def message_react_v1(token, message_id, react_id):
 
     '''
 
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Invalid token.")
@@ -487,7 +471,7 @@ def message_unreact_v1(token, message_id, react_id):
         {} on successful removing a reaction to the message
     '''
 
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Invalid token.")
@@ -552,7 +536,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     Return Value: {'message_id': message_id} where message_id is an integer
     '''
 
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(description="Invalid token id.")
 
@@ -598,7 +582,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
 
     Return Value: {'message_id': message_id} where message_id is an integer
 '''
-    data = load_data()
+    data = dataStore
 
     if not is_valid_token(token):
         raise AccessError(description="Invalid token id.")
@@ -629,7 +613,7 @@ def message_pin_v1(token: str, message_id: int) -> dict:
     if decoded_token is False:
         raise AccessError(description="Invalid Token.")
 
-    data = load_data()
+    data = dataStore
 
     message_found = find_message_source(message_id, data)
 
@@ -700,7 +684,7 @@ def message_unpin_v1(token: str, message_id: int) -> dict:
     if decoded_token is False:
         raise AccessError(description="Invalid Token.")
 
-    data = load_data()
+    data = dataStore
 
     message_found = find_message_source(message_id, data)
 

@@ -3,9 +3,8 @@ from src.helper import (find_dm, find_user, invite_notification_message,
                         is_user_in_dm, is_valid_dm_id, is_valid_token,
                         is_valid_user_id, save_data)
 from src.data import dataStore
-
-                        is_valid_user_id, load_data, save_data)
 from datetime import datetime
+
 
 def dm_list_v1(token):
     """Returns the list of DMs that the user is a member of
@@ -155,18 +154,14 @@ def dm_details_v1(token, dm_id):
     if not is_valid_token(token):
         raise AccessError("Invalid token")
     token = is_valid_token(token)
-<<<<<<< HEAD
 
     data = dataStore
-=======
     
     try:
         dm_id = int(dm_id)
     except Exception as e:
         raise InputError(description='dm_id must be an integer') from e
     
-    data = load_data()
->>>>>>> master
 
     dm = next((dm for dm in data['dms'] if dm['dm_id'] == dm_id), False)
     #dm = list(filter(lambda dm: dm['dm_id'] == dm_id, data['dm']))[0]
@@ -329,10 +324,8 @@ def dm_messages_v1(token, dm_id, start):
     Return Value:
         Returns {messages, start, end} where messages is a dictionary
     '''
-<<<<<<< HEAD
 
     data = dataStore
-=======
     try:
         dm_id = int(dm_id)
     except Exception as e: 
@@ -342,8 +335,6 @@ def dm_messages_v1(token, dm_id, start):
     except Exception as e:
         raise InputError(description='start must be an integer') from e
     
-    data = load_data()
->>>>>>> master
 
     if not is_valid_token(token):
         raise AccessError(description="Token is invalid")

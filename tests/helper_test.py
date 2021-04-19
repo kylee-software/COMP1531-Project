@@ -96,18 +96,13 @@ def test_save_correct_data():
 def test_load_incorrect_data():
     with open('src/data.json', 'w') as FILE:
         json.dump("incorrect", FILE)
-<<<<<<< HEAD
     load_data()
     assert dataStore == {'users': [], 'channels': [],
-                           'dms': [], 'msg_counter': 0}
-=======
-    assert load_data() == {'users': [], 'channels': [],
                            'dms': [], 'msg_counter': 0,
                            'dreams_stats': {'channels_exist':[], 
                                         'dms_exist':[], 
                                         'messages_exist':[], 
                                         'utilization_rate':0}}
->>>>>>> master
     clear_v1()
 
 

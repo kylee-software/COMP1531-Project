@@ -211,7 +211,7 @@ def user_stats_v1(token):
                     involovement_rate 
                     }
     '''
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(description=f"Token invalid")
 
@@ -249,7 +249,7 @@ def users_stats_v1(token):
                     utilization_rate 
                     }
     '''
-    data = load_data()
+    data = dataStore
     if not is_valid_token(token):
         raise AccessError(description=f"Token invalid")
     

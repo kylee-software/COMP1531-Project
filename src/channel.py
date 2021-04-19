@@ -4,7 +4,7 @@ from src.helper import (find_channel, find_user,
                         invite_notification_message, is_user_in_channel,
                         is_valid_channel_id, is_valid_token, is_valid_user_id, save_data, 
                         is_valid_channel_id, is_valid_token, is_valid_user_id,
-                        load_data, save_data)
+                        save_data)
 from datetime import datetime
 from src.data import dataStore
 
