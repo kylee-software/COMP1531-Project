@@ -88,3 +88,51 @@ Isabelle
 - Did some pair coding to create some simple helper functions 
 - Reviewed merge requests for auth together 
         
+
+### ITERATION THREE MEETINGS
+## Week 8
+# Description
+Weekly meeting in lab/after lab
+# Date
+07/04/2021 - Lab + meeting (10-12, 12-1) 
+# Attendees
+Sesi, Kylee, Michael, Isabelle 
+# Scribe
+Isabelle 
+# General Notes: 
+- Separated work 
+- Worked on deployment 
+- Tested front end together
+# Testing Front End Notes: 
+- Dm list is causing an error on start of frontend use 
+- Channel messages are sending/displaying both channels 
+- Data randomly deletes 
+
+## Week 9
+# Description
+Weekly meeting in lab/after lab
+# Date
+14/04/2021 - Lab + meeting (10-12, 12-1) 
+# Attendees
+Sesi, Kylee, Michael, Isabelle 
+# Scribe
+Isabelle 
+# Anto data Feedback Notes:  
+- check you arent accidentally clearing anywhere 
+- when you catch exception print the error (load data) 
+- Testing if in  for data is wrong right now -> fix that 
+- Print things out to work out if its load or save 
+- Save data -> do something to handle the exception 
+- Could be unable to open file if its already open? 
+- Maybe if file is large it could be taking some time 
+- Split data.json to users, channels, messages? 
+- Still use a global variable of data -> as soon as server is started keep that in memory and then keep saving at the end of functions (make a helper function get_data that returns a global data variable) 
+# Anto Other Feedback Notes: 
+- Http tests failing if the string is not a number vibe  
+- Type check before typecasting 
+- Something wrong with fixtures in channel http tests -> might not be using clear  
+- Needed to use server routes rather than actual functions 
+# Iteration 2 issues 
+- Handles need to be lowercase 
+- Message share ?? change dict key return 
+- Server tests need to check string type 
